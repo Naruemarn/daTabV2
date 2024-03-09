@@ -87,7 +87,7 @@ class _MainPage extends State<MainPage> {
       ),
       body: ListView(
         children: [
-          //Divider(),
+          Divider(),
           ListTile(title: const Text('General')),
           Enable_Bluetooth(),
           Bluetooth_Status(),

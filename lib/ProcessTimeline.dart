@@ -18,6 +18,10 @@ const inProgressColor = Colors.orange;
 const completeColor = Colors.green;
 const todoColor = Colors.grey;
 
+int cnt_ok = 123456789;
+int cnt_ng = 123545557;
+int cnt_total = 524892255;
+
 String timenow = '';
 
 class ProcessTimelinePage extends StatefulWidget {
@@ -85,7 +89,7 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
               },
               icon: const Icon(
                 Icons.settings,
-                size: 25,
+                size: 35,
               ))
         ],
       ),
@@ -93,7 +97,7 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
         children: [
           Container(
             height: 200,
-            //color: Colors.blue[200],
+            color: Colors.grey[200],
             child: Timeline.tileBuilder(
               theme: TimelineThemeData(
                 direction: Axis.horizontal,
@@ -238,25 +242,23 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
               ),
             ),
           ),
+          //Divider(color: Colors.grey, height: 40,),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               Column(
                 children: [
-                  Text(
-                    timenow,
-                    style: TextStyle(fontSize: 30, color: Colors.teal),
-                  ),
-                  build_ok_counter(123456),
-                  build_ng_counter(256789),
-                  build_total_counter(999944466),
+                  show_timenow(),
+                  build_ok_counter(cnt_ok),
+                  build_ng_counter(cnt_ng),
+                  build_total_counter(cnt_total),
+                  reset_button(),
                 ],
               ),
               Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Container(
-                    //color: Colors.blue,
                     //padding: EdgeInsets.symmetric(vertical: 16),
                     width: size * 0.3,
                     //color: Colors.yellow,
@@ -279,41 +281,127 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           retry_button(),
-          SizedBox(width: 10),
+          SizedBox(width: 20),
           save_button(),
         ],
       ),
     );
   }
 
-  FloatingActionButton save_button() {
-    return FloatingActionButton.extended(
-      icon: Icon(Icons.save_outlined),
-      label: Text('Save'),
-      foregroundColor: Colors.white,
-      backgroundColor: Colors.teal,
-      onPressed: () {
-        setState(() {
-          _processIndex = (_processIndex + 1) % _processes.length;
-        });
-      },
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Container icon_ng() {
+    return Container(
+      width: 60,
+      //color: Colors.pink,
+      child: ShowImage(path: MyConstant.image_ng),
     );
   }
 
-  FloatingActionButton retry_button() {
-    return FloatingActionButton.extended(
-      icon: Icon(Icons.refresh),
-      label: Text('Retry'),
-      foregroundColor: Colors.white,
-      backgroundColor: Colors.teal,
-      onPressed: () {
-        setState(() {
-          _processIndex = (_processIndex - 1) % _processes.length;
-        });
-      },
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Container icon_ok() {
+    return Container(
+      width: 60,
+      //color: Colors.pink,
+      child: ShowImage(path: MyConstant.image_ok),
     );
   }
 
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Text show_timenow() {
+    return Text(
+      timenow,
+      style: TextStyle(fontSize: 20, color: Colors.teal),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget reset_button() {
+    return Container(
+      //color: Colors.red,
+      width: 150,
+      height: 50,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          confirm_popup();
+        },
+        icon: Icon(Icons.clear_outlined),
+        label: Text('Reset'),
+        style: ElevatedButton.styleFrom(
+          shadowColor: Colors.black,
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget save_button() {
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 70,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            _processIndex = (_processIndex + 1) % _processes.length;
+          });
+        },
+        icon: Icon(Icons.save_as_outlined, size: 50),
+        label: Text(
+          'Save',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget retry_button() {
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 70,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            _processIndex = (_processIndex - 1) % _processes.length;
+          });
+        },
+        icon: Icon(Icons.refresh, size: 50),
+        label: Text(
+          'Retry',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_ok_counter(int value) {
     return Card(
       color: Colors.green,
@@ -323,21 +411,14 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'OK',
-                style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.white,
-                ),
-              ),
+              padding: const EdgeInsets.all(12.0),
+              child: icon_ok(),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(12.0),
               child: Text(
                 NumberFormat("#,###").format(value) + ' Qty',
-                style: TextStyle(color: Colors.white, fontSize: 30),
+                style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ),
           ],
@@ -346,6 +427,8 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
     );
   }
 
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_ng_counter(int value) {
     return Card(
       color: Colors.red,
@@ -355,18 +438,45 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(12.0),
+              child: icon_ng(),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(12.0),
               child: Text(
-                'NG',
+                NumberFormat("#,###").format(value) + ' Qty',
+                style: TextStyle(color: Colors.white, fontSize: 25),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Card build_total_counter(int value) {
+    return Card(
+      color: Colors.grey,
+      child: Container(
+        width: 400,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Text(
+                'Total',
                 style: TextStyle(
-                  fontSize: 40,
-                  fontWeight: FontWeight.normal,
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(20.0),
               child: Text(
                 NumberFormat("#,###").format(value) + ' Qty',
                 style: TextStyle(color: Colors.white, fontSize: 30),
@@ -378,37 +488,55 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
     );
   }
 
-  Card build_total_counter(int value) {
-    return Card(
-      color: Colors.grey,
-      child: Container(
-        width: 400,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                'Total',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                NumberFormat("#,###").format(value) + ' Qty',
-                style: TextStyle(color: Colors.white, fontSize: 30),
-              ),
-            ),
-          ],
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<void> confirm_popup() async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: ListTile(
+          leading: ShowImage(path: MyConstant.confirm),
+          title: Text(
+            'Are you sure to reset the counter?',
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+          ),
+          //subtitle: Text('Are you sure?', style: TextStyle(color: Colors.teal),),
         ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              cnt_ok = 0;
+              cnt_ng = -0;
+              cnt_total = 0;
+              Navigator.pop(context);
+            },
+            child: Text(
+              'Yes',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal),
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            child: Text(
+              'No',
+              style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.teal),
+            ),
+          ),
+        ],
       ),
     );
   }
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 }
 
 /// hardcoded bezier painter
