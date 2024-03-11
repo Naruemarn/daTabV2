@@ -14,6 +14,8 @@ import 'package:timelines/timelines.dart';
 
 late SharedPreferences prefs;
 
+late String? read_company_name;
+
 late String? read_min1;
 late String? read_min2;
 late String? read_min3;
@@ -83,6 +85,8 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
 Future<Null> read_setting() async {
     prefs = await SharedPreferences.getInstance();
 
+    read_company_name = prefs.getString('key_company');
+
     read_min1 = prefs.getString('key_min1');
     read_max1 = prefs.getString('key_max1');
 
@@ -99,6 +103,8 @@ Future<Null> read_setting() async {
     read_max5 = prefs.getString('key_max5');
 
     setState(() {
+      read_company_name = read_company_name;
+
       read_min1 = read_min1.toString();
       read_max1 = read_max1.toString();
 
@@ -114,6 +120,8 @@ Future<Null> read_setting() async {
       read_min5 = read_min5.toString();
       read_max5 = read_max5.toString();
     });
+
+    print('Company = $read_company_name');
 
     print('Min1 = $read_min1');
     print('Max1 = $read_max1');
@@ -189,7 +197,7 @@ Future<Null> save_count() async {
         backgroundColor: Colors.teal,
         centerTitle: true,
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               MyConstant.logo_appbar,
@@ -198,13 +206,13 @@ Future<Null> save_count() async {
             const SizedBox(
               width: 10,
             ),
-            // (Text(
-            //   MyConstant.appName,
-            //   style: const TextStyle(
-            //       fontSize: 50,
-            //       fontWeight: FontWeight.bold,
-            //       color: Colors.white),
-            // )),
+            (Text(
+              read_company_name.toString(),
+              style: const TextStyle(
+                  fontSize: 40,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white),
+            )),
           ],
         ),
         actions: [
@@ -219,23 +227,25 @@ Future<Null> save_count() async {
                 );
 
                 setState(() {
-                  read_min1 = get_setting[0];
-                  read_max1 = get_setting[1];
+                  read_company_name = get_setting[0];
 
-                  read_min2 = get_setting[2];
-                  read_max2 = get_setting[3];
+                  read_min1 = get_setting[1];
+                  read_max1 = get_setting[2];
 
-                  read_min3 = get_setting[4];
-                  read_max3 = get_setting[5];
+                  read_min2 = get_setting[3];
+                  read_max2 = get_setting[4];
 
-                  read_min4 = get_setting[6];
-                  read_max4 = get_setting[7];
+                  read_min3 = get_setting[5];
+                  read_max3 = get_setting[6];
 
-                  read_min5 = get_setting[8];
-                  read_max5 = get_setting[9];
+                  read_min4 = get_setting[7];
+                  read_max4 = get_setting[8];
+
+                  read_min5 = get_setting[9];
+                  read_max5 = get_setting[10];
 
                   print(
-                      'Return Setting ==> $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
+                      'Return Setting ==> $read_company_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
                 });
 
                 //read_register();
@@ -430,7 +440,7 @@ Future<Null> save_count() async {
                       //color: Colors.amber,
                       child: Text(
                         'Result',
-                        style: TextStyle(fontSize: 20, color: Colors.black),
+                        style: TextStyle(fontSize: 20, color: Colors.teal),
                       ),
                     ),
                   ],
@@ -518,7 +528,7 @@ Future<Null> save_count() async {
         onPressed: () {
           confirm_popup();
         },
-        icon: Icon(Icons.clear_outlined),
+        icon: Icon(Icons.arrow_drop_down_circle_rounded),
         label: Text('Reset'),
         style: ElevatedButton.styleFrom(
           shadowColor: Colors.black,
@@ -549,9 +559,9 @@ Future<Null> save_count() async {
             save_count();
           });
         },
-        icon: Icon(Icons.save_as_outlined, size: 50),
+        icon: Icon(Icons.play_circle_fill_outlined, size: 50),
         label: Text(
-          'Save',
+          'Clear',
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
@@ -578,7 +588,7 @@ Future<Null> save_count() async {
             _processIndex = (_processIndex - 1) % _processes.length;
           });
         },
-        icon: Icon(Icons.refresh, size: 50),
+        icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),

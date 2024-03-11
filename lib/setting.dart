@@ -1,5 +1,6 @@
 //import 'dart:js';
 
+//import 'dart:js_util';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -23,6 +24,8 @@ class _SettingPageState extends State<SettingPage> {
 
   late SharedPreferences prefs;
 
+  TextEditingController company_name = TextEditingController();
+
   TextEditingController min1 = TextEditingController();
   TextEditingController max1 = TextEditingController();
 
@@ -38,6 +41,8 @@ class _SettingPageState extends State<SettingPage> {
 
   TextEditingController min5 = TextEditingController();
   TextEditingController max5 = TextEditingController();
+
+  late String? read_company_name;
 
   late String? read_min1;
   late String? read_min2;
@@ -86,6 +91,8 @@ class _SettingPageState extends State<SettingPage> {
               save_register().then(
                 (value) {
                 Navigator.pop(context, [
+                company_name.text,
+
                 min1.text,
                 max1.text,
 
@@ -116,6 +123,9 @@ class _SettingPageState extends State<SettingPage> {
           key: formKey,
           child: ListView(
             children: [
+              buildTitle('Company name:'),
+              build_name(size, 'Company name', company_name),
+              //Divider(),
               buildTitle('STEP 1'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -171,7 +181,48 @@ class _SettingPageState extends State<SettingPage> {
       child: Text(
         msg,
         style: TextStyle(
-            fontSize: 20, fontWeight: FontWeight.bold, color: Colors.teal),
+            fontSize: 15, fontWeight: FontWeight.bold, color: Colors.teal),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget build_name(double size, String txt, TextEditingController inputbox) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Container(
+            //margin: EdgeInsets.only(top: 8),
+            width: size * 0.513,
+            child: TextFormField(
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return 'Please fill company name';
+                } else {
+                  return null;
+                }
+              },
+              //keyboardType: TextInputType.text,
+              controller: inputbox,
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(
+                labelText: txt,
+                labelStyle: TextStyle(fontSize: 15),
+                enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                    borderRadius: BorderRadius.circular(30)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.teal),
+                    borderRadius: BorderRadius.circular(30)),
+              ),
+              style: TextStyle(fontSize: 15),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -200,7 +251,7 @@ class _SettingPageState extends State<SettingPage> {
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 labelText: txt,
-                labelStyle: TextStyle(fontSize: 20),
+                labelStyle: TextStyle(fontSize: 15),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.teal),
                     borderRadius: BorderRadius.circular(30)),
@@ -208,7 +259,7 @@ class _SettingPageState extends State<SettingPage> {
                     borderSide: BorderSide(color: Colors.teal),
                     borderRadius: BorderRadius.circular(30)),
               ),
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 15),
             ),
           ),
         ],
@@ -240,7 +291,7 @@ class _SettingPageState extends State<SettingPage> {
               textAlign: TextAlign.center,
               decoration: InputDecoration(
                 labelText: txt,
-                labelStyle: TextStyle(fontSize: 20),
+                labelStyle: TextStyle(fontSize: 15),
                 enabledBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.teal),
                     borderRadius: BorderRadius.circular(30)),
@@ -248,7 +299,7 @@ class _SettingPageState extends State<SettingPage> {
                     borderSide: BorderSide(color: Colors.teal),
                     borderRadius: BorderRadius.circular(30)),
               ),
-              style: TextStyle(fontSize: 20),
+              style: TextStyle(fontSize: 15),
             ),
           ),
         ],
@@ -260,6 +311,8 @@ class _SettingPageState extends State<SettingPage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<Null> save_register() async {
     prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('key_company', company_name.text);
 
     prefs.setString('key_min1', min1.text);
     prefs.setString('key_max1', max1.text);
@@ -282,6 +335,8 @@ class _SettingPageState extends State<SettingPage> {
   Future<Null> read_register() async {
     prefs = await SharedPreferences.getInstance();
 
+    read_company_name = prefs.getString('key_company');
+
     read_min1 = prefs.getString('key_min1');
     read_max1 = prefs.getString('key_max1');
 
@@ -298,6 +353,8 @@ class _SettingPageState extends State<SettingPage> {
     read_max5 = prefs.getString('key_max5');
 
     setState(() {
+      company_name.text = read_company_name.toString();
+
       min1.text = read_min1.toString();
       max1.text = read_max1.toString();
 
@@ -313,6 +370,8 @@ class _SettingPageState extends State<SettingPage> {
       min5.text = read_min5.toString();
       max5.text = read_max5.toString();
     });
+
+    print('Company = $read_company_name');
 
     print('Min1 = $read_min1');
     print('Max1 = $read_max1');
