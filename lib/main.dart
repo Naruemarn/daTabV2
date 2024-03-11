@@ -11,17 +11,34 @@
 /////////////////////////////////////////////////////////////////
 
 // @dart=3.3.0
+import 'package:databv2/setting.dart';
+import 'package:databv2/utility/my_constant.dart';
 import 'package:flutter/material.dart';
 
 import './MainPage.dart';
 import 'ProcessTimeline.dart';
 
-void main() => runApp(new ExampleApplication());
+final Map<String, WidgetBuilder> map = {
+  '/timeline': (BuildContext) => ProcessTimelinePage(),
+  '/setting': (BuildContext) => SettingPage(),
+};
+
+String? initialRoute;
+
+void main() {
+  initialRoute = MyConstant.routeTimeline;
+  runApp(ExampleApplication());
+}
 
 class ExampleApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //return MaterialApp(debugShowCheckedModeBanner: false, home: MainPage());
-    return MaterialApp(debugShowCheckedModeBanner: false, home: ProcessTimelinePage());
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: MyConstant.appName,
+      routes: map,
+      initialRoute: initialRoute,
+    );
   }
 }

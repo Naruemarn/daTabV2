@@ -1,12 +1,30 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:databv2/setting.dart';
 import 'package:databv2/utility/my_constant.dart';
 import 'package:databv2/widgets/show_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timelines/timelines.dart';
+
+late SharedPreferences prefs;
+
+late String? read_min1;
+late String? read_min2;
+late String? read_min3;
+late String? read_min4;
+late String? read_min5;
+
+late String? read_max1;
+late String? read_max2;
+late String? read_max3;
+late String? read_max4;
+late String? read_max5;
 
 const kTileHeight = 50.0;
 
@@ -18,9 +36,9 @@ const inProgressColor = Colors.orange;
 const completeColor = Colors.green;
 const todoColor = Colors.grey;
 
-int cnt_ok = 123456789;
-int cnt_ng = 123545557;
-int cnt_total = 524892255;
+int? cnt_ok;
+int? cnt_ng;
+int? cnt_total;
 
 String timenow = '';
 
@@ -40,6 +58,8 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
     '400.1234',
     '500.1234',
   ];
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Color getColor(int index) {
     if (index == _processIndex) {
       return inProgressColor;
@@ -49,7 +69,8 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
       return todoColor;
     }
   }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   void gettime() {
     final DateTime now = DateTime.now();
 
@@ -57,12 +78,101 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
       timenow = DateFormat('yyyy-mm-dd HH:mm:ss ').format(now);
     });
   }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Future<Null> read_setting() async {
+    prefs = await SharedPreferences.getInstance();
 
+    read_min1 = prefs.getString('key_min1');
+    read_max1 = prefs.getString('key_max1');
+
+    read_min2 = prefs.getString('key_min2');
+    read_max2 = prefs.getString('key_max2');
+
+    read_min3 = prefs.getString('key_min3');
+    read_max3 = prefs.getString('key_max3');
+
+    read_min4 = prefs.getString('key_min4');
+    read_max4 = prefs.getString('key_max4');
+
+    read_min5 = prefs.getString('key_min5');
+    read_max5 = prefs.getString('key_max5');
+
+    setState(() {
+      read_min1 = read_min1.toString();
+      read_max1 = read_max1.toString();
+
+      read_min2 = read_min2.toString();
+      read_max2 = read_max2.toString();
+
+      read_min3 = read_min3.toString();
+      read_max3 = read_max3.toString();
+
+      read_min4 = read_min4.toString();
+      read_max4 = read_max4.toString();
+
+      read_min5 = read_min5.toString();
+      read_max5 = read_max5.toString();
+    });
+
+    print('Min1 = $read_min1');
+    print('Max1 = $read_max1');
+
+    print('Min2 = $read_min2');
+    print('Max2 = $read_max2');
+
+    print('Min3 = $read_min3');
+    print('Max3 = $read_max3');
+
+    print('Min4 = $read_min4');
+    print('Max4 = $read_max4');
+
+    print('Min5 = $read_min5');
+    print('Max5 = $read_max5');
+  }
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+Future<Null> save_count() async {
+    prefs = await SharedPreferences.getInstance();
+
+    prefs.setString('key_ok', cnt_ok.toString());
+    prefs.setString('key_ng', cnt_ng.toString());
+    prefs.setString('key_total', cnt_total.toString());
+
+  }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<Null> read_counter() async {
+    prefs = await SharedPreferences.getInstance();
+
+    String? ok = prefs.getString('key_ok');
+    String? ng = prefs.getString('key_ng');
+    String? total = prefs.getString('key_total');
+
+
+    setState(() {
+      cnt_ok = int.parse(ok.toString());
+      cnt_ng = int.parse(ng.toString());
+      cnt_total = int.parse(total.toString());
+     
+    });
+
+    print('Cnt OK = $cnt_ok');
+    print('Cnt NG = $cnt_ng');
+    print('Cnt Total = $cnt_total');
+
+  }
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
 
+    read_setting();
+    read_counter();
+    
     DateTime now = new DateTime.now();
     timenow = DateFormat('yyyy-mm-dd HH:mm:ss ').format(now);
     Timer.periodic(Duration(seconds: 1), (Timer t) => gettime());
@@ -74,18 +184,61 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
 
     return Scaffold(
       appBar: AppBar(
+        //leading: Image.asset('asset/images/logo.png', fit: BoxFit.cover),
         iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.teal,
         centerTitle: true,
-        title: (Text(
-          MyConstant.appName,
-          style: TextStyle(
-              fontSize: 50, fontWeight: FontWeight.bold, color: Colors.white),
-        )),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Image.asset(
+              MyConstant.logo_appbar,
+              scale: 3,
+            ),
+            const SizedBox(
+              width: 10,
+            ),
+            // (Text(
+            //   MyConstant.appName,
+            //   style: const TextStyle(
+            //       fontSize: 50,
+            //       fontWeight: FontWeight.bold,
+            //       color: Colors.white),
+            // )),
+          ],
+        ),
         actions: [
           IconButton(
-              onPressed: () {
-                // handle the press
+              onPressed: () async {
+                //Navigator.pushNamed(context, MyConstant.routeSetting);
+                final List<String> get_setting =
+                    await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => SettingPage(),
+                  ),
+                );
+
+                setState(() {
+                  read_min1 = get_setting[0];
+                  read_max1 = get_setting[1];
+
+                  read_min2 = get_setting[2];
+                  read_max2 = get_setting[3];
+
+                  read_min3 = get_setting[4];
+                  read_max3 = get_setting[5];
+
+                  read_min4 = get_setting[6];
+                  read_max4 = get_setting[7];
+
+                  read_min5 = get_setting[8];
+                  read_max5 = get_setting[9];
+
+                  print(
+                      'Return Setting ==> $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
+                });
+
+                //read_register();
               },
               icon: const Icon(
                 Icons.settings,
@@ -97,7 +250,7 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
         children: [
           Container(
             height: 200,
-            color: Colors.grey[200],
+            //color: Colors.grey[200],
             child: Timeline.tileBuilder(
               theme: TimelineThemeData(
                 direction: Axis.horizontal,
@@ -243,42 +396,79 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
             ),
           ),
           //Divider(color: Colors.grey, height: 40,),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  show_timenow(),
-                  build_ok_counter(cnt_ok),
-                  build_ng_counter(cnt_ng),
-                  build_total_counter(cnt_total),
-                  reset_button(),
-                ],
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Container(
-                    //padding: EdgeInsets.symmetric(vertical: 16),
-                    width: size * 0.3,
-                    //color: Colors.yellow,
-                    child: ShowImage(path: MyConstant.image_wait),
-                  ),
-                  Container(
-                    //color: Colors.amber,
-                    child: Text(
-                      'Result',
-                      style: TextStyle(fontSize: 20, color: Colors.black),
+          Container(
+            //color: Colors.yellow,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Container(
+                    //color: Colors.blue,
+                    child: Column(
+                      children: [
+                        show_timenow(),
+                        build_ok_counter(cnt_ok!),
+                        build_ng_counter(cnt_ng!),
+                        build_total_counter(cnt_total!),
+                        reset_button(),
+                      ],
                     ),
                   ),
-                ],
-              ),
-            ],
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      //padding: EdgeInsets.symmetric(vertical: 16),
+                      width: size * 0.25,
+                      //color: Colors.yellow,
+                      child: ShowImage(path: MyConstant.image_wait),
+                    ),
+                    Container(
+                      //color: Colors.amber,
+                      child: Text(
+                        'Result',
+                        style: TextStyle(fontSize: 20, color: Colors.black),
+                      ),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Container(
+                      width: size * 0.1,
+                      //color: Colors.purple,
+                      child: Table(
+                        border: TableBorder.all(),
+                        columnWidths: {
+                          0: FractionColumnWidth(0.15),
+                          1: FractionColumnWidth(0.25),
+                          2: FractionColumnWidth(0.25),
+                          3: FractionColumnWidth(0.25),
+                        },
+                        children: [
+                          buildRow(['Step', 'Min', 'Result', 'Max'],
+                              isHeader: true),
+                          buildRow(['1', read_min1.toString(), 'x', read_max1.toString()]),
+                          buildRow(['2', read_min2.toString(), 'xx', read_max2.toString()]),
+                          buildRow(['3', read_min3.toString(), 'xxx', read_max3.toString()]),
+                          buildRow(['4', read_min4.toString(), 'xxxx', read_max4.toString()]),
+                          buildRow(['5', read_min5.toString(), 'xxxxx', read_max5.toString()]),
+                        ],
+                      ),
+                    ),
+                  ),
+                )
+              ],
+            ),
           ),
         ],
       ),
       floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           retry_button(),
           SizedBox(width: 20),
@@ -352,7 +542,11 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
-            _processIndex = (_processIndex + 1) % _processes.length;
+            //_processIndex = (_processIndex + 1) % _processes.length;
+            cnt_ok=1234;
+            cnt_ng=5678;
+            cnt_total=9999;
+            save_count();
           });
         },
         icon: Icon(Icons.save_as_outlined, size: 50),
@@ -509,6 +703,7 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
               cnt_ok = 0;
               cnt_ng = -0;
               cnt_total = 0;
+              save_count();
               Navigator.pop(context);
             },
             child: Text(
@@ -535,6 +730,27 @@ class _ProcessTimelinePageState extends State<ProcessTimelinePage> {
       ),
     );
   }
+
+  TableRow buildRow(List<String> cells, {bool isHeader = false}) => TableRow(
+        decoration: isHeader
+            ? BoxDecoration(color: Colors.teal)
+            : BoxDecoration(color: Colors.white),
+        children: cells.map((cell) {
+          final style = TextStyle(
+            fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,
+            fontSize: 18,
+            color: isHeader ? Colors.white : Colors.black,
+          );
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: Center(
+                child: Text(
+              cell,
+              style: style,
+            )),
+          );
+        }).toList(),
+      );
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 }
