@@ -15,25 +15,26 @@ import 'package:databv2/setting.dart';
 import 'package:databv2/utility/my_constant.dart';
 import 'package:flutter/material.dart';
 
-import './MainPage.dart';
-import 'ProcessTimeline.dart';
+import 'BluetoothSettings.dart';
+import 'MainPage.dart';
 
 final Map<String, WidgetBuilder> map = {
-  '/timeline': (BuildContext) => ProcessTimelinePage(),
+  '/BluetoothSettings': (BuildContext) => BluetoothSettingsPage(),
   '/setting': (BuildContext) => SettingPage(),
+  
 };
 
 String? initialRoute;
 
 void main() {
-  initialRoute = MyConstant.routeTimeline;
+  initialRoute = MyConstant.routeBluetoothSettings;
   runApp(ExampleApplication());
 }
 
 class ExampleApplication extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //return MaterialApp(debugShowCheckedModeBanner: false, home: MainPage());
+    //return MaterialApp(debugShowCheckedModeBanner: false, home: BluetoothSettingsPage());
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: MyConstant.appName,

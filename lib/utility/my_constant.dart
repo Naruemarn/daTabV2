@@ -5,8 +5,8 @@ class MyConstant{
   static String appName = 'daTAB';
 
   // Route
+  static String routeBluetoothSettings = '/BluetoothSettings';
   static String routeSetting = '/setting';
-  static String routeTimeline = '/timeline';
 
   // Image
   static String logo = 'assets/images/datab_icon.png';

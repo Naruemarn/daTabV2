@@ -80,7 +80,7 @@ class _SettingPageState extends State<SettingPage> {
         //         size: 40,
         //       ))
         // ],
-        title: Text('Setting'),
+        title: Text('Range'),
         centerTitle: true,
         foregroundColor: Colors.white,
         backgroundColor: Colors.teal,
@@ -126,7 +126,7 @@ class _SettingPageState extends State<SettingPage> {
               buildTitle('Company name:'),
               build_name(size, 'Company name', company_name),
               //Divider(),
-              buildTitle('STEP 1'),
+              buildTitle('POINT 1'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -134,7 +134,7 @@ class _SettingPageState extends State<SettingPage> {
                   build_max(size, 'Max', max1),
                 ],
               ),
-              buildTitle('STEP 2'),
+              buildTitle('POINT 2'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -142,7 +142,7 @@ class _SettingPageState extends State<SettingPage> {
                   build_max(size, 'Max', max2),
                 ],
               ),
-              buildTitle('STEP 3'),
+              buildTitle('POINT 3'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -150,7 +150,7 @@ class _SettingPageState extends State<SettingPage> {
                   build_max(size, 'Max', max3),
                 ],
               ),
-              buildTitle('STEP 4'),
+              buildTitle('POINT 4'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -158,7 +158,7 @@ class _SettingPageState extends State<SettingPage> {
                   build_max(size, 'Max', max4),
                 ],
               ),
-              buildTitle('STEP 5'),
+              buildTitle('POINT 5'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
