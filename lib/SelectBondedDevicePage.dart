@@ -109,7 +109,8 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<BluetoothDeviceListEntry> list = devices
+
+    List<BluetoothDeviceListEntry> listxxx = devices
         .map((_device) => BluetoothDeviceListEntry(
               device: _device.device,
               rssi: _device.rssi,
@@ -119,10 +120,14 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
               },
             ))
         .toList();
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text('Select device',style: TextStyle(color: Colors.white),),
+        title: Text(
+          'Select device',
+          style: TextStyle(color: Colors.white, fontSize: 30,),
+        ),
         centerTitle: true,
         backgroundColor: Colors.teal,
         actions: <Widget>[
@@ -130,20 +135,16 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
               ? FittedBox(
                   child: Container(
                     margin: new EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        Colors.white,
-                      ),
-                    ),
+                    child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white,),),
                   ),
                 )
               : IconButton(
                   icon: Icon(Icons.replay),
                   onPressed: _restartDiscovery,
-                )
+                ),
         ],
       ),
-      body: ListView(children: list),
+      body: ListView(children: listxxx),
     );
   }
 }
