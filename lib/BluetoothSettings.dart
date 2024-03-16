@@ -5,6 +5,7 @@ import 'package:databv2/SelectBondedDevicePage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 
+
 //import './ChatPage.dart';
 
 class BluetoothSettingsPage extends StatefulWidget {
@@ -12,8 +13,9 @@ class BluetoothSettingsPage extends StatefulWidget {
   _BluetoothSettingsPage createState() => new _BluetoothSettingsPage();
 }
 
-class _BluetoothSettingsPage extends State<BluetoothSettingsPage> {
+class _BluetoothSettingsPage extends State<BluetoothSettingsPage>  with WidgetsBindingObserver{
   BluetoothState _bluetoothState = BluetoothState.UNKNOWN;
+
 
   String _address = "...";
   String _name = "...";
@@ -21,7 +23,7 @@ class _BluetoothSettingsPage extends State<BluetoothSettingsPage> {
   @override
   void initState() {
     super.initState();
-
+    
     // Get current state
     FlutterBluetoothSerial.instance.state.then((state) {
       setState(() {
@@ -75,7 +77,7 @@ class _BluetoothSettingsPage extends State<BluetoothSettingsPage> {
         backgroundColor: Colors.teal,
         title: const Text(
           'Bluetooth settings',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         //actions: [IconButton(
@@ -132,7 +134,7 @@ class _BluetoothSettingsPage extends State<BluetoothSettingsPage> {
                     print('Discovery -> no device selected');
                   }
                 },
-                child: Text('Scan',style: TextStyle(color: Colors.white,fontSize: 40),),
+                child: Text('Select Device',style: TextStyle(color: Colors.white,fontSize: 25),),
               ),
             ),
           ],

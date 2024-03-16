@@ -14,20 +14,29 @@ import 'package:databv2/widgets/show_image.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-// import 'package:open_file/open_file.dart';
+
+import 'package:open_file/open_file.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Column hide Row hide Stack;
+// import 'package:syncfusion_flutter_xlsio/xlsio.dart'
+//     hide Column
+//     hide Row
+//     hide Stack;
 
+import 'package:excel/excel.dart';
+//import 'package:path/path.dart';
 
 import 'package:timelines/timelines.dart';
 
+import 'package:async/async.dart';
 
 late SharedPreferences prefs;
 
@@ -51,17 +60,18 @@ const kTileHeight = 50.0;
 // const inProgressColor = Color(0xff5ec792);
 // const todoColor = Color(0xffd1d2d7);
 
-const inProgressColor = Colors.orange;
+const inProgressColor = Colors.deepOrange;
 const completeColor = Colors.green;
-const todoColor = Colors.grey;
+const todoColor = Colors.white;
 
 int? cnt_ok;
 int? cnt_ng;
 int? cnt_total;
 
 int? cnt_;
-
 String timenow = '';
+
+bool isSaving = false;
 
 class Mainpage extends StatefulWidget {
   final BluetoothDevice server;
@@ -83,9 +93,7 @@ class _MainpageState extends State<Mainpage> {
 
   var connection; //BluetoothConnection
 
-  List<String> buffer = ['', ''];
-
-  int data_1_char = 0;
+  List<String> buffer = [];
 
   bool isConnecting = true;
   bool isDisconnecting = false;
@@ -94,6 +102,11 @@ class _MainpageState extends State<Mainpage> {
   late bool judge = false;
 
   var excel;
+
+  List<List<int>> chunks = <List<int>>[];
+  int contentLength = 0;
+  late Uint8List _bytes;
+  late RestartableTimer _timer;
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Color getColor(int index) {
@@ -108,12 +121,29 @@ class _MainpageState extends State<Mainpage> {
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  void gettime() {
-    final DateTime now = DateTime.now();
+  void getBTdata() {
+    if (chunks.length == 0 || contentLength == 0) return;
+
+    _bytes = Uint8List(contentLength);
+    int offset = 0;
+    for (final List<int> chunk in chunks) {
+      _bytes.setRange(offset, offset + chunk.length, chunk);
+      offset += chunk.length;
+    }
+
+    //print('Bytes ------------------------------------> $_bytes');
+
+    String dataString = String.fromCharCodes(_bytes);
 
     setState(() {
+      data_recived[index_recive] = dataString;
+      process_data();
+      final DateTime now = DateTime.now();
       timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
     });
+
+    contentLength = 0;
+    chunks.clear();
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -210,45 +240,104 @@ class _MainpageState extends State<Mainpage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    BluetoothConnection.toAddress(widget.server.address).then((_connection) {
-      print('Connected to the device');
-      connection = _connection;
-      setState(() {
-        isConnecting = false;
-        isDisconnecting = false;
-      });
+    // BluetoothConnection.toAddress(widget.server.address).then((_connection) {
+    //   print('Connected to the device');
+    //   connection = _connection;
+    //   setState(() {
+    //     isConnecting = false;
+    //     isDisconnecting = false;
+    //   });
 
-      connection.input.listen(_onDataReceived).onDone(() {
-        // Example: Detect which side closed the connection
-        // There should be `isDisconnecting` flag to show are we are (locally)
-        // in middle of disconnecting process, should be set before calling
-        // `dispose`, `finish` or `close`, which all causes to disconnect.
-        // If we except the disconnection, `onDone` should be fired as result.
-        // If we didn't except this (no flag set), it means closing by remote.
+    //   connection.input.listen((Uint8List data) {
 
-        if (isDisconnecting) {
-          print('Disconnecting locally!');
-        } else {
-          print('Disconnected remotely!');
-        }
-        if (this.mounted) {
-          setState(() {});
-        }
-      });
-    }).catchError((error) {
-      print('Cannot connect, exception occured');
-      print(error);
-    });
+    //   print('1.Point --> $index_recive');
+    //   if (index_recive < 5) {
+    //     var dat = ascii.decode(data);
+    //     String dataString = String.fromCharCodes(data);
+    //     buffer.add(dat);
+    //     print('Buffer --> $buffer');
+    //     int len = buffer.length;
+    //     print('2.Len:$len');
+
+    //     if (buffer[0] == '#') // Header
+    //     {
+    //       print('3.Header');
+    //       String end = buffer[len-1];
+    //       print('4.End ${end}');
+
+    //       if (end == '%') {
+    //         setState(() {
+    //           print('0000000 ------------------------------------------------------------------------------>  $dataString');
+    //           var data_res = buffer.join("");
+    //           int dat_len = data_res.length;
+    //           print('5.Data Len --> $dat_len');
+
+    //           if (dat_len > 2) {
+    //             String a = data_res.substring(1, dat_len); // Remove Header
+    //             data_recived[index_recive] = a.substring(0,a.indexOf('%')); // Remove End
+
+    //             print('6.Final Data --> ${data_recived[index_recive]}');
+    //             // connection.output.add(data_recived[index_recive]); // Sending data
+
+    //             process_data();
+    //           } else {
+    //             print('Data is Empty!!!!!!!!!!!!!!!');
+    //           }
+
+    //           buffer.clear();
+    //         });
+    //       }
+
+    //     } else {
+    //       buffer.clear();
+    //       print('Index Received: $index_recive');
+    //     }
+
+    //     if (ascii.decode(data).contains('!')) {
+    //       connection.finish(); // Closing connection
+    //       print('Disconnecting by local host');
+    //     }
+    //   } else {
+    //     print('Point > 5');
+    //   }
+    // }).onDone(() {
+    //   print('Disconnected by remote request');
+    // });
+
+    // connection.input.listen(_onDataReceived).onDone(() {
+    //   // Example: Detect which side closed the connection
+    //   // There should be `isDisconnecting` flag to show are we are (locally)
+    //   // in middle of disconnecting process, should be set before calling
+    //   // `dispose`, `finish` or `close`, which all causes to disconnect.
+    //   // If we except the disconnection, `onDone` should be fired as result.
+    //   // If we didn't except this (no flag set), it means closing by remote.
+
+    //   if (isDisconnecting) {
+    //     print('Disconnecting locally!');
+    //   } else {
+    //     print('Disconnected remotely!');
+    //   }
+    //   if (this.mounted) {
+    //     setState(() {});
+    //   }
+    //   });
+    // }).catchError((error) {
+    //   print('Cannot connect, exception occured');
+    //   print(error);
+    // });
 
     read_setting();
     read_counter();
 
-    DateTime now = new DateTime.now();
-    timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
-    Timer.periodic(Duration(seconds: 1), (Timer t) => gettime());
+    _getBTConnection();
+
+    //DateTime now = new DateTime.now();
+    //timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+    //Timer.periodic(Duration(seconds: 1), (Timer t) => gettime());
+
+    _timer = new RestartableTimer(Duration(seconds: 1), getBTdata);
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -262,45 +351,52 @@ class _MainpageState extends State<Mainpage> {
       connection = null;
     }
 
+    _timer.cancel();
     super.dispose();
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  void _onDataReceived(Uint8List data) {
-    if (index_recive < 5) {
-      String dataString = new String.fromCharCodes(data);
-      print('data len: ${data.length}');
-      if (data.length == 1) {
-        data_1_char++;
-        if (data_1_char == 1) {
-          buffer[0] = dataString;
+  _getBTConnection() {
+    BluetoothConnection.toAddress(widget.server.address).then((_connection) {
+      connection = _connection;
+      isConnecting = false;
+      isDisconnecting = false;
+      setState(() {});
+      connection.input.listen(_onDataReceived).onDone(() {
+        if (isDisconnecting) {
+          print('Disconnecting locally');
         } else {
-          if (dataString == '\r') {
-            data_recived[index_recive] = buffer[0];
-            process_data();
-          }
+          print('Disconnecting remotely');
         }
-      } else {
-        buffer[1] = dataString;
-        data_recived[index_recive] = buffer[0] + buffer[1];
-        print('dat:${data_recived[index_recive]}');
-
-        var enter = data_recived[index_recive]
-            .substring(data_recived[index_recive].length - 1);
-
-        if (enter == '\r') {
-          process_data();
+        if (this.mounted) {
+          setState(() {});
         }
-      }
+        //Navigator.of(context).pop();
+      });
+    }).catchError((error) {
+      //Navigator.of(context).pop();
+      print('Cannot connect, exception occured');
+      print(error);
+    });
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void _onDataReceived(Uint8List data) {
+    if (data != null && data.length > 0) {
+      chunks.add(data);
+      contentLength += data.length;
+      _timer.reset();
     }
+
+    //print("Data Length: ${data.length}, chunks: ${chunks.length}");
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   void process_data() {
     setState(() {
-      data_1_char = 0;
       index_recive++;
 
       double min1 = double.parse(read_min1.toString());
@@ -401,16 +497,25 @@ class _MainpageState extends State<Mainpage> {
             (status_result[3] == true) &&
             (status_result[4] == true)) {
           judge = true;
-          cnt_ok = cnt_ok! + 1;
         } else {
           judge = false;
-          cnt_ng = cnt_ng! + 1;
         }
-        cnt_total = cnt_ok! + cnt_ng!;
-
-        save_count();
       }
     });
+  }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void check_save_counter() {
+    if (judge == true) {
+      cnt_ok = cnt_ok! + 1;
+    } else {
+      cnt_ng = cnt_ng! + 1;
+    }
+
+    cnt_total = cnt_ok! + cnt_ng!;
+
+    save_count();
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -421,6 +526,7 @@ class _MainpageState extends State<Mainpage> {
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
   @override
   Widget build(BuildContext context) {
     double size = MediaQuery.of(context).size.width;
@@ -436,16 +542,25 @@ class _MainpageState extends State<Mainpage> {
         title: (isConnecting
             ? Text(
                 'Connecting to ${widget.server.name} ..........',
-                style: TextStyle(color: Colors.white),
+                style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold),
               )
             : isConnected()
                 ? Text(
                     'BT Connected',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold),
                   )
                 : Text(
                     'BT Disconnected !!!',
-                    style: TextStyle(color: Colors.white),
+                    style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold),
                   )),
 
         // title: Text(read_company_name.toString(),
@@ -474,16 +589,14 @@ class _MainpageState extends State<Mainpage> {
         // ),
 
         actions: [
-          IconButton(
-              onPressed: () {
- 
-                createExcel();
-
-
-                
-  
-              },
-              icon: const Icon(Icons.file_copy_outlined)),
+          // IconButton(
+          //   onPressed: () async {
+          //     OpenFile.open(MyConstant.path_excel);
+          //   },
+          //   icon: const Icon(
+          //     Icons.file_copy_sharp,
+          //   ),
+          // ),
           IconButton(
               onPressed: () async {
                 //Navigator.pushNamed(context, MyConstant.routeSetting);
@@ -528,7 +641,7 @@ class _MainpageState extends State<Mainpage> {
         children: [
           Container(
             height: 200,
-            //color: Colors.grey[200],
+            color: Colors.black,
             child: Timeline.tileBuilder(
               theme: TimelineThemeData(
                 direction: Axis.horizontal,
@@ -559,8 +672,8 @@ class _MainpageState extends State<Mainpage> {
                         child: Text(
                           data_recived[index],
                           style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 40,
+                              fontWeight: FontWeight.normal,
+                              fontSize: 35,
                               color: Colors.green),
                         ),
                       );
@@ -571,7 +684,7 @@ class _MainpageState extends State<Mainpage> {
                           data_recived[index],
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              fontSize: 40,
+                              fontSize: 35,
                               color: Colors.red),
                         ),
                       );
@@ -582,9 +695,9 @@ class _MainpageState extends State<Mainpage> {
                       child: Text(
                         data_recived[index],
                         style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 40,
-                            color: Colors.grey),
+                            fontWeight: FontWeight.normal,
+                            fontSize: 35,
+                            color: Colors.white),
                       ),
                     );
                   }
@@ -729,10 +842,13 @@ class _MainpageState extends State<Mainpage> {
                     Container(
                       child: Text(
                         'Judge',
-                        style: TextStyle(fontSize: 20, color: Colors.teal),
+                        style: TextStyle(
+                            fontSize: 30,
+                            color: Colors.teal,
+                            fontWeight: FontWeight.bold),
                       ),
                     ),
-                    show_timenow(),
+                    //show_timenow(),
                   ],
                 ),
                 Expanded(
@@ -801,6 +917,118 @@ class _MainpageState extends State<Mainpage> {
         ],
       ),
     );
+  }
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<void> write_to_excel() async {
+    var res = await Permission.storage.request();
+    File outputFile = File((MyConstant.path_excel));
+    if (res.isGranted) {
+      if (await outputFile.exists()) {
+        print("File exist");
+        await excel_append_data();
+      } else {
+        await excel_write_header();
+      }
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<void> excel_append_data() async {
+    var res = await Permission.storage.request();
+    File InputFile = File((MyConstant.path_excel));
+    if (res.isGranted) {
+      print('Permission OK Append Mode');
+    }
+
+    //var filename = MyConstant.path_excel;
+    List<int> bytes = await (InputFile).readAsBytes();
+    var excel = Excel.decodeBytes(bytes);
+
+    var sheet1 = excel['Sheet1'];
+
+    String result = '';
+    if (judge == true) {
+      result = "OK";
+    } else {
+      result = "NG";
+    }
+
+    sheet1.appendRow([
+      TextCellValue(timenow),
+      TextCellValue(data_recived[0].trim()),
+      TextCellValue(data_recived[1].trim()),
+      TextCellValue(data_recived[2].trim()),
+      TextCellValue(data_recived[3].trim()),
+      TextCellValue(data_recived[4].trim()),
+      TextCellValue(result)
+    ]);
+
+    bool isSet = excel.setDefaultSheet(sheet1.sheetName);
+    // isSet is bool which tells that whether the setting of default sheet is successful or not.
+    if (isSet) {
+      print("${sheet1.sheetName} is set to default sheet.");
+    } else {
+      print("Unable to set ${sheet1.sheetName} to default sheet.");
+    }
+
+    List<int>? fileBytes = await excel.encode();
+
+    File outputFile = File((MyConstant.path_excel));
+    if (res.isGranted) {
+      if (await outputFile.exists()) {
+        //print("File exist");
+        // await outputFile.delete().catchError((e) {
+        //   print(e);
+        // });
+      }
+    }
+
+    // Saving the file
+    if (fileBytes != null) {
+      await outputFile.writeAsBytes(fileBytes, flush: true);
+
+      print('Appended');
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<void> excel_write_header() async {
+    var excel = Excel.createExcel();
+    var sheet1 = excel['Sheet1'];
+
+    List<CellValue> dataList = [
+      TextCellValue("Timestamp"),
+      TextCellValue("Point1"),
+      TextCellValue("Point2"),
+      TextCellValue("Point3"),
+      TextCellValue("Point4"),
+      TextCellValue("Point5"),
+      TextCellValue("Judge")
+    ];
+
+    sheet1.insertRowIterables(dataList, 0);
+
+    List<int>? fileBytes = await excel.encode();
+
+    var res = await Permission.storage.request();
+    File outputFile = File((MyConstant.path_excel));
+    if (res.isGranted) {
+      if (await outputFile.exists()) {
+        print("File exist");
+        //await outputFile.delete().catchError((e) {
+        //print(e);
+        //});
+      }
+    }
+
+    // Saving the file
+    if (fileBytes != null) {
+      await outputFile.writeAsBytes(fileBytes, flush: true);
+    }
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -904,45 +1132,55 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget save_button() {
     return Container(
-      //color: Colors.red,
-      width: 200,
-      height: 70,
-      child: ElevatedButton.icon(
-        onPressed: () {
-          setState(() {
-            //_processIndex = (_processIndex + 1) % _processes.length;
+        //color: Colors.red,
+        width: 200,
+        height: 70,
+        child: isSaving
+            ? Center(
+                child: CircularProgressIndicator(
+                color: Colors.teal,
+              ))
+            : ElevatedButton.icon(
+                onPressed: () {
+                  isSaving = true;
+                  setState(() async {
+                    //_processIndex = (_processIndex + 1) % _processes.length;
 
-            WriteLogFile();
+                    //WriteLogFile();
 
-            index_recive = 0;
+                    if (index_recive >= 5) {
+                      await write_to_excel().then((value) => isSaving = false);
+                      check_save_counter();
+                      index_recive = 0;
+                      buffer.clear();
 
-            status_result[0] = false;
-            status_result[1] = false;
-            status_result[2] = false;
-            status_result[3] = false;
-            status_result[4] = false;
+                      status_result[0] = false;
+                      status_result[1] = false;
+                      status_result[2] = false;
+                      status_result[3] = false;
+                      status_result[4] = false;
 
-            data_recived[0] = 'Waiting';
-            data_recived[1] = 'Waiting';
-            data_recived[2] = 'Waiting';
-            data_recived[3] = 'Waiting';
-            data_recived[4] = 'Waiting';
-          });
-        },
-        icon: Icon(Icons.save, size: 50),
-        label: Text(
-          'Save',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
-        ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
-          shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30),
-          ),
-        ),
-      ),
-    );
+                      data_recived[0] = 'Waiting';
+                      data_recived[1] = 'Waiting';
+                      data_recived[2] = 'Waiting';
+                      data_recived[3] = 'Waiting';
+                      data_recived[4] = 'Waiting';
+                    }
+                  });
+                },
+                icon: Icon(Icons.save, size: 50),
+                label: Text(
+                  'Save',
+                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30),
+                  ),
+                ),
+              ));
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -957,8 +1195,12 @@ class _MainpageState extends State<Mainpage> {
           setState(() {
             //_processIndex = (_processIndex - 1) % _processes.length;
             index_recive--;
+            buffer.clear();
 
             if (index_recive == 0) {
+              index_recive = 0;
+              buffer.clear();
+
               status_result[0] = false;
               status_result[1] = false;
               status_result[2] = false;
@@ -1093,7 +1335,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_total_counter(int value) {
     return Card(
-      color: Colors.grey,
+      color: Colors.blue,
       child: Container(
         width: 400,
         child: Row(
@@ -1201,45 +1443,47 @@ class _MainpageState extends State<Mainpage> {
           );
         }).toList(),
       );
-      
 
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+//   Future<void> createExcel() async {
+//     // Create a new Excel Document.
+//     final Workbook workbook = Workbook(1);
+// // Accessing sheet via index.
+//     final Worksheet sheet = workbook.worksheets[0];
+//     final Range range = sheet.getRangeByName('A1:D4');
+//     range.setText('Hi');
 
+// // get first row.
+//     print(sheet.getFirstRow());
+// // get last row.
+//     print(sheet.getLastRow());
+// // get first column.
+//     print(sheet.getFirstColumn());
+// // get last Column.
+//     print(sheet.getLastColumn());
 
+// // Save and dispose workbook.
+//     final List<int> bytes = workbook.saveAsStream();
 
+//     // Saving the file
+//     var res = await Permission.storage.request();
+//     File outputFile = File(("/storage/emulated/0/Download/Output.xlsx"));
+//     if (res.isGranted) {
+//       if (await outputFile.exists()) {
+//         print("File exist");
+//         //await outputFile.delete().catchError((e) {
+//         //print(e);
+//         //});
+//       }
+//     }
 
+//     await outputFile.writeAsBytes(bytes, flush: true, mode: FileMode.append);
+//     //OpenFile.open('/storage/emulated/0/Download/Output.xlsx');
 
-
-        Future<void> createExcel() async{
-
-               final Workbook workbook = Workbook();
-               final Worksheet sheet = workbook.worksheets[0];
-               sheet.getRangeByName('A1').setText('Helloo world!');
-
-                final List<int> bytes = workbook.saveAsStream();
-                workbook.dispose();
-
-                //final String path =(await getApplicationCacheDirectory()).path;
-                //final String filename = '$path/Output.xlsx';
-
-
-                // Saving the file
-                var res = await Permission.storage.request();
-                File outputFile =
-                    File(("/storage/emulated/0/Download/Output.xlsx"));
-                if (res.isGranted) {
-                  if (await outputFile.exists()) {
-                    print("File exist");
-                    await outputFile.delete().catchError((e) {
-                      print(e);
-                    });
-                  }
-                }
-
-
-                await outputFile.writeAsBytes(bytes, flush: true);
-                //OpenFile.open(outputFile);
-        }
+//     workbook.dispose();
+//   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

@@ -126,7 +126,7 @@ class _SelectBondedDevicePage extends State<SelectBondedDevicePage> {
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(
           'Select device',
-          style: TextStyle(color: Colors.white, fontSize: 30,),
+          style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         backgroundColor: Colors.teal,

@@ -44,14 +44,12 @@ dependencies:
   intl: ^0.19.0
   shared_preferences: ^2.2.2
   path_provider: ^2.1.2
-
+  open_file: ^3.3.1
  
 
-  syncfusion_flutter_xlsio: ^24.2.9
-  #open_file: ^3.3.1
+  #syncfusion_flutter_xlsio: ^24.2.9
+  excel: ^4.0.2
   
-
-    
 
 flutter_icons:
   android: true

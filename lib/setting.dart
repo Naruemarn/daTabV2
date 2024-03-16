@@ -80,7 +80,7 @@ class _SettingPageState extends State<SettingPage> {
         //         size: 40,
         //       ))
         // ],
-        title: Text('Range'),
+        title: Text('Setting Min and Max',style: TextStyle(color: Colors.white,fontSize: 40,fontWeight: FontWeight.bold),),
         centerTitle: true,
         foregroundColor: Colors.white,
         backgroundColor: Colors.teal,
@@ -123,8 +123,8 @@ class _SettingPageState extends State<SettingPage> {
           key: formKey,
           child: ListView(
             children: [
-              buildTitle('Company name:'),
-              build_name(size, 'Company name', company_name),
+              buildTitle('Company'),
+              build_name(size, 'Company', company_name),
               //Divider(),
               buildTitle('POINT 1'),
               Row(
