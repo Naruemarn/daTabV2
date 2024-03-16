@@ -1141,15 +1141,20 @@ class _MainpageState extends State<Mainpage> {
                 color: Colors.teal,
               ))
             : ElevatedButton.icon(
-                onPressed: () {
+                onPressed: () async{
                   isSaving = true;
-                  setState(() async {
+
+                  if (index_recive >= 5) {
+                      await write_to_excel().then((value) => isSaving = false);                      
+                    }
+
+
+                  setState(() {
                     //_processIndex = (_processIndex + 1) % _processes.length;
 
                     //WriteLogFile();
 
-                    if (index_recive >= 5) {
-                      await write_to_excel().then((value) => isSaving = false);
+                    if (index_recive >= 5) {                     
                       check_save_counter();
                       index_recive = 0;
                       buffer.clear();
