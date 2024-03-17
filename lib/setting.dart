@@ -42,24 +42,23 @@ class _SettingPageState extends State<SettingPage> {
   TextEditingController min5 = TextEditingController();
   TextEditingController max5 = TextEditingController();
 
-  final List<String> items1 = [
-    'Preset 1',
-    'Preset 2',
-    'Preset 3',
-    'Preset 4',
-    'Preset 5',
-    'Preset 6',
-    'Preset 7',
-    'Preset 8',
-    'Preset 9',
-    'Preset 10',
+  List<String> items1 = [
+    'Preset1',
+    'Preset2',
+    'Preset3',
+    'Preset4',
+    'Preset5',
+    'Preset6',
+    'Preset7',
+    'Preset8',
+    'Preset9',
+    'Preset10',
   ];
 
-  String selected_preset = 'Preset 1';
+  String selected_preset = 'Preset1';
 
-
-  String read_preset_selected = 'Preset 1';
-  String read_preset_name = 'Preset 1';
+  String read_preset_selected = 'Preset1';
+  String read_preset_name = 'Preset1';
 
   String read_min1='0';
   String read_min2='0';
@@ -210,6 +209,8 @@ class _SettingPageState extends State<SettingPage> {
                 setState(() {
                   selected_preset = value!;
                   print(selected_preset);
+                  read_register_select_dropdown();
+                  
                 });
               }),
             ),
@@ -358,23 +359,25 @@ class _SettingPageState extends State<SettingPage> {
   Future<Null> save_register() async {
     prefs = await SharedPreferences.getInstance();
 
-    prefs.setString('key_preset_selected', selected_preset!);
-    prefs.setString('key_preset_name', preset_name.text);
+    prefs.setString('key_preset_selected', selected_preset);
 
-    prefs.setString('key_min1', min1.text);
-    prefs.setString('key_max1', max1.text);
+    prefs.setString('key_preset_name_' + selected_preset, preset_name.text);
 
-    prefs.setString('key_min2', min2.text);
-    prefs.setString('key_max2', max2.text);
+    prefs.setString('key_min1_' + selected_preset, min1.text);
+    prefs.setString('key_max1_' + selected_preset, max1.text);
 
-    prefs.setString('key_min3', min3.text);
-    prefs.setString('key_max3', max3.text);
+    prefs.setString('key_min2_' + selected_preset, min2.text);
+    prefs.setString('key_max2_' + selected_preset, max2.text);
 
-    prefs.setString('key_min4', min4.text);
-    prefs.setString('key_max4', max4.text);
+    prefs.setString('key_min3_'+ selected_preset , min3.text);
+    prefs.setString('key_max3_' + selected_preset, max3.text);
 
-    prefs.setString('key_min5', min5.text);
-    prefs.setString('key_max5', max5.text);
+    prefs.setString('key_min4_' + selected_preset, min4.text);
+    prefs.setString('key_max4_' + selected_preset, max4.text);
+
+    prefs.setString('key_min5_' + selected_preset, min5.text);
+    prefs.setString('key_max5_' + selected_preset, max5.text);
+    
   }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -383,22 +386,23 @@ class _SettingPageState extends State<SettingPage> {
     prefs = await SharedPreferences.getInstance();
 
     read_preset_selected = prefs.getString('key_preset_selected')!;
-    read_preset_name = prefs.getString('key_preset_name')!;
 
-    read_min1 = prefs.getString('key_min1')!;
-    read_max1 = prefs.getString('key_max1')!;
+    read_preset_name = prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
 
-    read_min2 = prefs.getString('key_min2')!;
-    read_max2 = prefs.getString('key_max2')!;
+    read_min1 = prefs.getString('key_min1_' + read_preset_selected.toString())!;
+    read_max1 = prefs.getString('key_max1_' + read_preset_selected.toString())!;
 
-    read_min3 = prefs.getString('key_min3')!;
-    read_max3 = prefs.getString('key_max3')!;
+    read_min2 = prefs.getString('key_min2_' + read_preset_selected.toString())!;
+    read_max2 = prefs.getString('key_max2_' + read_preset_selected.toString())!;
 
-    read_min4 = prefs.getString('key_min4')!;
-    read_max4 = prefs.getString('key_max4')!;
+    read_min3 = prefs.getString('key_min3_' + read_preset_selected.toString())!;
+    read_max3 = prefs.getString('key_max3_' + read_preset_selected.toString())!;
 
-    read_min5 = prefs.getString('key_min5')!;
-    read_max5 = prefs.getString('key_max5')!;
+    read_min4 = prefs.getString('key_min4_' + read_preset_selected.toString())!;
+    read_max4 = prefs.getString('key_max4_' + read_preset_selected.toString())!;
+
+    read_min5 = prefs.getString('key_min5_' + read_preset_selected.toString())!;
+    read_max5 = prefs.getString('key_max5_' + read_preset_selected.toString())!;
 
     setState(() {
       selected_preset = read_preset_selected.toString();
@@ -421,6 +425,64 @@ class _SettingPageState extends State<SettingPage> {
     });
 
     print('Pset selected = $read_preset_selected');
+    print('Pset name = $read_preset_name');
+
+    print('Min1 = $read_min1');
+    print('Max1 = $read_max1');
+
+    print('Min2 = $read_min2');
+    print('Max2 = $read_max2');
+
+    print('Min3 = $read_min3');
+    print('Max3 = $read_max3');
+
+    print('Min4 = $read_min4');
+    print('Max4 = $read_max4');
+
+    print('Min5 = $read_min5');
+    print('Max5 = $read_max5');
+  }
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<Null> read_register_select_dropdown() async {
+    prefs = await SharedPreferences.getInstance();    
+
+    read_preset_name = prefs.getString('key_preset_name_' + selected_preset.toString())!;
+
+    read_min1 = prefs.getString('key_min1_' + selected_preset.toString())!;
+    read_max1 = prefs.getString('key_max1_' + selected_preset.toString())!;
+
+    read_min2 = prefs.getString('key_min2_' + selected_preset.toString())!;
+    read_max2 = prefs.getString('key_max2_' + selected_preset.toString())!;
+
+    read_min3 = prefs.getString('key_min3_' + selected_preset.toString())!;
+    read_max3 = prefs.getString('key_max3_' + selected_preset.toString())!;
+
+    read_min4 = prefs.getString('key_min4_' + selected_preset.toString())!;
+    read_max4 = prefs.getString('key_max4_' + selected_preset.toString())!;
+
+    read_min5 = prefs.getString('key_min5_' + selected_preset.toString())!;
+    read_max5 = prefs.getString('key_max5_' + selected_preset.toString())!;
+
+    setState(() {
+      preset_name.text = read_preset_name.toString();
+
+      min1.text = read_min1.toString();
+      max1.text = read_max1.toString();
+
+      min2.text = read_min2.toString();
+      max2.text = read_max2.toString();
+
+      min3.text = read_min3.toString();
+      max3.text = read_max3.toString();
+
+      min4.text = read_min4.toString();
+      max4.text = read_max4.toString();
+
+      min5.text = read_min5.toString();
+      max5.text = read_max5.toString();
+    });
+
     print('Pset name = $read_preset_name');
 
     print('Min1 = $read_min1');

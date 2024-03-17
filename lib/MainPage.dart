@@ -153,22 +153,22 @@ class _MainpageState extends State<Mainpage> {
     prefs = await SharedPreferences.getInstance();
 
     read_preset_selected = prefs.getString('key_preset_selected')!;
-    read_preset_name = prefs.getString('key_preset_name')!;
+    read_preset_name = prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
 
-    read_min1 = prefs.getString('key_min1')!;
-    read_max1 = prefs.getString('key_max1')!;
+    read_min1 = prefs.getString('key_min1_' + read_preset_selected.toString())!;
+    read_max1 = prefs.getString('key_max1_' + read_preset_selected.toString())!;
 
-    read_min2 = prefs.getString('key_min2')!;
-    read_max2 = prefs.getString('key_max2')!;
+    read_min2 = prefs.getString('key_min2_' + read_preset_selected.toString())!;
+    read_max2 = prefs.getString('key_max2_' + read_preset_selected.toString())!;
 
-    read_min3 = prefs.getString('key_min3')!;
-    read_max3 = prefs.getString('key_max3')!;
+    read_min3 = prefs.getString('key_min3_' + read_preset_selected.toString())!;
+    read_max3 = prefs.getString('key_max3_' + read_preset_selected.toString())!;
 
-    read_min4 = prefs.getString('key_min4')!;
-    read_max4 = prefs.getString('key_max4')!;
+    read_min4 = prefs.getString('key_min4_' + read_preset_selected.toString())!;
+    read_max4 = prefs.getString('key_max4_' + read_preset_selected.toString())!;
 
-    read_min5 = prefs.getString('key_min5')!;
-    read_max5 = prefs.getString('key_max5')!;
+    read_min5 = prefs.getString('key_min5_' + read_preset_selected.toString())!;
+    read_max5 = prefs.getString('key_max5_' + read_preset_selected.toString())!;
 
     setState(() {
       read_preset_selected = read_preset_selected;
@@ -251,7 +251,7 @@ class _MainpageState extends State<Mainpage> {
 
     _getBTConnection();
 
-    _timer = new RestartableTimer(Duration(seconds: 1), getBTdata);
+    _timer = new RestartableTimer(Duration(milliseconds: 100), getBTdata);
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1299,6 +1299,7 @@ class _MainpageState extends State<Mainpage> {
               cnt_ng = -0;
               cnt_total = 0;
               save_count();
+              read_counter();
               Navigator.pop(context);
             },
             child: Text(
