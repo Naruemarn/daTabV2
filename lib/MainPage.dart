@@ -40,19 +40,20 @@ import 'package:async/async.dart';
 
 late SharedPreferences prefs;
 
-late String? read_company_name;
+String read_preset_selected = 'preset select?';
+String read_preset_name = 'preset name?';
 
-late String? read_min1;
-late String? read_min2;
-late String? read_min3;
-late String? read_min4;
-late String? read_min5;
+  String read_min1='0';
+  String read_min2='0';
+  String read_min3='0';
+  String read_min4='0';
+  String read_min5='0';
 
-late String? read_max1;
-late String? read_max2;
-late String? read_max3;
-late String? read_max4;
-late String? read_max5;
+  String read_max1='0';
+  String read_max2='0';
+  String read_max3='0';
+  String read_max4='0';
+  String read_max5='0';
 
 const kTileHeight = 50.0;
 
@@ -60,7 +61,7 @@ const kTileHeight = 50.0;
 // const inProgressColor = Color(0xff5ec792);
 // const todoColor = Color(0xffd1d2d7);
 
-const inProgressColor = Colors.deepOrange;
+const inProgressColor = Colors.yellow;
 const completeColor = Colors.green;
 const todoColor = Colors.white;
 
@@ -151,25 +152,27 @@ class _MainpageState extends State<Mainpage> {
   Future<Null> read_setting() async {
     prefs = await SharedPreferences.getInstance();
 
-    read_company_name = prefs.getString('key_company');
+    read_preset_selected = prefs.getString('key_preset_selected')!;
+    read_preset_name = prefs.getString('key_preset_name')!;
 
-    read_min1 = prefs.getString('key_min1');
-    read_max1 = prefs.getString('key_max1');
+    read_min1 = prefs.getString('key_min1')!;
+    read_max1 = prefs.getString('key_max1')!;
 
-    read_min2 = prefs.getString('key_min2');
-    read_max2 = prefs.getString('key_max2');
+    read_min2 = prefs.getString('key_min2')!;
+    read_max2 = prefs.getString('key_max2')!;
 
-    read_min3 = prefs.getString('key_min3');
-    read_max3 = prefs.getString('key_max3');
+    read_min3 = prefs.getString('key_min3')!;
+    read_max3 = prefs.getString('key_max3')!;
 
-    read_min4 = prefs.getString('key_min4');
-    read_max4 = prefs.getString('key_max4');
+    read_min4 = prefs.getString('key_min4')!;
+    read_max4 = prefs.getString('key_max4')!;
 
-    read_min5 = prefs.getString('key_min5');
-    read_max5 = prefs.getString('key_max5');
+    read_min5 = prefs.getString('key_min5')!;
+    read_max5 = prefs.getString('key_max5')!;
 
     setState(() {
-      read_company_name = read_company_name;
+      read_preset_selected = read_preset_selected;
+      read_preset_name = read_preset_name;
 
       read_min1 = read_min1.toString();
       read_max1 = read_max1.toString();
@@ -187,7 +190,8 @@ class _MainpageState extends State<Mainpage> {
       read_max5 = read_max5.toString();
     });
 
-    print('Company = $read_company_name');
+    print('Preset selected = $read_preset_selected');
+    print('Preset name = $read_preset_name');
 
     print('Min1 = $read_min1');
     print('Max1 = $read_max1');
@@ -242,100 +246,10 @@ class _MainpageState extends State<Mainpage> {
   void initState() {
     super.initState();
 
-    // BluetoothConnection.toAddress(widget.server.address).then((_connection) {
-    //   print('Connected to the device');
-    //   connection = _connection;
-    //   setState(() {
-    //     isConnecting = false;
-    //     isDisconnecting = false;
-    //   });
-
-    //   connection.input.listen((Uint8List data) {
-
-    //   print('1.Point --> $index_recive');
-    //   if (index_recive < 5) {
-    //     var dat = ascii.decode(data);
-    //     String dataString = String.fromCharCodes(data);
-    //     buffer.add(dat);
-    //     print('Buffer --> $buffer');
-    //     int len = buffer.length;
-    //     print('2.Len:$len');
-
-    //     if (buffer[0] == '#') // Header
-    //     {
-    //       print('3.Header');
-    //       String end = buffer[len-1];
-    //       print('4.End ${end}');
-
-    //       if (end == '%') {
-    //         setState(() {
-    //           print('0000000 ------------------------------------------------------------------------------>  $dataString');
-    //           var data_res = buffer.join("");
-    //           int dat_len = data_res.length;
-    //           print('5.Data Len --> $dat_len');
-
-    //           if (dat_len > 2) {
-    //             String a = data_res.substring(1, dat_len); // Remove Header
-    //             data_recived[index_recive] = a.substring(0,a.indexOf('%')); // Remove End
-
-    //             print('6.Final Data --> ${data_recived[index_recive]}');
-    //             // connection.output.add(data_recived[index_recive]); // Sending data
-
-    //             process_data();
-    //           } else {
-    //             print('Data is Empty!!!!!!!!!!!!!!!');
-    //           }
-
-    //           buffer.clear();
-    //         });
-    //       }
-
-    //     } else {
-    //       buffer.clear();
-    //       print('Index Received: $index_recive');
-    //     }
-
-    //     if (ascii.decode(data).contains('!')) {
-    //       connection.finish(); // Closing connection
-    //       print('Disconnecting by local host');
-    //     }
-    //   } else {
-    //     print('Point > 5');
-    //   }
-    // }).onDone(() {
-    //   print('Disconnected by remote request');
-    // });
-
-    // connection.input.listen(_onDataReceived).onDone(() {
-    //   // Example: Detect which side closed the connection
-    //   // There should be `isDisconnecting` flag to show are we are (locally)
-    //   // in middle of disconnecting process, should be set before calling
-    //   // `dispose`, `finish` or `close`, which all causes to disconnect.
-    //   // If we except the disconnection, `onDone` should be fired as result.
-    //   // If we didn't except this (no flag set), it means closing by remote.
-
-    //   if (isDisconnecting) {
-    //     print('Disconnecting locally!');
-    //   } else {
-    //     print('Disconnected remotely!');
-    //   }
-    //   if (this.mounted) {
-    //     setState(() {});
-    //   }
-    //   });
-    // }).catchError((error) {
-    //   print('Cannot connect, exception occured');
-    //   print(error);
-    // });
-
     read_setting();
     read_counter();
 
     _getBTConnection();
-
-    //DateTime now = new DateTime.now();
-    //timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
-    //Timer.periodic(Duration(seconds: 1), (Timer t) => gettime());
 
     _timer = new RestartableTimer(Duration(seconds: 1), getBTdata);
   }
@@ -372,10 +286,8 @@ class _MainpageState extends State<Mainpage> {
         if (this.mounted) {
           setState(() {});
         }
-        //Navigator.of(context).pop();
       });
     }).catchError((error) {
-      //Navigator.of(context).pop();
       print('Cannot connect, exception occured');
       print(error);
     });
@@ -523,7 +435,6 @@ class _MainpageState extends State<Mainpage> {
   bool isConnected() {
     return connection != null && connection.isConnected;
   }
-
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -563,7 +474,7 @@ class _MainpageState extends State<Mainpage> {
                         fontWeight: FontWeight.bold),
                   )),
 
-        // title: Text(read_company_name.toString(),
+        // title: Text(read_preset_name.toString(),
         //     style: const TextStyle(
         //         fontSize: 30,
         //         fontWeight: FontWeight.bold,
@@ -579,7 +490,7 @@ class _MainpageState extends State<Mainpage> {
         //       width: 10,
         //     ),
         //     (Text(
-        //       read_company_name.toString(),
+        //       read_preset_name.toString(),
         //       style: const TextStyle(
         //           fontSize: 40,
         //           fontWeight: FontWeight.bold,
@@ -608,25 +519,25 @@ class _MainpageState extends State<Mainpage> {
                 );
 
                 setState(() {
-                  read_company_name = get_setting[0];
+                  read_preset_selected = get_setting[0];
+                  read_preset_name = get_setting[1];
 
-                  read_min1 = get_setting[1];
-                  read_max1 = get_setting[2];
+                  read_min1 = get_setting[2];
+                  read_max1 = get_setting[3];
 
-                  read_min2 = get_setting[3];
-                  read_max2 = get_setting[4];
+                  read_min2 = get_setting[4];
+                  read_max2 = get_setting[5];
+                  read_min3 = get_setting[6];
+                  read_max3 = get_setting[7];
 
-                  read_min3 = get_setting[5];
-                  read_max3 = get_setting[6];
+                  read_min4 = get_setting[8];
+                  read_max4 = get_setting[9];
 
-                  read_min4 = get_setting[7];
-                  read_max4 = get_setting[8];
-
-                  read_min5 = get_setting[9];
-                  read_max5 = get_setting[10];
+                  read_min5 = get_setting[10];
+                  read_max5 = get_setting[11];
 
                   print(
-                      'Return Setting ==> $read_company_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
+                      'Return Setting ==> $read_preset_selected $read_preset_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
                 });
 
                 //read_register();
@@ -852,54 +763,57 @@ class _MainpageState extends State<Mainpage> {
                   ],
                 ),
                 Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32),
-                    child: Container(
-                      width: size * 0.1,
-                      //color: Colors.purple,
-                      child: Table(
-                        border: TableBorder.all(),
-                        columnWidths: {
-                          0: FractionColumnWidth(0.15),
-                          1: FractionColumnWidth(0.25),
-                          2: FractionColumnWidth(0.25),
-                          3: FractionColumnWidth(0.25),
-                        },
-                        children: [
-                          buildRow(['Points', 'Min', 'Result', 'Max'],
-                              isHeader: true),
-                          buildRow([
-                            '1',
-                            read_min1.toString(),
-                            data_recived[0],
-                            read_max1.toString()
-                          ]),
-                          buildRow([
-                            '2',
-                            read_min2.toString(),
-                            data_recived[1],
-                            read_max2.toString()
-                          ]),
-                          buildRow([
-                            '3',
-                            read_min3.toString(),
-                            data_recived[2],
-                            read_max3.toString()
-                          ]),
-                          buildRow([
-                            '4',
-                            read_min4.toString(),
-                            data_recived[3],
-                            read_max4.toString()
-                          ]),
-                          buildRow([
-                            '5',
-                            read_min5.toString(),
-                            data_recived[4],
-                            read_max5.toString()
-                          ]),
-                        ],
-                      ),
+                  child: Container(
+                    width: size * 0.1,
+                    //color: Colors.purple,
+                    child: Column(
+                      children: [
+                        Container(child: Text(read_preset_name!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35, color: Colors.teal), )),
+                        SizedBox(height: 5,),
+                        Table(
+                          border: TableBorder.all(),
+                          columnWidths: {
+                            0: FractionColumnWidth(0.15),
+                            1: FractionColumnWidth(0.25),
+                            2: FractionColumnWidth(0.25),
+                            3: FractionColumnWidth(0.25),
+                          },
+                          children: [
+                            buildRow(['Points', 'Min', 'Result', 'Max'],
+                                isHeader: true),
+                            buildRow([
+                              '1',
+                              read_min1.toString(),
+                              data_recived[0],
+                              read_max1.toString()
+                            ]),
+                            buildRow([
+                              '2',
+                              read_min2.toString(),
+                              data_recived[1],
+                              read_max2.toString()
+                            ]),
+                            buildRow([
+                              '3',
+                              read_min3.toString(),
+                              data_recived[2],
+                              read_max3.toString()
+                            ]),
+                            buildRow([
+                              '4',
+                              read_min4.toString(),
+                              data_recived[3],
+                              read_max4.toString()
+                            ]),
+                            buildRow([
+                              '5',
+                              read_min5.toString(),
+                              data_recived[4],
+                              read_max5.toString()
+                            ]),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 )
@@ -918,8 +832,7 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
-//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> write_to_excel() async {
     var res = await Permission.storage.request();
@@ -933,7 +846,6 @@ class _MainpageState extends State<Mainpage> {
       }
     }
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> excel_append_data() async {
@@ -1030,7 +942,6 @@ class _MainpageState extends State<Mainpage> {
       await outputFile.writeAsBytes(fileBytes, flush: true);
     }
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   void WriteLogFile() {
@@ -1060,7 +971,6 @@ class _MainpageState extends State<Mainpage> {
               '\r',
           "log.csv");
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Container icon_ng() {
@@ -1070,7 +980,6 @@ class _MainpageState extends State<Mainpage> {
       child: ShowImage(path: MyConstant.image_ng),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Container icon_ok() {
@@ -1080,7 +989,6 @@ class _MainpageState extends State<Mainpage> {
       child: ShowImage(path: MyConstant.image_ok),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget show_timenow() {
@@ -1089,7 +997,6 @@ class _MainpageState extends State<Mainpage> {
       style: TextStyle(fontSize: 25, color: Colors.teal),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget show_counter() {
@@ -1099,7 +1006,6 @@ class _MainpageState extends State<Mainpage> {
           fontSize: 30, fontWeight: FontWeight.bold, color: Colors.teal),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget reset_button() {
@@ -1127,7 +1033,6 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget save_button() {
@@ -1187,7 +1092,6 @@ class _MainpageState extends State<Mainpage> {
                 ),
               ));
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget retry_button() {
@@ -1267,7 +1171,6 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_ok_counter(int value) {
@@ -1301,7 +1204,6 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_ng_counter(int value) {
@@ -1335,7 +1237,6 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_total_counter(int value) {
@@ -1376,7 +1277,6 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> confirm_popup() async {
@@ -1425,7 +1325,6 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
-
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   TableRow buildRow(List<String> cells, {bool isHeader = false}) => TableRow(
@@ -1448,47 +1347,6 @@ class _MainpageState extends State<Mainpage> {
           );
         }).toList(),
       );
-
-  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-//   Future<void> createExcel() async {
-//     // Create a new Excel Document.
-//     final Workbook workbook = Workbook(1);
-// // Accessing sheet via index.
-//     final Worksheet sheet = workbook.worksheets[0];
-//     final Range range = sheet.getRangeByName('A1:D4');
-//     range.setText('Hi');
-
-// // get first row.
-//     print(sheet.getFirstRow());
-// // get last row.
-//     print(sheet.getLastRow());
-// // get first column.
-//     print(sheet.getFirstColumn());
-// // get last Column.
-//     print(sheet.getLastColumn());
-
-// // Save and dispose workbook.
-//     final List<int> bytes = workbook.saveAsStream();
-
-//     // Saving the file
-//     var res = await Permission.storage.request();
-//     File outputFile = File(("/storage/emulated/0/Download/Output.xlsx"));
-//     if (res.isGranted) {
-//       if (await outputFile.exists()) {
-//         print("File exist");
-//         //await outputFile.delete().catchError((e) {
-//         //print(e);
-//         //});
-//       }
-//     }
-
-//     await outputFile.writeAsBytes(bytes, flush: true, mode: FileMode.append);
-//     //OpenFile.open('/storage/emulated/0/Download/Output.xlsx');
-
-//     workbook.dispose();
-//   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------

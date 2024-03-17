@@ -108,9 +108,9 @@ class _BluetoothSettingsPage extends State<BluetoothSettingsPage>  with WidgetsB
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              margin: EdgeInsets.symmetric(vertical: 16),
+              margin: EdgeInsets.symmetric(vertical: 100),
               width: size * 0.2,
-              height: 100,
+              height: 120,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.teal,
                   shape: RoundedRectangleBorder(
