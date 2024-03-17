@@ -209,7 +209,6 @@ class _SettingPageState extends State<SettingPage> {
               onChanged: ((value) {
                 setState(() {
                   selected_preset = value!;
-                  preset_name.text = value;
                   print(selected_preset);
                 });
               }),
