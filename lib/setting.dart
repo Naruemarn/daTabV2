@@ -386,6 +386,7 @@ class _SettingPageState extends State<SettingPage> {
     prefs = await SharedPreferences.getInstance();
 
     read_preset_selected = prefs.getString('key_preset_selected')!;
+    print('---------------- Dropdown Selected is ------------------------>   $read_preset_selected');
 
     read_preset_name = prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
 
@@ -405,7 +406,17 @@ class _SettingPageState extends State<SettingPage> {
     read_max5 = prefs.getString('key_max5_' + read_preset_selected.toString())!;
 
     setState(() {
-      selected_preset = read_preset_selected.toString();
+
+      if(read_preset_selected.toString() == '0')
+      {
+           selected_preset='Preset1';
+      }
+      else
+      {
+          selected_preset = read_preset_selected.toString();
+      }
+
+      
       preset_name.text = read_preset_name.toString();
 
       min1.text = read_min1.toString();
@@ -424,6 +435,7 @@ class _SettingPageState extends State<SettingPage> {
       max5.text = read_max5.toString();
     });
 
+    print('Setting Preset Page');
     print('Pset selected = $read_preset_selected');
     print('Pset name = $read_preset_name');
 
