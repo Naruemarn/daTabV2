@@ -1260,7 +1260,8 @@ class _MainpageState extends State<Mainpage> {
         print("File exist Append Mode");
         await excel_append_data(filename);
       } else {
-        await excel_write_header(filename);
+         print("New Excel File");
+        await excel_write_header(filename).then((value) => excel_append_data(filename));
       }
     }
   }
