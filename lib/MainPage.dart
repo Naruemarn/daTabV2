@@ -40,20 +40,21 @@ import 'package:async/async.dart';
 
 late SharedPreferences prefs;
 
-String read_preset_selected = 'preset select?';
-String read_preset_name = 'preset name?';
+String read_point_selected = '1';
+String read_preset_selected = 'Preset1';
+String read_preset_name = 'Preset1';
 
-  String read_min1='0';
-  String read_min2='0';
-  String read_min3='0';
-  String read_min4='0';
-  String read_min5='0';
+String read_min1 = '0';
+String read_min2 = '0';
+String read_min3 = '0';
+String read_min4 = '0';
+String read_min5 = '0';
 
-  String read_max1='0';
-  String read_max2='0';
-  String read_max3='0';
-  String read_max4='0';
-  String read_max5='0';
+String read_max1 = '0';
+String read_max2 = '0';
+String read_max3 = '0';
+String read_max4 = '0';
+String read_max5 = '0';
 
 const kTileHeight = 50.0;
 
@@ -99,7 +100,7 @@ class _MainpageState extends State<Mainpage> {
   bool isConnecting = true;
   bool isDisconnecting = false;
 
-  final status_result = [false, false, false, false, false];
+  final status_result = [true, true, true, true, true];
   late bool judge = false;
 
   var excel;
@@ -152,6 +153,7 @@ class _MainpageState extends State<Mainpage> {
   Future<Null> read_setting() async {
     prefs = await SharedPreferences.getInstance();
 
+    read_point_selected = prefs.getString('key_point_selected')!;
     read_preset_selected = prefs.getString('key_preset_selected')!;
     read_preset_name = prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
 
@@ -171,6 +173,7 @@ class _MainpageState extends State<Mainpage> {
     read_max5 = prefs.getString('key_max5_' + read_preset_selected.toString())!;
 
     setState(() {
+      read_point_selected = read_point_selected;
       read_preset_selected = read_preset_selected;
       read_preset_name = read_preset_name;
 
@@ -190,6 +193,7 @@ class _MainpageState extends State<Mainpage> {
       read_max5 = read_max5.toString();
     });
 
+    print('Point selected = $read_point_selected');
     print('Preset selected = $read_preset_selected');
     print('Preset name = $read_preset_name');
 
@@ -310,58 +314,35 @@ class _MainpageState extends State<Mainpage> {
   void process_data() {
     setState(() {
       index_recive++;
-
-      double min1 = double.parse(read_min1.toString());
-      double max1 = double.parse(read_max1.toString());
-
-      double min2 = double.parse(read_min2.toString());
-      double max2 = double.parse(read_max2.toString());
-
-      double min3 = double.parse(read_min3.toString());
-      double max3 = double.parse(read_max3.toString());
-
-      double min4 = double.parse(read_min4.toString());
-      double max4 = double.parse(read_max4.toString());
-
-      double min5 = double.parse(read_min5.toString());
-      double max5 = double.parse(read_max5.toString());
-
-      double dat_0;
-      double dat_1;
-      double dat_2;
-      double dat_3;
-      double dat_4;
-
-      if (data_recived[0] == 'Waiting') {
-        dat_0 = 0;
-      } else {
-        dat_0 = double.parse(data_recived[0].toString());
+      if (read_point_selected == '1') {
+        calculate_result_1_points();
+      } else if (read_point_selected == '2') {
+        calculate_result_2_points();
+      } else if (read_point_selected == '3') {
+        calculate_result_3_points();
+      } else if (read_point_selected == '4') {
+        calculate_result_4_points();
+      } else if (read_point_selected == '5') {
+        calculate_result_5_points();
       }
+    });
+  }
 
-      if (data_recived[1] == 'Waiting') {
-        dat_1 = 0;
-      } else {
-        dat_1 = double.parse(data_recived[1].toString());
-      }
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void calculate_result_1_points() {
+    double min1 = double.parse(read_min1.toString());
+    double max1 = double.parse(read_max1.toString());
 
-      if (data_recived[2] == 'Waiting') {
-        dat_2 = 0;
-      } else {
-        dat_2 = double.parse(data_recived[2].toString());
-      }
+    double dat_0;
 
-      if (data_recived[3] == 'Waiting') {
-        dat_3 = 0;
-      } else {
-        dat_3 = double.parse(data_recived[3].toString());
-      }
+    if (data_recived[0] == 'Waiting') {
+      dat_0 = 0;
+    } else {
+      dat_0 = double.parse(data_recived[0].toString());
+    }
 
-      if (data_recived[4] == 'Waiting') {
-        dat_4 = 0;
-      } else {
-        dat_4 = double.parse(data_recived[4].toString());
-      }
-
+    if (index_recive >= 1) {
       if ((dat_0 >= min1) && (dat_0 <= max1)) {
         status_result[0] = true;
         print('Point1 OK: Min:$min1  Value:$dat_0  Max: $max1');
@@ -370,6 +351,47 @@ class _MainpageState extends State<Mainpage> {
         print('Point1 NG: Min:$min1  Value:$dat_0  Max: $max1');
       }
 
+      if ((status_result[0] == true)) {
+        judge = true;
+      } else {
+        judge = false;
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void calculate_result_2_points() {
+    double min1 = double.parse(read_min1.toString());
+    double max1 = double.parse(read_max1.toString());
+
+    double min2 = double.parse(read_min2.toString());
+    double max2 = double.parse(read_max2.toString());
+
+    double dat_0;
+    double dat_1;
+
+    if (data_recived[0] == 'Waiting') {
+      dat_0 = 0;
+    } else {
+      dat_0 = double.parse(data_recived[0].toString());
+    }
+
+    if (data_recived[1] == 'Waiting') {
+      dat_1 = 0;
+    } else {
+      dat_1 = double.parse(data_recived[1].toString());
+    }
+
+    if (index_recive == 1) {
+      if ((dat_0 >= min1) && (dat_0 <= max1)) {
+        status_result[0] = true;
+        print('Point1 OK: Min:$min1  Value:$dat_0  Max: $max1');
+      } else {
+        status_result[0] = false;
+        print('Point1 NG: Min:$min1  Value:$dat_0  Max: $max1');
+      }
+    } else if (index_recive >= 2) {
       if ((dat_1 >= min2) && (dat_1 <= max2)) {
         status_result[1] = true;
         print('Point2 OK: Min:$min2  Value:$dat_1  Max: $max2');
@@ -377,7 +399,65 @@ class _MainpageState extends State<Mainpage> {
         status_result[1] = false;
         print('Point2 NG: Min:$min2  Value:$dat_1  Max: $max2');
       }
+      if ((status_result[0] == true) && (status_result[1] == true)) {
+        judge = true;
+      } else {
+        judge = false;
+      }
+    }
+  }
 
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void calculate_result_3_points() {
+    double min1 = double.parse(read_min1.toString());
+    double max1 = double.parse(read_max1.toString());
+
+    double min2 = double.parse(read_min2.toString());
+    double max2 = double.parse(read_max2.toString());
+
+    double min3 = double.parse(read_min3.toString());
+    double max3 = double.parse(read_max3.toString());
+
+    double dat_0;
+    double dat_1;
+    double dat_2;
+
+    if (data_recived[0] == 'Waiting') {
+      dat_0 = 0;
+    } else {
+      dat_0 = double.parse(data_recived[0].toString());
+    }
+
+    if (data_recived[1] == 'Waiting') {
+      dat_1 = 0;
+    } else {
+      dat_1 = double.parse(data_recived[1].toString());
+    }
+
+    if (data_recived[2] == 'Waiting') {
+      dat_2 = 0;
+    } else {
+      dat_2 = double.parse(data_recived[2].toString());
+    }
+
+    if (index_recive == 1) {
+      if ((dat_0 >= min1) && (dat_0 <= max1)) {
+        status_result[0] = true;
+        print('Point1 OK: Min:$min1  Value:$dat_0  Max: $max1');
+      } else {
+        status_result[0] = false;
+        print('Point1 NG: Min:$min1  Value:$dat_0  Max: $max1');
+      }
+    } else if (index_recive == 2) {
+      if ((dat_1 >= min2) && (dat_1 <= max2)) {
+        status_result[1] = true;
+        print('Point2 OK: Min:$min2  Value:$dat_1  Max: $max2');
+      } else {
+        status_result[1] = false;
+        print('Point2 NG: Min:$min2  Value:$dat_1  Max: $max2');
+      }
+    } else if (index_recive >= 3) {
       if ((dat_2 >= min3) && (dat_2 <= max3)) {
         status_result[2] = true;
         print('Point3 OK: Min:$min3  Value:$dat_2  Max: $max3');
@@ -386,6 +466,85 @@ class _MainpageState extends State<Mainpage> {
         print('Point3 NG: Min:$min3  Value:$dat_2  Max: $max3');
       }
 
+      if ((status_result[0] == true) &&
+          (status_result[1] == true) &&
+          (status_result[2] == true)) {
+        judge = true;
+      } else {
+        judge = false;
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void calculate_result_4_points() {
+    double min1 = double.parse(read_min1.toString());
+    double max1 = double.parse(read_max1.toString());
+
+    double min2 = double.parse(read_min2.toString());
+    double max2 = double.parse(read_max2.toString());
+
+    double min3 = double.parse(read_min3.toString());
+    double max3 = double.parse(read_max3.toString());
+
+    double min4 = double.parse(read_min4.toString());
+    double max4 = double.parse(read_max4.toString());
+
+    double dat_0;
+    double dat_1;
+    double dat_2;
+    double dat_3;
+
+    if (data_recived[0] == 'Waiting') {
+      dat_0 = 0;
+    } else {
+      dat_0 = double.parse(data_recived[0].toString());
+    }
+
+    if (data_recived[1] == 'Waiting') {
+      dat_1 = 0;
+    } else {
+      dat_1 = double.parse(data_recived[1].toString());
+    }
+
+    if (data_recived[2] == 'Waiting') {
+      dat_2 = 0;
+    } else {
+      dat_2 = double.parse(data_recived[2].toString());
+    }
+
+    if (data_recived[3] == 'Waiting') {
+      dat_3 = 0;
+    } else {
+      dat_3 = double.parse(data_recived[3].toString());
+    }
+
+    if (index_recive == 1) {
+      if ((dat_0 >= min1) && (dat_0 <= max1)) {
+        status_result[0] = true;
+        print('Point1 OK: Min:$min1  Value:$dat_0  Max: $max1');
+      } else {
+        status_result[0] = false;
+        print('Point1 NG: Min:$min1  Value:$dat_0  Max: $max1');
+      }
+    } else if (index_recive == 2) {
+      if ((dat_1 >= min2) && (dat_1 <= max2)) {
+        status_result[1] = true;
+        print('Point2 OK: Min:$min2  Value:$dat_1  Max: $max2');
+      } else {
+        status_result[1] = false;
+        print('Point2 NG: Min:$min2  Value:$dat_1  Max: $max2');
+      }
+    } else if (index_recive == 3) {
+      if ((dat_2 >= min3) && (dat_2 <= max3)) {
+        status_result[2] = true;
+        print('Point3 OK: Min:$min3  Value:$dat_2  Max: $max3');
+      } else {
+        status_result[2] = false;
+        print('Point3 NG: Min:$min3  Value:$dat_2  Max: $max3');
+      }
+    } else if (index_recive >= 4) {
       if ((dat_3 >= min4) && (dat_3 <= max4)) {
         status_result[3] = true;
         print('Point4 OK: Min:$min4  Value:$dat_3  Max: $max4');
@@ -394,6 +553,104 @@ class _MainpageState extends State<Mainpage> {
         print('Point4 NG: Min:$min4  Value:$dat_3  Max: $max4');
       }
 
+      if ((status_result[0] == true) &&
+          (status_result[1] == true) &&
+          (status_result[2] == true) &&
+          (status_result[3] == true)) {
+        judge = true;
+      } else {
+        judge = false;
+      }
+    }
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  void calculate_result_5_points() {
+    double min1 = double.parse(read_min1.toString());
+    double max1 = double.parse(read_max1.toString());
+
+    double min2 = double.parse(read_min2.toString());
+    double max2 = double.parse(read_max2.toString());
+
+    double min3 = double.parse(read_min3.toString());
+    double max3 = double.parse(read_max3.toString());
+
+    double min4 = double.parse(read_min4.toString());
+    double max4 = double.parse(read_max4.toString());
+
+    double min5 = double.parse(read_min5.toString());
+    double max5 = double.parse(read_max5.toString());
+
+    double dat_0;
+    double dat_1;
+    double dat_2;
+    double dat_3;
+    double dat_4;
+
+    if (data_recived[0] == 'Waiting') {
+      dat_0 = 0;
+    } else {
+      dat_0 = double.parse(data_recived[0].toString());
+    }
+
+    if (data_recived[1] == 'Waiting') {
+      dat_1 = 0;
+    } else {
+      dat_1 = double.parse(data_recived[1].toString());
+    }
+
+    if (data_recived[2] == 'Waiting') {
+      dat_2 = 0;
+    } else {
+      dat_2 = double.parse(data_recived[2].toString());
+    }
+
+    if (data_recived[3] == 'Waiting') {
+      dat_3 = 0;
+    } else {
+      dat_3 = double.parse(data_recived[3].toString());
+    }
+
+    if (data_recived[4] == 'Waiting') {
+      dat_4 = 0;
+    } else {
+      dat_4 = double.parse(data_recived[4].toString());
+    }
+
+    if (index_recive == 1) {
+      if ((dat_0 >= min1) && (dat_0 <= max1)) {
+        status_result[0] = true;
+        print('Point1 OK: Min:$min1  Value:$dat_0  Max: $max1');
+      } else {
+        status_result[0] = false;
+        print('Point1 NG: Min:$min1  Value:$dat_0  Max: $max1');
+      }
+    } else if (index_recive == 2) {
+      if ((dat_1 >= min2) && (dat_1 <= max2)) {
+        status_result[1] = true;
+        print('Point2 OK: Min:$min2  Value:$dat_1  Max: $max2');
+      } else {
+        status_result[1] = false;
+        print('Point2 NG: Min:$min2  Value:$dat_1  Max: $max2');
+      }
+    } else if (index_recive == 3) {
+      if ((dat_2 >= min3) && (dat_2 <= max3)) {
+        status_result[2] = true;
+        print('Point3 OK: Min:$min3  Value:$dat_2  Max: $max3');
+      } else {
+        status_result[2] = false;
+        print('Point3 NG: Min:$min3  Value:$dat_2  Max: $max3');
+      }
+    } else if (index_recive == 4) {
+      if ((dat_3 >= min4) && (dat_3 <= max4)) {
+        status_result[3] = true;
+        print('Point4 OK: Min:$min4  Value:$dat_3  Max: $max4');
+      } else {
+        status_result[3] = false;
+        print('Point4 NG: Min:$min4  Value:$dat_3  Max: $max4');
+      }
+    } else if (index_recive >= 5) {
       if ((dat_4 >= min5) && (dat_4 <= max5)) {
         status_result[4] = true;
         print('Point5 OK: Min:$min5  Value:$dat_4  Max: $max5');
@@ -402,18 +659,16 @@ class _MainpageState extends State<Mainpage> {
         print('Point5 NG: Min:$min5  Value:$dat_4  Max: $max5');
       }
 
-      if (index_recive >= 5) {
-        if ((status_result[0] == true) &&
-            (status_result[1] == true) &&
-            (status_result[2] == true) &&
-            (status_result[3] == true) &&
-            (status_result[4] == true)) {
-          judge = true;
-        } else {
-          judge = false;
-        }
+      if ((status_result[0] == true) &&
+          (status_result[1] == true) &&
+          (status_result[2] == true) &&
+          (status_result[3] == true) &&
+          (status_result[4] == true)) {
+        judge = true;
+      } else {
+        judge = false;
       }
-    });
+    }
   }
 
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -508,208 +763,12 @@ class _MainpageState extends State<Mainpage> {
           //     Icons.file_copy_sharp,
           //   ),
           // ),
-          IconButton(
-              onPressed: () async {
-                //Navigator.pushNamed(context, MyConstant.routeSetting);
-                final List<String> get_setting =
-                    await Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => SettingPage(),
-                  ),
-                );
-
-                setState(() {
-                  read_preset_selected = get_setting[0];
-                  read_preset_name = get_setting[1];
-
-                  read_min1 = get_setting[2];
-                  read_max1 = get_setting[3];
-
-                  read_min2 = get_setting[4];
-                  read_max2 = get_setting[5];
-                  read_min3 = get_setting[6];
-                  read_max3 = get_setting[7];
-
-                  read_min4 = get_setting[8];
-                  read_max4 = get_setting[9];
-
-                  read_min5 = get_setting[10];
-                  read_max5 = get_setting[11];
-
-                  print(
-                      'Return Setting ==> $read_preset_selected $read_preset_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
-                });
-
-                //read_register();
-              },
-              icon: const Icon(
-                Icons.settings,
-                size: 35,
-              ))
+          build_setting_icon(context)
         ],
       ),
       body: Column(
         children: [
-          Container(
-            height: 200,
-            color: Colors.black,
-            child: Timeline.tileBuilder(
-              theme: TimelineThemeData(
-                direction: Axis.horizontal,
-                connectorTheme: ConnectorThemeData(
-                  space: 30.0,
-                  thickness: 5.0,
-                ),
-              ),
-              builder: TimelineTileBuilder.connected(
-                connectionDirection: ConnectionDirection.before,
-                itemExtentBuilder: (_, __) =>
-                    MediaQuery.of(context).size.width / data_recived.length,
-                oppositeContentsBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Image.asset(
-                      'assets/images/process_timeline/step${index + 1}.png',
-                      width: 50.0,
-                      color: getColor(index),
-                    ),
-                  );
-                },
-                contentsBuilder: (context, index) {
-                  if (data_recived[index] != 'Waiting') {
-                    if (status_result[index]) {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: Text(
-                          data_recived[index],
-                          style: TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 35,
-                              color: Colors.green),
-                        ),
-                      );
-                    } else {
-                      return Padding(
-                        padding: const EdgeInsets.only(top: 15.0),
-                        child: Text(
-                          data_recived[index],
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 35,
-                              color: Colors.red),
-                        ),
-                      );
-                    }
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.only(top: 15.0),
-                      child: Text(
-                        data_recived[index],
-                        style: TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 35,
-                            color: Colors.white),
-                      ),
-                    );
-                  }
-                },
-                indicatorBuilder: (_, index) {
-                  var color;
-                  var child;
-
-                  if (index == index_recive) {
-                    color = inProgressColor;
-                    child = Padding(
-                      padding: const EdgeInsets.all(6.0),
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4.0,
-                        valueColor: AlwaysStoppedAnimation(Colors.cyanAccent),
-                      ),
-                    );
-                  } else if (index < index_recive) {
-                    color = completeColor;
-                    child = Icon(
-                      Icons.check,
-                      color: Colors.white,
-                      size: 15.0,
-                    );
-                  } else {
-                    color = todoColor;
-                  }
-
-                  if (index <= index_recive) {
-                    return Stack(
-                      children: [
-                        // CustomPaint(
-                        //   size: Size(30.0, 30.0),
-                        //   painter: _BezierPainter(
-                        //     color: color,
-                        //     drawStart: index > 0,
-                        //     drawEnd: index < index_recive,
-                        //   ),
-                        // ),
-                        DotIndicator(
-                          size: 30.0,
-                          color: color,
-                          child: child,
-                        ),
-                      ],
-                    );
-                  } else {
-                    return Stack(
-                      children: [
-                        CustomPaint(
-                          size: Size(15.0, 15.0),
-                          painter: _BezierPainter(
-                            color: color,
-                            drawEnd: index < data_recived.length - 1,
-                          ),
-                        ),
-                        OutlinedDotIndicator(
-                          borderWidth: 4.0,
-                          color: color,
-                        ),
-                      ],
-                    );
-                  }
-                },
-                connectorBuilder: (_, index, type) {
-                  if (index > 0) {
-                    if (index == index_recive) {
-                      final prevColor = getColor(index - 1);
-                      final color = getColor(index);
-                      List<Color> gradientColors;
-                      if (type == ConnectorType.start) {
-                        gradientColors = [
-                          Color.lerp(prevColor, color, 0.5)!,
-                          color
-                        ];
-                      } else {
-                        gradientColors = [
-                          prevColor,
-                          Color.lerp(prevColor, color, 0.5)!
-                        ];
-                      }
-                      return DecoratedLineConnector(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: gradientColors,
-                          ),
-                        ),
-                      );
-                    } else {
-                      return SolidLineConnector(
-                        color: getColor(index),
-                      );
-                    }
-                  } else {
-                    return null;
-                  }
-                },
-                itemCount: data_recived.length,
-              ),
-            ),
-          ),
+          build_timeline(context, int.parse(read_point_selected)),
           //Divider(color: Colors.grey, height: 40,),
           Container(
             //color: Colors.yellow,
@@ -732,125 +791,485 @@ class _MainpageState extends State<Mainpage> {
                     ),
                   ),
                 ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    if (index_recive >= 5)
-                      judge
-                          ? Container(
-                              width: size * 0.25,
-                              child: ShowImage(path: MyConstant.image_ok),
-                            )
-                          : Container(
-                              width: size * 0.25,
-                              child: ShowImage(path: MyConstant.image_ng),
-                            ),
-                    if (index_recive < 5)
-                      Container(
-                        width: size * 0.25,
-                        child: ShowImage(path: MyConstant.image_wait),
-                      ),
-                    Container(
-                      child: Text(
-                        'Judge',
-                        style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.teal,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                    //show_timenow(),
-                  ],
-                ),
-                Expanded(
-                  child: Container(
-                    width: size * 0.1,
-                    //color: Colors.purple,
-                    child: Column(
-                      children: [
-                        Container(child: Text(read_preset_name!, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 35, color: Colors.teal), )),
-                        SizedBox(height: 5,),
-                        Table(
-                          border: TableBorder.all(),
-                          columnWidths: {
-                            0: FractionColumnWidth(0.15),
-                            1: FractionColumnWidth(0.25),
-                            2: FractionColumnWidth(0.25),
-                            3: FractionColumnWidth(0.25),
-                          },
-                          children: [
-                            buildRow(['Points', 'Min', 'Result', 'Max'],
-                                isHeader: true),
-                            buildRow([
-                              '1',
-                              read_min1.toString(),
-                              data_recived[0],
-                              read_max1.toString()
-                            ]),
-                            buildRow([
-                              '2',
-                              read_min2.toString(),
-                              data_recived[1],
-                              read_max2.toString()
-                            ]),
-                            buildRow([
-                              '3',
-                              read_min3.toString(),
-                              data_recived[2],
-                              read_max3.toString()
-                            ]),
-                            buildRow([
-                              '4',
-                              read_min4.toString(),
-                              data_recived[3],
-                              read_max4.toString()
-                            ]),
-                            buildRow([
-                              '5',
-                              read_min5.toString(),
-                              data_recived[4],
-                              read_max5.toString()
-                            ]),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                )
+                build_judge(size),
+                build_table(size)
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          retry_button(),
-          SizedBox(width: 20),
-          save_button(),
-        ],
+      floatingActionButton: build_retry_save_button(),
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  IconButton build_setting_icon(BuildContext context) {
+    return IconButton(
+        onPressed: () async {
+          //Navigator.pushNamed(context, MyConstant.routeSetting);
+          final List<String> get_setting = await Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => SettingPage(),
+            ),
+          );
+
+          setState(() {
+            read_point_selected = get_setting[0];
+            read_preset_selected = get_setting[1];
+            read_preset_name = get_setting[2];
+
+            read_min1 = get_setting[3];
+            read_max1 = get_setting[4];
+
+            read_min2 = get_setting[5];
+            read_max2 = get_setting[6];
+            read_min3 = get_setting[7];
+            read_max3 = get_setting[8];
+
+            read_min4 = get_setting[9];
+            read_max4 = get_setting[10];
+
+            read_min5 = get_setting[11];
+            read_max5 = get_setting[12];
+
+            print(
+                'Return Setting ==> $read_point_selected $read_preset_selected $read_preset_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
+          });
+
+          //read_register();
+        },
+        icon: const Icon(
+          Icons.settings,
+          size: 35,
+        ));
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Row build_retry_save_button() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if (read_point_selected == '1') retry_button_1_points(),
+        if (read_point_selected == '2') retry_button_2_points(),
+        if (read_point_selected == '3') retry_button_3_points(),
+        if (read_point_selected == '4') retry_button_4_points(),
+        if (read_point_selected == '5') retry_button_5_points(),
+        SizedBox(width: 20),
+        if (index_recive >= int.parse(read_point_selected)) save_button(),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Expanded build_table(double size) {
+    return Expanded(
+      child: Container(
+        width: size * 0.1,
+        //color: Colors.purple,
+        child: Column(
+          children: [
+            Container(
+                child: Text(
+              read_preset_name,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 35,
+                  color: Colors.teal),
+            )),
+            SizedBox(
+              height: 5,
+            ),
+            if (read_point_selected == '1') build_table_row1(),
+            if (read_point_selected == '2') build_table_row2(),
+            if (read_point_selected == '3') build_table_row3(),
+            if (read_point_selected == '4') build_table_row4(),
+            if (read_point_selected == '5') build_table_row5(),
+          ],
+        ),
       ),
     );
   }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Table build_table_row1() {
+    return Table(
+      border: TableBorder.all(),
+      columnWidths: {
+        0: FractionColumnWidth(0.15),
+        1: FractionColumnWidth(0.25),
+        2: FractionColumnWidth(0.25),
+        3: FractionColumnWidth(0.25),
+      },
+      children: [
+        buildRow(['Points', 'Min', 'Result', 'Max'], isHeader: true),
+        buildRow(
+            ['1', read_min1.toString(), data_recived[0], read_max1.toString()],
+            isOK: status_result[0]),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Table build_table_row2() {
+    return Table(
+      border: TableBorder.all(),
+      columnWidths: {
+        0: FractionColumnWidth(0.15),
+        1: FractionColumnWidth(0.25),
+        2: FractionColumnWidth(0.25),
+        3: FractionColumnWidth(0.25),
+      },
+      children: [
+        buildRow(['Points', 'Min', 'Result', 'Max'], isHeader: true),
+        buildRow(
+            ['1', read_min1.toString(), data_recived[0], read_max1.toString()],
+            isOK: status_result[0]),
+        buildRow(
+            ['2', read_min2.toString(), data_recived[1], read_max2.toString()],
+            isOK: status_result[1]),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Table build_table_row3() {
+    return Table(
+      border: TableBorder.all(),
+      columnWidths: {
+        0: FractionColumnWidth(0.15),
+        1: FractionColumnWidth(0.25),
+        2: FractionColumnWidth(0.25),
+        3: FractionColumnWidth(0.25),
+      },
+      children: [
+        buildRow(['Points', 'Min', 'Result', 'Max'], isHeader: true),
+        buildRow(
+            ['1', read_min1.toString(), data_recived[0], read_max1.toString()],
+            isOK: status_result[0]),
+        buildRow(
+            ['2', read_min2.toString(), data_recived[1], read_max2.toString()],
+            isOK: status_result[1]),
+        buildRow(
+            ['3', read_min3.toString(), data_recived[2], read_max3.toString()],
+            isOK: status_result[2]),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Table build_table_row4() {
+    return Table(
+      border: TableBorder.all(),
+      columnWidths: {
+        0: FractionColumnWidth(0.15),
+        1: FractionColumnWidth(0.25),
+        2: FractionColumnWidth(0.25),
+        3: FractionColumnWidth(0.25),
+      },
+      children: [
+        buildRow(['Points', 'Min', 'Result', 'Max'], isHeader: true),
+        buildRow(
+            ['1', read_min1.toString(), data_recived[0], read_max1.toString()],
+            isOK: status_result[0]),
+        buildRow(
+            ['2', read_min2.toString(), data_recived[1], read_max2.toString()],
+            isOK: status_result[1]),
+        buildRow(
+            ['3', read_min3.toString(), data_recived[2], read_max3.toString()],
+            isOK: status_result[2]),
+        buildRow(
+            ['4', read_min4.toString(), data_recived[3], read_max4.toString()],
+            isOK: status_result[3]),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Table build_table_row5() {
+    return Table(
+      border: TableBorder.all(),
+      columnWidths: {
+        0: FractionColumnWidth(0.15),
+        1: FractionColumnWidth(0.25),
+        2: FractionColumnWidth(0.25),
+        3: FractionColumnWidth(0.25),
+      },
+      children: [
+        buildRow(['Points', 'Min', 'Result', 'Max'], isHeader: true),
+        buildRow(
+            ['1', read_min1.toString(), data_recived[0], read_max1.toString()],
+            isOK: status_result[0]),
+        buildRow(
+            ['2', read_min2.toString(), data_recived[1], read_max2.toString()],
+            isOK: status_result[1]),
+        buildRow(
+            ['3', read_min3.toString(), data_recived[2], read_max3.toString()],
+            isOK: status_result[2]),
+        buildRow(
+            ['4', read_min4.toString(), data_recived[3], read_max4.toString()],
+            isOK: status_result[3]),
+        buildRow(
+            ['5', read_min5.toString(), data_recived[4], read_max5.toString()],
+            isOK: status_result[4]),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Column build_judge(double size) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        if (index_recive >= int.parse(read_point_selected))
+          judge
+              ? Container(
+                  width: size * 0.25,
+                  child: ShowImage(path: MyConstant.image_ok),
+                )
+              : Container(
+                  width: size * 0.25,
+                  child: ShowImage(path: MyConstant.image_ng),
+                ),
+        if (index_recive < int.parse(read_point_selected))
+          Container(
+            width: size * 0.25,
+            child: ShowImage(path: MyConstant.image_wait),
+          ),
+        Container(
+          child: Text(
+            'Judge',
+            style: TextStyle(
+                fontSize: 30, color: Colors.teal, fontWeight: FontWeight.bold),
+          ),
+        ),
+        //show_timenow(),
+      ],
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Container build_timeline(BuildContext context, int cnt_point) {
+    return Container(
+      height: 200,
+      color: Colors.black,
+      child: Timeline.tileBuilder(
+        theme: TimelineThemeData(
+          direction: Axis.horizontal,
+          connectorTheme: ConnectorThemeData(
+            space: 30.0,
+            thickness: 5.0,
+          ),
+        ),
+        builder: TimelineTileBuilder.connected(
+          connectionDirection: ConnectionDirection.before,
+          itemExtentBuilder: (_, __) =>
+              MediaQuery.of(context).size.width / cnt_point,
+          oppositeContentsBuilder: (context, index) {
+            return build_image_number(index);
+          },
+          contentsBuilder: (context, index) {
+            if (data_recived[index] != 'Waiting') {
+              if (status_result[index]) {
+                return build_text_result_OK(index);
+              } else {
+                return build_text_result_NG(index);
+              }
+            } else {
+              return build_text_result_waiting(index);
+            }
+          },
+          indicatorBuilder: (_, index) {
+            var color;
+            var child;
+
+            if (index == index_recive) {
+              color = inProgressColor;
+              child = build_circular_timeline();
+            } else if (index < index_recive) {
+              color = completeColor;
+              child = Icon(
+                Icons.check,
+                color: Colors.white,
+                size: 15.0,
+              );
+            } else {
+              color = todoColor;
+            }
+
+            if (index <= index_recive) {
+              return Stack(
+                children: [
+                  // CustomPaint(
+                  //   size: Size(30.0, 30.0),
+                  //   painter: _BezierPainter(
+                  //     color: color,
+                  //     drawStart: index > 0,
+                  //     drawEnd: index < index_recive,
+                  //   ),
+                  // ),
+                  DotIndicator(
+                    size: 30.0,
+                    color: color,
+                    child: child,
+                  ),
+                ],
+              );
+            } else {
+              return Stack(
+                children: [
+                  CustomPaint(
+                    size: Size(15.0, 15.0),
+                    painter: _BezierPainter(
+                      color: color,
+                      drawEnd: index < cnt_point - 1,
+                    ),
+                  ),
+                  OutlinedDotIndicator(
+                    borderWidth: 4.0,
+                    color: color,
+                  ),
+                ],
+              );
+            }
+          },
+          connectorBuilder: (_, index, type) {
+            if (index > 0) {
+              if (index == index_recive) {
+                final prevColor = getColor(index - 1);
+                final color = getColor(index);
+                List<Color> gradientColors;
+                if (type == ConnectorType.start) {
+                  gradientColors = [Color.lerp(prevColor, color, 0.5)!, color];
+                } else {
+                  gradientColors = [
+                    prevColor,
+                    Color.lerp(prevColor, color, 0.5)!
+                  ];
+                }
+                return DecoratedLineConnector(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: gradientColors,
+                    ),
+                  ),
+                );
+              } else {
+                return SolidLineConnector(
+                  color: getColor(index),
+                );
+              }
+            } else {
+              return null;
+            }
+          },
+          itemCount: cnt_point,
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Padding build_circular_timeline() {
+    return Padding(
+      padding: const EdgeInsets.all(6.0),
+      child: CircularProgressIndicator(
+        strokeWidth: 4.0,
+        valueColor: AlwaysStoppedAnimation(Colors.cyanAccent),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Padding build_image_number(int index) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 15.0),
+      child: Image.asset(
+        'assets/images/process_timeline/step${index + 1}.png',
+        width: 50.0,
+        color: getColor(index),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Padding build_text_result_waiting(int index) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15.0),
+      child: Text(
+        data_recived[index],
+        style: TextStyle(
+            fontWeight: FontWeight.normal, fontSize: 35, color: Colors.white),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Padding build_text_result_NG(int index) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15.0),
+      child: Text(
+        data_recived[index],
+        style: TextStyle(
+            fontWeight: FontWeight.bold, fontSize: 35, color: Colors.red),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Padding build_text_result_OK(int index) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 15.0),
+      child: Text(
+        data_recived[index],
+        style: TextStyle(
+            fontWeight: FontWeight.normal, fontSize: 35, color: Colors.green),
+      ),
+    );
+  }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> write_to_excel() async {
     var res = await Permission.storage.request();
-    File outputFile = File((MyConstant.path_excel));
+    String product_name = read_preset_name.replaceAll(' ', '');
+    String datenow = timenow.substring(0, 10);
+    String filename = '/storage/emulated/0/Download/' +
+        product_name +
+        '_' +
+        datenow +
+        '.xlsx';
+
+    File outputFile = File((filename));
     if (res.isGranted) {
       if (await outputFile.exists()) {
-        print("File exist");
-        await excel_append_data();
+        print("File exist Append Mode");
+        await excel_append_data(filename);
       } else {
-        await excel_write_header();
+        await excel_write_header(filename);
       }
     }
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Future<void> excel_append_data() async {
+  Future<void> excel_append_data(String filepath) async {
     var res = await Permission.storage.request();
-    File InputFile = File((MyConstant.path_excel));
+    File InputFile = File((filepath));
     if (res.isGranted) {
       print('Permission OK Append Mode');
     }
@@ -868,15 +1287,57 @@ class _MainpageState extends State<Mainpage> {
       result = "NG";
     }
 
-    sheet1.appendRow([
-      TextCellValue(timenow),
-      TextCellValue(data_recived[0].trim()),
-      TextCellValue(data_recived[1].trim()),
-      TextCellValue(data_recived[2].trim()),
-      TextCellValue(data_recived[3].trim()),
-      TextCellValue(data_recived[4].trim()),
-      TextCellValue(result)
-    ]);
+    if (read_point_selected == '1') {
+      sheet1.appendRow([
+        TextCellValue(timenow),
+        TextCellValue(data_recived[0].trim()),
+        TextCellValue('Not use'),
+        TextCellValue('Not use'),
+        TextCellValue('Not use'),
+        TextCellValue('Not use'),
+        TextCellValue(result)
+      ]);
+    } else if (read_point_selected == '2') {
+      sheet1.appendRow([
+        TextCellValue(timenow),
+        TextCellValue(data_recived[0].trim()),
+        TextCellValue(data_recived[1].trim()),
+        TextCellValue('Not use'),
+        TextCellValue('Not use'),
+        TextCellValue('Not use'),
+        TextCellValue(result)
+      ]);
+    } else if (read_point_selected == '3') {
+      sheet1.appendRow([
+        TextCellValue(timenow),
+        TextCellValue(data_recived[0].trim()),
+        TextCellValue(data_recived[1].trim()),
+        TextCellValue(data_recived[2].trim()),
+        TextCellValue('Not use'),
+        TextCellValue('Not use'),
+        TextCellValue(result)
+      ]);
+    } else if (read_point_selected == '4') {
+      sheet1.appendRow([
+        TextCellValue(timenow),
+        TextCellValue(data_recived[0].trim()),
+        TextCellValue(data_recived[1].trim()),
+        TextCellValue(data_recived[2].trim()),
+        TextCellValue(data_recived[3].trim()),
+        TextCellValue('Not use'),
+        TextCellValue(result)
+      ]);
+    } else if (read_point_selected == '5') {
+      sheet1.appendRow([
+        TextCellValue(timenow),
+        TextCellValue(data_recived[0].trim()),
+        TextCellValue(data_recived[1].trim()),
+        TextCellValue(data_recived[2].trim()),
+        TextCellValue(data_recived[3].trim()),
+        TextCellValue(data_recived[4].trim()),
+        TextCellValue(result)
+      ]);
+    }
 
     bool isSet = excel.setDefaultSheet(sheet1.sheetName);
     // isSet is bool which tells that whether the setting of default sheet is successful or not.
@@ -888,7 +1349,7 @@ class _MainpageState extends State<Mainpage> {
 
     List<int>? fileBytes = await excel.encode();
 
-    File outputFile = File((MyConstant.path_excel));
+    File outputFile = File((filepath));
     if (res.isGranted) {
       if (await outputFile.exists()) {
         //print("File exist");
@@ -908,7 +1369,7 @@ class _MainpageState extends State<Mainpage> {
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Future<void> excel_write_header() async {
+  Future<void> excel_write_header(String filepath) async {
     var excel = Excel.createExcel();
     var sheet1 = excel['Sheet1'];
 
@@ -927,7 +1388,7 @@ class _MainpageState extends State<Mainpage> {
     List<int>? fileBytes = await excel.encode();
 
     var res = await Permission.storage.request();
-    File outputFile = File((MyConstant.path_excel));
+    File outputFile = File((filepath));
     if (res.isGranted) {
       if (await outputFile.exists()) {
         print("File exist");
@@ -942,6 +1403,7 @@ class _MainpageState extends State<Mainpage> {
       await outputFile.writeAsBytes(fileBytes, flush: true);
     }
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   void WriteLogFile() {
@@ -953,7 +1415,7 @@ class _MainpageState extends State<Mainpage> {
       res = "NG";
     }
     print('Index Recieved: $index_recive');
-    if (index_recive >= 5)
+    if (index_recive >= int.parse(read_point_selected))
       FileStorage.writeCounter(
           timenow +
               ',' +
@@ -971,6 +1433,7 @@ class _MainpageState extends State<Mainpage> {
               '\r',
           "log.csv");
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Container icon_ng() {
@@ -980,6 +1443,7 @@ class _MainpageState extends State<Mainpage> {
       child: ShowImage(path: MyConstant.image_ng),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Container icon_ok() {
@@ -989,6 +1453,7 @@ class _MainpageState extends State<Mainpage> {
       child: ShowImage(path: MyConstant.image_ok),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget show_timenow() {
@@ -997,6 +1462,7 @@ class _MainpageState extends State<Mainpage> {
       style: TextStyle(fontSize: 25, color: Colors.teal),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget show_counter() {
@@ -1006,6 +1472,7 @@ class _MainpageState extends State<Mainpage> {
           fontSize: 30, fontWeight: FontWeight.bold, color: Colors.teal),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget reset_button() {
@@ -1033,6 +1500,7 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget save_button() {
@@ -1046,29 +1514,54 @@ class _MainpageState extends State<Mainpage> {
                 color: Colors.teal,
               ))
             : ElevatedButton.icon(
-                onPressed: () async{
+                onPressed: () async {
                   isSaving = true;
 
-                  if (index_recive >= 5) {
-                      await write_to_excel().then((value) => isSaving = false);                      
-                    }
-
+                  await write_to_excel().then((value) => isSaving = false);
 
                   setState(() {
                     //_processIndex = (_processIndex + 1) % _processes.length;
 
                     //WriteLogFile();
 
-                    if (index_recive >= 5) {                     
-                      check_save_counter();
-                      index_recive = 0;
-                      buffer.clear();
+                    check_save_counter();
+                    index_recive = 0;
+                    buffer.clear();
 
-                      status_result[0] = false;
-                      status_result[1] = false;
-                      status_result[2] = false;
-                      status_result[3] = false;
-                      status_result[4] = false;
+                    if (read_point_selected == '1') {
+                      status_result[0] = true;
+
+                      data_recived[0] = 'Waiting';
+                    } else if (read_point_selected == '2') {
+                      status_result[0] = true;
+                      status_result[1] = true;
+
+                      data_recived[0] = 'Waiting';
+                      data_recived[1] = 'Waiting';
+                    } else if (read_point_selected == '3') {
+                      status_result[0] = true;
+                      status_result[1] = true;
+                      status_result[2] = true;
+
+                      data_recived[0] = 'Waiting';
+                      data_recived[1] = 'Waiting';
+                      data_recived[2] = 'Waiting';
+                    } else if (read_point_selected == '4') {
+                      status_result[0] = true;
+                      status_result[1] = true;
+                      status_result[2] = true;
+                      status_result[3] = true;
+
+                      data_recived[0] = 'Waiting';
+                      data_recived[1] = 'Waiting';
+                      data_recived[2] = 'Waiting';
+                      data_recived[3] = 'Waiting';
+                    } else if (read_point_selected == '5') {
+                      status_result[0] = true;
+                      status_result[1] = true;
+                      status_result[2] = true;
+                      status_result[3] = true;
+                      status_result[4] = true;
 
                       data_recived[0] = 'Waiting';
                       data_recived[1] = 'Waiting';
@@ -1092,9 +1585,227 @@ class _MainpageState extends State<Mainpage> {
                 ),
               ));
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Widget retry_button() {
+  Widget retry_button_1_points() {
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 70,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            index_recive--;
+            buffer.clear();
+
+            if (index_recive == 0) {
+              index_recive = 0;
+              buffer.clear();
+
+              status_result[0] = true;
+
+              data_recived[0] = 'Waiting';
+            }
+
+            if (index_recive <= 0) {
+              index_recive = 0;
+            }
+          });
+        },
+        icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
+        label: Text(
+          'Retry',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget retry_button_2_points() {
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 70,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            index_recive--;
+            buffer.clear();
+
+            if (index_recive == 0) {
+              index_recive = 0;
+              buffer.clear();
+
+              status_result[0] = true;
+              status_result[1] = true;
+
+              data_recived[0] = 'Waiting';
+              data_recived[1] = 'Waiting';
+            } else if (index_recive == 1) {
+              status_result[1] = true;
+
+              data_recived[1] = 'Waiting';
+            }
+
+            if (index_recive <= 0) {
+              index_recive = 0;
+            }
+          });
+        },
+        icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
+        label: Text(
+          'Retry',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget retry_button_3_points() {
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 70,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            index_recive--;
+            buffer.clear();
+
+            if (index_recive == 0) {
+              index_recive = 0;
+              buffer.clear();
+
+              status_result[0] = true;
+              status_result[1] = true;
+              status_result[2] = true;
+
+              data_recived[0] = 'Waiting';
+              data_recived[1] = 'Waiting';
+              data_recived[2] = 'Waiting';
+            } else if (index_recive == 1) {
+              status_result[1] = true;
+              status_result[2] = true;
+
+              data_recived[1] = 'Waiting';
+              data_recived[2] = 'Waiting';
+            } else if (index_recive == 2) {
+              status_result[2] = true;
+
+              data_recived[2] = 'Waiting';
+            }
+
+            if (index_recive <= 0) {
+              index_recive = 0;
+            }
+          });
+        },
+        icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
+        label: Text(
+          'Retry',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget retry_button_4_points() {
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 70,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          setState(() {
+            index_recive--;
+            buffer.clear();
+
+            if (index_recive == 0) {
+              index_recive = 0;
+              buffer.clear();
+
+              status_result[0] = true;
+              status_result[1] = true;
+              status_result[2] = true;
+              status_result[3] = true;
+
+              data_recived[0] = 'Waiting';
+              data_recived[1] = 'Waiting';
+              data_recived[2] = 'Waiting';
+              data_recived[3] = 'Waiting';
+            } else if (index_recive == 1) {
+              status_result[1] = true;
+              status_result[2] = true;
+              status_result[3] = true;
+
+              data_recived[1] = 'Waiting';
+              data_recived[2] = 'Waiting';
+              data_recived[3] = 'Waiting';
+            } else if (index_recive == 2) {
+              status_result[2] = true;
+              status_result[3] = true;
+
+              data_recived[2] = 'Waiting';
+              data_recived[3] = 'Waiting';
+            } else if (index_recive == 3) {
+              status_result[3] = true;
+              status_result[4] = true;
+
+              data_recived[3] = 'Waiting';
+            }
+
+            if (index_recive <= 0) {
+              index_recive = 0;
+            }
+          });
+        },
+        icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
+        label: Text(
+          'Retry',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(30),
+          ),
+        ),
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget retry_button_5_points() {
     return Container(
       //color: Colors.red,
       width: 200,
@@ -1110,11 +1821,11 @@ class _MainpageState extends State<Mainpage> {
               index_recive = 0;
               buffer.clear();
 
-              status_result[0] = false;
-              status_result[1] = false;
-              status_result[2] = false;
-              status_result[3] = false;
-              status_result[4] = false;
+              status_result[0] = true;
+              status_result[1] = true;
+              status_result[2] = true;
+              status_result[3] = true;
+              status_result[4] = true;
 
               data_recived[0] = 'Waiting';
               data_recived[1] = 'Waiting';
@@ -1122,31 +1833,31 @@ class _MainpageState extends State<Mainpage> {
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
             } else if (index_recive == 1) {
-              status_result[1] = false;
-              status_result[2] = false;
-              status_result[3] = false;
-              status_result[4] = false;
+              status_result[1] = true;
+              status_result[2] = true;
+              status_result[3] = true;
+              status_result[4] = true;
 
               data_recived[1] = 'Waiting';
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
             } else if (index_recive == 2) {
-              status_result[2] = false;
-              status_result[3] = false;
-              status_result[4] = false;
+              status_result[2] = true;
+              status_result[3] = true;
+              status_result[4] = true;
 
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
             } else if (index_recive == 3) {
-              status_result[3] = false;
-              status_result[4] = false;
+              status_result[3] = true;
+              status_result[4] = true;
 
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
             } else if (index_recive == 4) {
-              status_result[4] = false;
+              status_result[4] = true;
 
               data_recived[4] = 'Waiting';
             }
@@ -1171,6 +1882,7 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_ok_counter(int value) {
@@ -1204,6 +1916,7 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_ng_counter(int value) {
@@ -1237,6 +1950,7 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Card build_total_counter(int value) {
@@ -1277,6 +1991,7 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> confirm_popup() async {
@@ -1326,12 +2041,15 @@ class _MainpageState extends State<Mainpage> {
       ),
     );
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  TableRow buildRow(List<String> cells, {bool isHeader = false}) => TableRow(
+  TableRow buildRow(List<String> cells,
+          {bool isHeader = false, bool isOK = false}) =>
+      TableRow(
         decoration: isHeader
             ? BoxDecoration(color: Colors.teal)
-            : BoxDecoration(color: Colors.white),
+            : BoxDecoration(color: isOK ? Colors.white : Colors.red),
         children: cells.map((cell) {
           final style = TextStyle(
             fontWeight: isHeader ? FontWeight.bold : FontWeight.normal,

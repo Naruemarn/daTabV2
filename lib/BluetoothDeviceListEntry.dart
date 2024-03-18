@@ -9,7 +9,7 @@ class BluetoothDeviceListEntry extends ListTile {
     required GestureTapCallback onTap,
     bool enabled = true,
   }) : super(
-          tileColor: Colors.grey[300],
+          tileColor: Colors.blue[300],
           onTap: onTap,
           enabled: enabled,          
           leading: Icon(Icons.devices),

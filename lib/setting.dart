@@ -55,22 +55,32 @@ class _SettingPageState extends State<SettingPage> {
     'Preset10',
   ];
 
+  List<String> items2 = [
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+  ];
+
+  String selected_point = '1';
   String selected_preset = 'Preset1';
 
+  String read_point_selected = '1';
   String read_preset_selected = 'Preset1';
   String read_preset_name = 'Preset1';
 
-  String read_min1='0';
-  String read_min2='0';
-  String read_min3='0';
-  String read_min4='0';
-  String read_min5='0';
+  String read_min1 = '0';
+  String read_min2 = '0';
+  String read_min3 = '0';
+  String read_min4 = '0';
+  String read_min5 = '0';
 
-  String read_max1='0';
-  String read_max2='0';
-  String read_max3='0';
-  String read_max4='0';
-  String read_max5='0';
+  String read_max1 = '0';
+  String read_max2 = '0';
+  String read_max3 = '0';
+  String read_max4 = '0';
+  String read_max5 = '0';
 
   @override
   void initState() {
@@ -110,6 +120,7 @@ class _SettingPageState extends State<SettingPage> {
             if (formKey.currentState!.validate()) {
               save_register().then((value) {
                 Navigator.pop(context, [
+                  selected_point,
                   selected_preset,
                   preset_name.text,
                   min1.text,
@@ -139,57 +150,151 @@ class _SettingPageState extends State<SettingPage> {
           key: formKey,
           child: ListView(
             children: [
-              buildTitle('Preset'),
-
-              build_dropdown_preset(size),
-
+              build_dropdown_point_preset(size),
               buildTitle('Name'),
               build_name(size, 'Name', preset_name),
-              //Divider(),
-              buildTitle('POINT 1'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  build_min(size, 'Min', min1),
-                  build_max(size, 'Max', max1),
-                ],
-              ),
-              buildTitle('POINT 2'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  build_min(size, 'Min', min2),
-                  build_max(size, 'Max', max2),
-                ],
-              ),
-              buildTitle('POINT 3'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  build_min(size, 'Min', min3),
-                  build_max(size, 'Max', max3),
-                ],
-              ),
-              buildTitle('POINT 4'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  build_min(size, 'Min', min4),
-                  build_max(size, 'Max', max4),
-                ],
-              ),
-              buildTitle('POINT 5'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  build_min(size, 'Min', min5),
-                  build_max(size, 'Max', max5),
-                ],
-              ),
+              if (selected_point == '1') ...[
+                buildTitle('POINT 1'),
+                build_minmax1(size),
+              ],
+              if (selected_point == '2') ...[
+                buildTitle('POINT 1'),
+                build_minmax1(size),
+                buildTitle('POINT 2'),
+                build_minmax2(size),
+              ],
+              if (selected_point == '3') ...[
+                buildTitle('POINT 1'),
+                build_minmax1(size),
+                buildTitle('POINT 2'),
+                build_minmax2(size),
+                buildTitle('POINT 3'),
+                build_minmax3(size),
+              ],
+              if (selected_point == '4') ...[
+                buildTitle('POINT 1'),
+                build_minmax1(size),
+                buildTitle('POINT 2'),
+                build_minmax2(size),
+                buildTitle('POINT 3'),
+                build_minmax3(size),
+                buildTitle('POINT 4'),
+                build_minmax4(size),
+              ],
+              if (selected_point == '5') ...[
+                buildTitle('POINT 1'),
+                build_minmax1(size),
+                buildTitle('POINT 2'),
+                build_minmax2(size),
+                buildTitle('POINT 3'),
+                build_minmax3(size),
+                buildTitle('POINT 4'),
+                build_minmax4(size),
+                buildTitle('POINT 5'),
+                build_minmax5(size),
+              ],
             ],
           ),
         ),
       )),
+    );
+  }
+
+  Row build_minmax5(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        build_min(size, 'Min', min5),
+        build_max(size, 'Max', max5),
+      ],
+    );
+  }
+
+  Row build_minmax4(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        build_min(size, 'Min', min4),
+        build_max(size, 'Max', max4),
+      ],
+    );
+  }
+
+  Row build_minmax3(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        build_min(size, 'Min', min3),
+        build_max(size, 'Max', max3),
+      ],
+    );
+  }
+
+  Row build_minmax2(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        build_min(size, 'Min', min2),
+        build_max(size, 'Max', max2),
+      ],
+    );
+  }
+
+  Row build_minmax1(double size) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        build_min(size, 'Min', min1),
+        build_max(size, 'Max', max1),
+      ],
+    );
+  }
+
+  Padding build_dropdown_point_preset(double size) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10),
+      child: Row(
+        children: [
+          Column(
+            children: [
+              buildTitle('Select Point 1-5'),
+              build_dropdown_point(size),
+            ],
+          ),
+          Column(
+            children: [
+              buildTitle('Select Preset 1-10'),
+              build_dropdown_preset(size),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Widget build_dropdown_point(double size) {
+    return Padding(
+      padding: const EdgeInsets.only(left: 8),
+      child: Container(
+        child: Row(
+          children: [
+            CustomDropdownButton2(
+              hint: 'Select point 1-5',
+              value: selected_point,
+              dropdownItems: items2,
+              onChanged: ((value) {
+                setState(() {
+                  selected_point = value!;
+                  print(selected_point);
+                  read_register_select_dropdown();
+                });
+              }),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -202,7 +307,7 @@ class _SettingPageState extends State<SettingPage> {
         child: Row(
           children: [
             CustomDropdownButton2(
-              hint: 'Select Preset',
+              hint: 'Select Preset 1-10',
               value: selected_preset,
               dropdownItems: items1,
               onChanged: ((value) {
@@ -210,7 +315,6 @@ class _SettingPageState extends State<SettingPage> {
                   selected_preset = value!;
                   print(selected_preset);
                   read_register_select_dropdown();
-                  
                 });
               }),
             ),
@@ -359,6 +463,7 @@ class _SettingPageState extends State<SettingPage> {
   Future<Null> save_register() async {
     prefs = await SharedPreferences.getInstance();
 
+    prefs.setString('key_point_selected', selected_point);
     prefs.setString('key_preset_selected', selected_preset);
 
     prefs.setString('key_preset_name_' + selected_preset, preset_name.text);
@@ -369,7 +474,7 @@ class _SettingPageState extends State<SettingPage> {
     prefs.setString('key_min2_' + selected_preset, min2.text);
     prefs.setString('key_max2_' + selected_preset, max2.text);
 
-    prefs.setString('key_min3_'+ selected_preset , min3.text);
+    prefs.setString('key_min3_' + selected_preset, min3.text);
     prefs.setString('key_max3_' + selected_preset, max3.text);
 
     prefs.setString('key_min4_' + selected_preset, min4.text);
@@ -377,7 +482,6 @@ class _SettingPageState extends State<SettingPage> {
 
     prefs.setString('key_min5_' + selected_preset, min5.text);
     prefs.setString('key_max5_' + selected_preset, max5.text);
-    
   }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -385,10 +489,16 @@ class _SettingPageState extends State<SettingPage> {
   Future<Null> read_register() async {
     prefs = await SharedPreferences.getInstance();
 
-    read_preset_selected = prefs.getString('key_preset_selected')!;
-    print('---------------- Dropdown Selected is ------------------------>   $read_preset_selected');
+    read_point_selected = prefs.getString('key_point_selected')!;
+    print(
+        '---------------- Dropdown Point Selected is ------------------------>   $read_preset_selected');
 
-    read_preset_name = prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
+    read_preset_selected = prefs.getString('key_preset_selected')!;
+    print(
+        '---------------- Dropdown Preset Selected is ------------------------>   $read_preset_selected');
+
+    read_preset_name =
+        prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
 
     read_min1 = prefs.getString('key_min1_' + read_preset_selected.toString())!;
     read_max1 = prefs.getString('key_max1_' + read_preset_selected.toString())!;
@@ -406,17 +516,14 @@ class _SettingPageState extends State<SettingPage> {
     read_max5 = prefs.getString('key_max5_' + read_preset_selected.toString())!;
 
     setState(() {
+      selected_point = read_point_selected.toString();
 
-      if(read_preset_selected.toString() == '0')
-      {
-           selected_preset='Preset1';
-      }
-      else
-      {
-          selected_preset = read_preset_selected.toString();
+      if (read_preset_selected.toString() == '0') {
+        selected_preset = 'Preset1';
+      } else {
+        selected_preset = read_preset_selected.toString();
       }
 
-      
       preset_name.text = read_preset_name.toString();
 
       min1.text = read_min1.toString();
@@ -436,6 +543,7 @@ class _SettingPageState extends State<SettingPage> {
     });
 
     print('Setting Preset Page');
+    print('Point selected = $read_point_selected');
     print('Pset selected = $read_preset_selected');
     print('Pset name = $read_preset_name');
 
@@ -454,12 +562,14 @@ class _SettingPageState extends State<SettingPage> {
     print('Min5 = $read_min5');
     print('Max5 = $read_max5');
   }
+
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<Null> read_register_select_dropdown() async {
-    prefs = await SharedPreferences.getInstance();    
+    prefs = await SharedPreferences.getInstance();
 
-    read_preset_name = prefs.getString('key_preset_name_' + selected_preset.toString())!;
+    read_preset_name =
+        prefs.getString('key_preset_name_' + selected_preset.toString())!;
 
     read_min1 = prefs.getString('key_min1_' + selected_preset.toString())!;
     read_max1 = prefs.getString('key_max1_' + selected_preset.toString())!;
@@ -495,7 +605,7 @@ class _SettingPageState extends State<SettingPage> {
       max5.text = read_max5.toString();
     });
 
-    print('Pset name = $read_preset_name');
+    print('Product name = $read_preset_name');
 
     print('Min1 = $read_min1');
     print('Max1 = $read_max1');
