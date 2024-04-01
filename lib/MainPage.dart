@@ -7,8 +7,10 @@ import 'dart:typed_data';
 import 'dart:developer';
 
 import 'package:databv2/FileStorage.dart';
+import 'package:databv2/read_excel_file.dart';
 
 import 'package:databv2/setting.dart';
+import 'package:databv2/show_excel_page.dart';
 import 'package:databv2/utility/my_constant.dart';
 import 'package:databv2/widgets/show_image.dart';
 
@@ -75,6 +77,8 @@ String timenow = '';
 
 bool isSaving = false;
 
+String filename_excel = '';
+
 class Mainpage extends StatefulWidget {
   final BluetoothDevice server;
   const Mainpage({required this.server});
@@ -91,6 +95,9 @@ class _MainpageState extends State<Mainpage> {
     'Waiting',
     'Waiting'
   ];
+
+  List<String> unit = ['', '', '', '', ''];
+
   int index_recive = 0;
 
   var connection; //BluetoothConnection
@@ -136,9 +143,12 @@ class _MainpageState extends State<Mainpage> {
     //print('Bytes ------------------------------------> $_bytes');
 
     String dataString = String.fromCharCodes(_bytes);
+    var value_unit = dataString.split(',');
 
     setState(() {
-      data_recived[index_recive] = dataString;
+      data_recived[index_recive] = value_unit[0];
+      unit[index_recive] = value_unit[1];
+
       process_data();
       final DateTime now = DateTime.now();
       timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
@@ -155,7 +165,8 @@ class _MainpageState extends State<Mainpage> {
 
     read_point_selected = prefs.getString('key_point_selected')!;
     read_preset_selected = prefs.getString('key_preset_selected')!;
-    read_preset_name = prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
+    read_preset_name =
+        prefs.getString('key_preset_name_' + read_preset_selected.toString())!;
 
     read_min1 = prefs.getString('key_min1_' + read_preset_selected.toString())!;
     read_max1 = prefs.getString('key_max1_' + read_preset_selected.toString())!;
@@ -754,17 +765,7 @@ class _MainpageState extends State<Mainpage> {
         //   ],
         // ),
 
-        actions: [
-          // IconButton(
-          //   onPressed: () async {
-          //     OpenFile.open(MyConstant.path_excel);
-          //   },
-          //   icon: const Icon(
-          //     Icons.file_copy_sharp,
-          //   ),
-          // ),
-          build_setting_icon(context)
-        ],
+        actions: [build_read_excel(context), build_show_excel(context), build_setting_icon(context)],
       ),
       body: Column(
         children: [
@@ -799,6 +800,58 @@ class _MainpageState extends State<Mainpage> {
         ],
       ),
       floatingActionButton: build_retry_save_button(),
+    );
+  }
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  IconButton build_show_excel(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        //OpenFile.open(MyConstant.path_excel);
+
+
+          // Set excel filename for ShowExcelPage
+          String product_name = read_preset_name.replaceAll(' ', '');
+
+          final DateTime now = DateTime.now();
+          timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+          String datenow = timenow.substring(0, 10);
+          filename_excel = product_name + '_' + datenow + '.xlsx';
+
+
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ShowExcelPage(
+                  filename: filename_excel,
+                )));
+      },
+      icon: const Icon(
+        Icons.file_copy_sharp,
+      ),
+    );
+  }
+
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+   IconButton build_read_excel(BuildContext context) {
+    return IconButton(
+      onPressed: () {
+          // Set excel filename for ReadExcelPage
+          String product_name = read_preset_name.replaceAll(' ', '');
+
+          final DateTime now = DateTime.now();
+          timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+          String datenow = timenow.substring(0, 10);
+          filename_excel = product_name + '_' + datenow + '.xlsx';
+
+
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) => ReadExcelPage(
+                  filename: filename_excel,
+                )));
+      },
+      icon: const Icon(
+        Icons.file_open_outlined,
+      ),
     );
   }
 
@@ -1209,7 +1262,7 @@ class _MainpageState extends State<Mainpage> {
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
       child: Text(
-        data_recived[index],
+        data_recived[index] + unit[index],
         style: TextStyle(
             fontWeight: FontWeight.normal, fontSize: 35, color: Colors.white),
       ),
@@ -1222,7 +1275,7 @@ class _MainpageState extends State<Mainpage> {
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
       child: Text(
-        data_recived[index],
+        data_recived[index] + unit[index],
         style: TextStyle(
             fontWeight: FontWeight.bold, fontSize: 35, color: Colors.red),
       ),
@@ -1235,7 +1288,7 @@ class _MainpageState extends State<Mainpage> {
     return Padding(
       padding: const EdgeInsets.only(top: 15.0),
       child: Text(
-        data_recived[index],
+        data_recived[index] + unit[index],
         style: TextStyle(
             fontWeight: FontWeight.normal, fontSize: 35, color: Colors.green),
       ),
@@ -1252,17 +1305,1042 @@ class _MainpageState extends State<Mainpage> {
         product_name +
         '_' +
         datenow +
-        '.xlsx';
+        '.xlsx';    
 
     File outputFile = File((filename));
     if (res.isGranted) {
       if (await outputFile.exists()) {
         print("File exist Append Mode");
-        await excel_append_data(filename);
+        await excel_append_data(filename)
+            .then((value) => excel_update_cell(filename));
       } else {
-         print("New Excel File");
-        await excel_write_header(filename).then((value) => excel_append_data(filename));
+        print("New Excel File");
+        await excel_write_header(filename).then((value) =>
+            excel_append_data(filename)
+                .then((value) => excel_update_cell(filename)));
       }
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  double standardDeviation(List<double> list) {
+    if (list.length > 1) {
+      final mean = list.reduce((a, b) => a + b) / list.length;
+
+      final st_dev = sqrt(list.map((current) {
+            var difference = current - mean;
+            return pow(difference, 2);
+          }).reduce((previous, current) => previous + current) /
+          list.length);
+      return st_dev;
+    } else {
+      return 0;
+    }
+  }
+
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Future<void> excel_update_cell(String filepath) async {
+    var res = await Permission.storage.request();
+    File InputFile = File((filepath));
+    if (res.isGranted) {
+      print('Permission OK Append Mode');
+    }
+
+    //var filename = MyConstant.path_excel;
+    List<int> bytes = await (InputFile).readAsBytes();
+    var excel = Excel.decodeBytes(bytes);
+    var sheet1 = excel['Sheet1'];
+
+    // Read Excel file
+    //List<String>? row0 = [];
+    List<String>? row1 = [];
+    List<String>? row2 = [];
+    List<String>? row3 = [];
+    List<String>? row4 = [];
+    List<String>? row5 = [];
+
+    List<double>? row1_double = [];
+    List<double>? row2_double = [];
+    List<double>? row3_double = [];
+    List<double>? row4_double = [];
+    List<double>? row5_double = [];
+
+    for (var table in excel.tables.keys) {
+      print(table); //sheet Name
+      print('Max Column: ' + excel.tables[table]!.maxColumns.toString());
+      print('Max Rows: ' + excel.tables[table]!.maxRows.toString());
+
+      for (var row in excel.tables[table]!.rows) {
+        //row0.add(row[0]?.value.toString() ?? "");
+        row1.add(row[1]?.value.toString() ?? "");
+        row2.add(row[2]?.value.toString() ?? "");
+        row3.add(row[3]?.value.toString() ?? "");
+        row4.add(row[4]?.value.toString() ?? "");
+        row5.add(row[5]?.value.toString() ?? "");
+      }
+    }
+
+    // Remove Header and Min max avg cp cpk ...
+    //row0.removeRange(0,10);
+    row1.removeRange(0, 11);
+    row2.removeRange(0, 11);
+    row3.removeRange(0, 11);
+    row4.removeRange(0, 11);
+    row5.removeRange(0, 11);
+
+    //row0.removeWhere((item) => item == "");
+    row1.removeWhere((item) => item == "");
+    row2.removeWhere((item) => item == "");
+    row3.removeWhere((item) => item == "");
+    row4.removeWhere((item) => item == "");
+    row5.removeWhere((item) => item == "");
+
+    //print(' Row  1 --------------> ${row0}');
+    print(' Row  2 --------------> ${row1}');
+    print(' Row  3 --------------> ${row2}');
+    print(' Row  4 --------------> ${row3}');
+    print(' Row  5 --------------> ${row4}');
+    print(' Row  6 --------------> ${row5}');
+
+    // Update Cell
+    // ST MAX
+    var cell_B2 = sheet1.cell(CellIndex.indexByString('B2'));
+    var cell_C2 = sheet1.cell(CellIndex.indexByString('C2'));
+    var cell_D2 = sheet1.cell(CellIndex.indexByString('D2'));
+    var cell_E2 = sheet1.cell(CellIndex.indexByString('E2'));
+    var cell_F2 = sheet1.cell(CellIndex.indexByString('F2'));
+    // ST MIN
+    var cell_B3 = sheet1.cell(CellIndex.indexByString('B3'));
+    var cell_C3 = sheet1.cell(CellIndex.indexByString('C3'));
+    var cell_D3 = sheet1.cell(CellIndex.indexByString('D3'));
+    var cell_E3 = sheet1.cell(CellIndex.indexByString('E3'));
+    var cell_F3 = sheet1.cell(CellIndex.indexByString('F3'));
+
+    // MAX
+    var cell_B4 = sheet1.cell(CellIndex.indexByString('B4'));
+    var cell_C4 = sheet1.cell(CellIndex.indexByString('C4'));
+    var cell_D4 = sheet1.cell(CellIndex.indexByString('D4'));
+    var cell_E4 = sheet1.cell(CellIndex.indexByString('E4'));
+    var cell_F4 = sheet1.cell(CellIndex.indexByString('F4'));
+
+    // MIN
+    var cell_B5 = sheet1.cell(CellIndex.indexByString('B5'));
+    var cell_C5 = sheet1.cell(CellIndex.indexByString('C5'));
+    var cell_D5 = sheet1.cell(CellIndex.indexByString('D5'));
+    var cell_E5 = sheet1.cell(CellIndex.indexByString('E5'));
+    var cell_F5 = sheet1.cell(CellIndex.indexByString('F5'));
+
+    // AVERAGE
+    var cell_B6 = sheet1.cell(CellIndex.indexByString('B6'));
+    var cell_C6 = sheet1.cell(CellIndex.indexByString('C6'));
+    var cell_D6 = sheet1.cell(CellIndex.indexByString('D6'));
+    var cell_E6 = sheet1.cell(CellIndex.indexByString('E6'));
+    var cell_F6 = sheet1.cell(CellIndex.indexByString('F6'));
+
+    // ST DEV
+    var cell_B7 = sheet1.cell(CellIndex.indexByString('B7'));
+    var cell_C7 = sheet1.cell(CellIndex.indexByString('C7'));
+    var cell_D7 = sheet1.cell(CellIndex.indexByString('D7'));
+    var cell_E7 = sheet1.cell(CellIndex.indexByString('E7'));
+    var cell_F7 = sheet1.cell(CellIndex.indexByString('F7'));
+
+    // Cp
+    var cell_B8 = sheet1.cell(CellIndex.indexByString('B8'));
+    var cell_C8 = sheet1.cell(CellIndex.indexByString('C8'));
+    var cell_D8 = sheet1.cell(CellIndex.indexByString('D8'));
+    var cell_E8 = sheet1.cell(CellIndex.indexByString('E8'));
+    var cell_F8 = sheet1.cell(CellIndex.indexByString('F8'));
+
+    // Cpk
+    var cell_B9 = sheet1.cell(CellIndex.indexByString('B9'));
+    var cell_C9 = sheet1.cell(CellIndex.indexByString('C9'));
+    var cell_D9 = sheet1.cell(CellIndex.indexByString('D9'));
+    var cell_E9 = sheet1.cell(CellIndex.indexByString('E9'));
+    var cell_F9 = sheet1.cell(CellIndex.indexByString('F9'));
+
+    if (read_point_selected == '1') {
+      //---------------------------------------------------> 1
+      // ST MAX
+      cell_B2.value = TextCellValue(read_max1);
+      cell_C2.value = TextCellValue("");
+      cell_D2.value = TextCellValue("");
+      cell_E2.value = TextCellValue("");
+      cell_F2.value = TextCellValue("");
+
+      // ST MIN
+      cell_B3.value = TextCellValue(read_min1);
+      cell_C3.value = TextCellValue("");
+      cell_D3.value = TextCellValue("");
+      cell_E3.value = TextCellValue("");
+      cell_F3.value = TextCellValue("");
+
+      // MAX MIN AVG
+      double avg = 0;
+      for (var i = 0; i < row1.length; i++) // Point1
+      {
+        var x = double.parse(row1[i]);
+        row1_double.add(x);
+
+        avg = avg + x;
+      }
+      double max1 =
+          row1_double.reduce((curr, next) => curr > next ? curr : next);
+      double min1 =
+          row1_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg1 = avg / row1.length;
+
+      double st_dev1 = standardDeviation(row1_double);
+      double st_max1 = double.parse(read_max1);
+      double st_min1 = double.parse(read_min1);
+      double cp1 = (st_max1 - st_min1) / (6 * st_dev1);
+      cp1.isInfinite ? cp1 = 0 : cp1 = cp1;
+
+      double value1 = ((st_max1 - avg1) / (3 * st_dev1));
+      double value2 = ((avg1 - st_min1) / (3 * st_dev1));
+
+      double cpk1 = [value1, value2].reduce(min);
+      cpk1.isInfinite ? cpk1 = 0 : cpk1 = cpk1;
+
+      cell_B4.value = TextCellValue(max1.toString());
+      cell_C4.value = TextCellValue("");
+      cell_D4.value = TextCellValue("");
+      cell_E4.value = TextCellValue("");
+      cell_F4.value = TextCellValue("");
+
+      cell_B5.value = TextCellValue(min1.toString());
+      cell_C5.value = TextCellValue("");
+      cell_D5.value = TextCellValue("");
+      cell_E5.value = TextCellValue("");
+      cell_F5.value = TextCellValue("");
+
+      cell_B6.value = TextCellValue(avg1.toStringAsFixed(2));
+      cell_C6.value = TextCellValue("");
+      cell_D6.value = TextCellValue("");
+      cell_E6.value = TextCellValue("");
+      cell_F6.value = TextCellValue("");
+
+      cell_B7.value = TextCellValue(st_dev1.toStringAsFixed(2));
+      cell_C7.value = TextCellValue("");
+      cell_D7.value = TextCellValue("");
+      cell_E7.value = TextCellValue("");
+      cell_F7.value = TextCellValue("");
+
+      cell_B8.value = TextCellValue(cp1.toStringAsFixed(2));
+      cell_C8.value = TextCellValue("");
+      cell_D8.value = TextCellValue("");
+      cell_E8.value = TextCellValue("");
+      cell_F8.value = TextCellValue("");
+
+      cell_B9.value = TextCellValue(cpk1.toStringAsFixed(2));
+      cell_C9.value = TextCellValue("");
+      cell_D9.value = TextCellValue("");
+      cell_E9.value = TextCellValue("");
+      cell_F9.value = TextCellValue("");
+
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
+              max1.toString() +
+              "  " +
+              min1.toString() +
+              "  " +
+              avg1.toStringAsFixed(2) +
+              "  " +
+              st_dev1.toStringAsFixed(2) +
+              "  " +
+              cp1.toStringAsFixed(2) +
+              "  " +
+              cpk1.toStringAsFixed(2));
+    } else if (read_point_selected == '2') {
+      //---------------------------------------------------> 2
+      // ST MAX
+      cell_B2.value = TextCellValue(read_max1);
+      cell_C2.value = TextCellValue(read_max2);
+      cell_D2.value = TextCellValue("");
+      cell_E2.value = TextCellValue("");
+      cell_F2.value = TextCellValue("");
+
+      // ST MIN
+      cell_B3.value = TextCellValue(read_min1);
+      cell_C3.value = TextCellValue(read_min2);
+      cell_D3.value = TextCellValue("");
+      cell_E3.value = TextCellValue("");
+      cell_F3.value = TextCellValue("");
+
+      // MAX MIN AVG
+      double avg = 0;
+      for (var i = 0; i < row1.length; i++) // Point1
+      {
+        var x = double.parse(row1[i]);
+        row1_double.add(x);
+
+        avg = avg + x;
+      }
+      double max1 =
+          row1_double.reduce((curr, next) => curr > next ? curr : next);
+      double min1 =
+          row1_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg1 = avg / row1.length;
+      double st_dev1 = standardDeviation(row1_double);
+
+      double st_max1 = double.parse(read_max1);
+      double st_min1 = double.parse(read_min1);
+      double cp1 = (st_max1 - st_min1) / (6 * st_dev1);
+      cp1.isInfinite ? cp1 = 0 : cp1 = cp1;
+
+      double value1 = ((st_max1 - avg1) / (3 * st_dev1));
+      double value2 = ((avg1 - st_min1) / (3 * st_dev1));
+      double cpk1 = [value1, value2].reduce(min);
+      cpk1.isInfinite ? cpk1 = 0 : cpk1 = cpk1;
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row2.length; i++) // Point2
+      {
+        var x = double.parse(row2[i]);
+        row2_double.add(x);
+
+        avg = avg + x;
+      }
+      double max2 =
+          row2_double.reduce((curr, next) => curr > next ? curr : next);
+      double min2 =
+          row2_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg2 = avg / row2.length;
+      double st_dev2 = standardDeviation(row2_double);
+
+      double st_max2 = double.parse(read_max2);
+      double st_min2 = double.parse(read_min2);
+      double cp2 = (st_max2 - st_min2) / (6 * st_dev2);
+      cp2.isInfinite ? cp2 = 0 : cp2 = cp2;
+
+      value1 = ((st_max2 - avg2) / (3 * st_dev2));
+      value2 = ((avg2 - st_min2) / (3 * st_dev2));
+      double cpk2 = [value1, value2].reduce(min);
+      cpk2.isInfinite ? cpk2 = 0 : cpk2 = cpk2;
+
+      cell_B4.value = TextCellValue(max1.toString());
+      cell_C4.value = TextCellValue(max2.toString());
+      cell_D4.value = TextCellValue("");
+      cell_E4.value = TextCellValue("");
+      cell_F4.value = TextCellValue("");
+
+      cell_B5.value = TextCellValue(min1.toString());
+      cell_C5.value = TextCellValue(min2.toString());
+      cell_D5.value = TextCellValue("");
+      cell_E5.value = TextCellValue("");
+      cell_F5.value = TextCellValue("");
+
+      cell_B6.value = TextCellValue(avg1.toStringAsFixed(2));
+      cell_C6.value = TextCellValue(avg2.toStringAsFixed(2));
+      cell_D6.value = TextCellValue("");
+      cell_E6.value = TextCellValue("");
+      cell_F6.value = TextCellValue("");
+
+      cell_B7.value = TextCellValue(st_dev1.toStringAsFixed(2));
+      cell_C7.value = TextCellValue(st_dev2.toStringAsFixed(2));
+      cell_D7.value = TextCellValue("");
+      cell_E7.value = TextCellValue("");
+      cell_F7.value = TextCellValue("");
+
+      cell_B8.value = TextCellValue(cp1.toStringAsFixed(2));
+      cell_C8.value = TextCellValue(cp2.toStringAsFixed(2));
+      cell_D8.value = TextCellValue("");
+      cell_E8.value = TextCellValue("");
+      cell_F8.value = TextCellValue("");
+
+      cell_B9.value = TextCellValue(cpk1.toStringAsFixed(2));
+      cell_C9.value = TextCellValue(cpk2.toStringAsFixed(2));
+      cell_D9.value = TextCellValue("");
+      cell_E9.value = TextCellValue("");
+      cell_F9.value = TextCellValue("");
+
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
+              max1.toString() +
+              "  " +
+              min1.toString() +
+              "  " +
+              avg1.toStringAsFixed(2) +
+              "  " +
+              st_dev1.toStringAsFixed(2) +
+              "  " +
+              cp1.toStringAsFixed(2) +
+              "  " +
+              cpk1.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT2 ----------------------------------> ' +
+              max2.toString() +
+              "  " +
+              min2.toString() +
+              "  " +
+              avg2.toStringAsFixed(2) +
+              "  " +
+              st_dev2.toStringAsFixed(2) +
+              "  " +
+              cp2.toStringAsFixed(2) +
+              "  " +
+              cpk2.toStringAsFixed(2));
+    } else if (read_point_selected == '3') {
+      //---------------------------------------------------> 3
+      // ST MAX
+      cell_B2.value = TextCellValue(read_max1);
+      cell_C2.value = TextCellValue(read_max2);
+      cell_D2.value = TextCellValue(read_max3);
+      cell_E2.value = TextCellValue("");
+      cell_F2.value = TextCellValue("");
+
+      // ST MIN
+      cell_B3.value = TextCellValue(read_min1);
+      cell_C3.value = TextCellValue(read_min2);
+      cell_D3.value = TextCellValue(read_min3);
+      cell_E3.value = TextCellValue("");
+      cell_F3.value = TextCellValue("");
+
+      // MAX MIN AVG
+      double avg = 0;
+      for (var i = 0; i < row1.length; i++) // Point1
+      {
+        var x = double.parse(row1[i]);
+        row1_double.add(x);
+
+        avg = avg + x;
+      }
+      double max1 =
+          row1_double.reduce((curr, next) => curr > next ? curr : next);
+      double min1 =
+          row1_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg1 = avg / row1.length;
+      double st_dev1 = standardDeviation(row1_double);
+
+      double st_max1 = double.parse(read_max1);
+      double st_min1 = double.parse(read_min1);
+      double cp1 = (st_max1 - st_min1) / (6 * st_dev1);
+      cp1.isInfinite ? cp1 = 0 : cp1 = cp1;
+
+      double value1 = ((st_max1 - avg1) / (3 * st_dev1));
+      double value2 = ((avg1 - st_min1) / (3 * st_dev1));
+      double cpk1 = [value1, value2].reduce(min);
+      cpk1.isInfinite ? cpk1 = 0 : cpk1 = cpk1;
+
+      //------------------------------------------
+
+      // MAX MIN AVG
+      avg = 0;
+      for (var i = 0; i < row2.length; i++) // Point2
+      {
+        var x = double.parse(row2[i]);
+        row2_double.add(x);
+
+        avg = avg + x;
+      }
+      double max2 =
+          row2_double.reduce((curr, next) => curr > next ? curr : next);
+      double min2 =
+          row2_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg2 = avg / row2.length;
+      double st_dev2 = standardDeviation(row2_double);
+
+      double st_max2 = double.parse(read_max2);
+      double st_min2 = double.parse(read_min2);
+      double cp2 = (st_max2 - st_min2) / (6 * st_dev2);
+      cp2.isInfinite ? cp2 = 0 : cp2 = cp2;
+
+      value1 = ((st_max2 - avg2) / (3 * st_dev2));
+      value2 = ((avg2 - st_min2) / (3 * st_dev2));
+      double cpk2 = [value1, value2].reduce(min);
+      cpk2.isInfinite ? cpk2 = 0 : cpk2 = cpk2;
+
+      //------------------------------------------
+
+      // MAX MIN AVG
+      avg = 0;
+      for (var i = 0; i < row3.length; i++) // Point3
+      {
+        var x = double.parse(row3[i]);
+        row3_double.add(x);
+
+        avg = avg + x;
+      }
+      double max3 =
+          row3_double.reduce((curr, next) => curr > next ? curr : next);
+      double min3 =
+          row3_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg3 = avg / row3.length;
+      double st_dev3 = standardDeviation(row3_double);
+
+      double st_max3 = double.parse(read_max3);
+      double st_min3 = double.parse(read_min3);
+      double cp3 = (st_max3 - st_min3) / (6 * st_dev3);
+      cp3.isInfinite ? cp3 = 0 : cp3 = cp3;
+
+      value1 = ((st_max3 - avg3) / (3 * st_dev3));
+      value2 = ((avg3 - st_min3) / (3 * st_dev3));
+      double cpk3 = [value1, value2].reduce(min);
+      cpk3.isInfinite ? cpk3 = 0 : cpk3 = cpk3;
+
+      print('Value1: $st_max3-$avg3 / 3*$st_dev3');
+      print('Value2: $avg3-$st_min3 / 3*$st_dev3');
+      print('Value1: $value1  Value2: $value2  Cpk3: $cpk3');
+
+      cell_B4.value = TextCellValue(max1.toString());
+      cell_C4.value = TextCellValue(max2.toString());
+      cell_D4.value = TextCellValue(max3.toString());
+      cell_E4.value = TextCellValue("");
+      cell_F4.value = TextCellValue("");
+
+      cell_B5.value = TextCellValue(min1.toString());
+      cell_C5.value = TextCellValue(min2.toString());
+      cell_D5.value = TextCellValue(min3.toString());
+      cell_E5.value = TextCellValue("");
+      cell_F5.value = TextCellValue("");
+
+      cell_B6.value = TextCellValue(avg1.toStringAsFixed(2));
+      cell_C6.value = TextCellValue(avg2.toStringAsFixed(2));
+      cell_D6.value = TextCellValue(avg3.toStringAsFixed(2));
+      cell_E6.value = TextCellValue("");
+      cell_F6.value = TextCellValue("");
+
+      cell_B7.value = TextCellValue(st_dev1.toStringAsFixed(2));
+      cell_C7.value = TextCellValue(st_dev2.toStringAsFixed(2));
+      cell_D7.value = TextCellValue(st_dev3.toStringAsFixed(2));
+      cell_E7.value = TextCellValue("");
+      cell_F7.value = TextCellValue("");
+
+      cell_B8.value = TextCellValue(cp1.toStringAsFixed(2));
+      cell_C8.value = TextCellValue(cp2.toStringAsFixed(2));
+      cell_D8.value = TextCellValue(cp3.toStringAsFixed(2));
+      cell_E8.value = TextCellValue("");
+      cell_F8.value = TextCellValue("");
+
+      cell_B9.value = TextCellValue(cpk1.toStringAsFixed(2));
+      cell_C9.value = TextCellValue(cpk2.toStringAsFixed(2));
+      cell_D9.value = TextCellValue(cpk3.toStringAsFixed(2));
+      cell_E9.value = TextCellValue("");
+      cell_F9.value = TextCellValue("");
+
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
+              max1.toString() +
+              "  " +
+              min1.toString() +
+              "  " +
+              avg1.toStringAsFixed(2) +
+              "  " +
+              st_dev1.toStringAsFixed(2) +
+              "  " +
+              cp1.toStringAsFixed(2) +
+              "  " +
+              cpk1.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT2 ----------------------------------> ' +
+              max2.toString() +
+              "  " +
+              min2.toString() +
+              "  " +
+              avg2.toStringAsFixed(2) +
+              "  " +
+              st_dev2.toStringAsFixed(2) +
+              "  " +
+              cp2.toStringAsFixed(2) +
+              "  " +
+              cpk2.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT3 ----------------------------------> ' +
+              max3.toString() +
+              "  " +
+              min3.toString() +
+              "  " +
+              avg3.toStringAsFixed(2) +
+              "  " +
+              st_dev3.toStringAsFixed(2) +
+              "  " +
+              cp3.toStringAsFixed(2) +
+              "  " +
+              cpk3.toStringAsFixed(2));
+    } else if (read_point_selected == '4') {
+      //---------------------------------------------------> 4
+      // ST MAX
+      cell_B2.value = TextCellValue(read_max1);
+      cell_C2.value = TextCellValue(read_max2);
+      cell_D2.value = TextCellValue(read_max3);
+      cell_E2.value = TextCellValue(read_max4);
+      cell_F2.value = TextCellValue("");
+
+      // ST MIN
+      cell_B3.value = TextCellValue(read_min1);
+      cell_C3.value = TextCellValue(read_min2);
+      cell_D3.value = TextCellValue(read_min3);
+      cell_E3.value = TextCellValue(read_min4);
+      cell_F3.value = TextCellValue("");
+
+      // MAX MIN AVG
+      double avg = 0;
+      for (var i = 0; i < row1.length; i++) // Point1
+      {
+        var x = double.parse(row1[i]);
+        row1_double.add(x);
+
+        avg = avg + x;
+      }
+      double max1 =
+          row1_double.reduce((curr, next) => curr > next ? curr : next);
+      double min1 =
+          row1_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg1 = avg / row1.length;
+      double st_dev1 = standardDeviation(row1_double);
+
+      double st_max1 = double.parse(read_max1);
+      double st_min1 = double.parse(read_min1);
+      double cp1 = (st_max1 - st_min1) / (6 * st_dev1);
+      cp1.isInfinite ? cp1 = 0 : cp1 = cp1;
+
+      double value1 = ((st_max1 - avg1) / (3 * st_dev1));
+      double value2 = ((avg1 - st_min1) / (3 * st_dev1));
+      double cpk1 = [value1, value2].reduce(min);
+      cpk1.isInfinite ? cpk1 = 0 : cpk1 = cpk1;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row2.length; i++) // Point2
+      {
+        var x = double.parse(row2[i]);
+        row2_double.add(x);
+
+        avg = avg + x;
+      }
+      double max2 =
+          row2_double.reduce((curr, next) => curr > next ? curr : next);
+      double min2 =
+          row2_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg2 = avg / row2.length;
+      double st_dev2 = standardDeviation(row2_double);
+
+      double st_max2 = double.parse(read_max2);
+      double st_min2 = double.parse(read_min2);
+      double cp2 = (st_max2 - st_min2) / (6 * st_dev2);
+      cp2.isInfinite ? cp2 = 0 : cp2 = cp2;
+
+      value1 = ((st_max2 - avg2) / (3 * st_dev2));
+      value2 = ((avg2 - st_min2) / (3 * st_dev2));
+      double cpk2 = [value1, value2].reduce(min);
+      cpk2.isInfinite ? cpk2 = 0 : cpk2 = cpk2;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row3.length; i++) // Point3
+      {
+        var x = double.parse(row3[i]);
+        row3_double.add(x);
+
+        avg = avg + x;
+      }
+      double max3 =
+          row3_double.reduce((curr, next) => curr > next ? curr : next);
+      double min3 =
+          row3_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg3 = avg / row3.length;
+      double st_dev3 = standardDeviation(row3_double);
+
+      double st_max3 = double.parse(read_max3);
+      double st_min3 = double.parse(read_min3);
+      double cp3 = (st_max3 - st_min3) / (6 * st_dev3);
+      cp3.isInfinite ? cp3 = 0 : cp3 = cp3;
+
+      value1 = ((st_max3 - avg3) / (3 * st_dev3));
+      value2 = ((avg3 - st_min3) / (3 * st_dev3));
+      double cpk3 = [value1, value2].reduce(min);
+      cpk3.isInfinite ? cpk3 = 0 : cpk3 = cpk3;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row4.length; i++) // Point4
+      {
+        var x = double.parse(row4[i]);
+        row4_double.add(x);
+
+        avg = avg + x;
+      }
+      double max4 =
+          row4_double.reduce((curr, next) => curr > next ? curr : next);
+      double min4 =
+          row4_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg4 = avg / row4.length;
+      double st_dev4 = standardDeviation(row4_double);
+
+      double st_max4 = double.parse(read_max4);
+      double st_min4 = double.parse(read_min4);
+      double cp4 = (st_max4 - st_min4) / (6 * st_dev4);
+      cp4.isInfinite ? cp4 = 0 : cp4 = cp4;
+
+      value1 = ((st_max4 - avg4) / (3 * st_dev4));
+      value2 = ((avg4 - st_min4) / (3 * st_dev4));
+      double cpk4 = [value1, value2].reduce(min);
+      cpk4.isInfinite ? cpk4 = 0 : cpk4 = cpk4;
+
+      cell_B4.value = TextCellValue(max1.toString());
+      cell_C4.value = TextCellValue(max2.toString());
+      cell_D4.value = TextCellValue(max3.toString());
+      cell_E4.value = TextCellValue(max4.toString());
+      cell_F4.value = TextCellValue("");
+
+      cell_B5.value = TextCellValue(min1.toString());
+      cell_C5.value = TextCellValue(min2.toString());
+      cell_D5.value = TextCellValue(min3.toString());
+      cell_E5.value = TextCellValue(min4.toString());
+      cell_F5.value = TextCellValue("");
+
+      cell_B6.value = TextCellValue(avg1.toStringAsFixed(2));
+      cell_C6.value = TextCellValue(avg2.toStringAsFixed(2));
+      cell_D6.value = TextCellValue(avg3.toStringAsFixed(2));
+      cell_E6.value = TextCellValue(avg4.toStringAsFixed(2));
+      cell_F6.value = TextCellValue("");
+
+      cell_B7.value = TextCellValue(st_dev1.toStringAsFixed(2));
+      cell_C7.value = TextCellValue(st_dev2.toStringAsFixed(2));
+      cell_D7.value = TextCellValue(st_dev3.toStringAsFixed(2));
+      cell_E7.value = TextCellValue(st_dev4.toStringAsFixed(2));
+      cell_F7.value = TextCellValue("");
+
+      cell_B8.value = TextCellValue(cp1.toStringAsFixed(2));
+      cell_C8.value = TextCellValue(cp2.toStringAsFixed(2));
+      cell_D8.value = TextCellValue(cp3.toStringAsFixed(2));
+      cell_E8.value = TextCellValue(cp4.toStringAsFixed(2));
+      cell_F8.value = TextCellValue("");
+
+      cell_B9.value = TextCellValue(cpk1.toStringAsFixed(2));
+      cell_C9.value = TextCellValue(cpk2.toStringAsFixed(2));
+      cell_D9.value = TextCellValue(cpk3.toStringAsFixed(2));
+      cell_E9.value = TextCellValue(cpk4.toStringAsFixed(2));
+      cell_F9.value = TextCellValue("");
+
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
+              max1.toString() +
+              "  " +
+              min1.toString() +
+              "  " +
+              avg1.toStringAsFixed(2) +
+              "  " +
+              st_dev1.toStringAsFixed(2) +
+              "  " +
+              cp1.toStringAsFixed(2) +
+              "  " +
+              cpk1.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT2 ----------------------------------> ' +
+              max2.toString() +
+              "  " +
+              min2.toString() +
+              "  " +
+              avg2.toStringAsFixed(2) +
+              "  " +
+              st_dev2.toStringAsFixed(2) +
+              "  " +
+              cp2.toStringAsFixed(2) +
+              "  " +
+              cpk2.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT3 ----------------------------------> ' +
+              max3.toString() +
+              "  " +
+              min3.toString() +
+              "  " +
+              avg3.toStringAsFixed(2) +
+              "  " +
+              st_dev3.toStringAsFixed(2) +
+              "  " +
+              cp3.toStringAsFixed(2) +
+              "  " +
+              cpk3.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT4 ----------------------------------> ' +
+              max4.toString() +
+              "  " +
+              min4.toString() +
+              "  " +
+              avg4.toStringAsFixed(2) +
+              "  " +
+              st_dev4.toStringAsFixed(2) +
+              "  " +
+              cp4.toStringAsFixed(2) +
+              "  " +
+              cpk4.toStringAsFixed(2));
+    } else if (read_point_selected == '5') {
+      //---------------------------------------------------> 5
+      // ST MAX
+      cell_B2.value = TextCellValue(read_max1);
+      cell_C2.value = TextCellValue(read_max2);
+      cell_D2.value = TextCellValue(read_max3);
+      cell_E2.value = TextCellValue(read_max4);
+      cell_F2.value = TextCellValue(read_max5);
+
+      // ST MIN
+      cell_B3.value = TextCellValue(read_min1);
+      cell_C3.value = TextCellValue(read_min2);
+      cell_D3.value = TextCellValue(read_min3);
+      cell_E3.value = TextCellValue(read_min4);
+      cell_F3.value = TextCellValue(read_min5);
+
+      // MAX MIN AVG
+      double avg = 0;
+      for (var i = 0; i < row1.length; i++) // Point1
+      {
+        var x = double.parse(row1[i]);
+        row1_double.add(x);
+
+        avg = avg + x;
+      }
+      double max1 =
+          row1_double.reduce((curr, next) => curr > next ? curr : next);
+      double min1 =
+          row1_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg1 = avg / row1.length;
+      double st_dev1 = standardDeviation(row1_double);
+
+      double st_max1 = double.parse(read_max1);
+      double st_min1 = double.parse(read_min1);
+      double cp1 = (st_max1 - st_min1) / (6 * st_dev1);
+      cp1.isInfinite ? cp1 = 0 : cp1 = cp1;
+
+      double value1 = ((st_max1 - avg1) / (3 * st_dev1));
+      double value2 = ((avg1 - st_min1) / (3 * st_dev1));
+      double cpk1 = [value1, value2].reduce(min);
+      cpk1.isInfinite ? cpk1 = 0 : cpk1 = cpk1;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row2.length; i++) // Point2
+      {
+        var x = double.parse(row2[i]);
+        row2_double.add(x);
+
+        avg = avg + x;
+      }
+      double max2 =
+          row2_double.reduce((curr, next) => curr > next ? curr : next);
+      double min2 =
+          row2_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg2 = avg / row2.length;
+      double st_dev2 = standardDeviation(row2_double);
+
+      double st_max2 = double.parse(read_max2);
+      double st_min2 = double.parse(read_min2);
+      double cp2 = (st_max2 - st_min2) / (6 * st_dev2);
+      cp2.isInfinite ? cp2 = 0 : cp2 = cp2;
+
+      value1 = ((st_max2 - avg2) / (3 * st_dev2));
+      value2 = ((avg2 - st_min2) / (3 * st_dev2));
+      double cpk2 = [value1, value2].reduce(min);
+      cpk2.isInfinite ? cpk2 = 0 : cpk2 = cpk2;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row3.length; i++) // Point3
+      {
+        var x = double.parse(row3[i]);
+        row3_double.add(x);
+
+        avg = avg + x;
+      }
+      double max3 =
+          row3_double.reduce((curr, next) => curr > next ? curr : next);
+      double min3 =
+          row3_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg3 = avg / row3.length;
+      double st_dev3 = standardDeviation(row3_double);
+
+      double st_max3 = double.parse(read_max3);
+      double st_min3 = double.parse(read_min3);
+      double cp3 = (st_max3 - st_min3) / (6 * st_dev3);
+      cp3.isInfinite ? cp3 = 0 : cp3 = cp3;
+
+      value1 = ((st_max3 - avg3) / (3 * st_dev3));
+      value2 = ((avg3 - st_min3) / (3 * st_dev3));
+      double cpk3 = [value1, value2].reduce(min);
+      cpk3.isInfinite ? cpk3 = 0 : cpk3 = cpk3;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row4.length; i++) // Point4
+      {
+        var x = double.parse(row4[i]);
+        row4_double.add(x);
+
+        avg = avg + x;
+      }
+      double max4 =
+          row4_double.reduce((curr, next) => curr > next ? curr : next);
+      double min4 =
+          row4_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg4 = avg / row4.length;
+      double st_dev4 = standardDeviation(row4_double);
+
+      double st_max4 = double.parse(read_max4);
+      double st_min4 = double.parse(read_min4);
+      double cp4 = (st_max4 - st_min4) / (6 * st_dev4);
+      cp4.isInfinite ? cp4 = 0 : cp4 = cp4;
+
+      value1 = ((st_max4 - avg4) / (3 * st_dev4));
+      value2 = ((avg4 - st_min4) / (3 * st_dev4));
+      double cpk4 = [value1, value2].reduce(min);
+      cpk4.isInfinite ? cpk4 = 0 : cpk4 = cpk4;
+
+      //------------------------------------------
+
+      avg = 0;
+      for (var i = 0; i < row5.length; i++) // Point5
+      {
+        var x = double.parse(row5[i]);
+        row5_double.add(x);
+
+        avg = avg + x;
+      }
+      double max5 =
+          row5_double.reduce((curr, next) => curr > next ? curr : next);
+      double min5 =
+          row5_double.reduce((curr, next) => curr < next ? curr : next);
+      double avg5 = avg / row5.length;
+      double st_dev5 = standardDeviation(row5_double);
+
+      double st_max5 = double.parse(read_max5);
+      double st_min5 = double.parse(read_min5);
+      double cp5 = (st_max5 - st_min5) / (6 * st_dev5);
+      cp5.isInfinite ? cp5 = 0 : cp5 = cp5;
+
+      value1 = ((st_max5 - avg5) / (3 * st_dev5));
+      value2 = ((avg5 - st_min5) / (3 * st_dev5));
+      double cpk5 = [value1, value2].reduce(min);
+      cpk5.isInfinite ? cpk5 = 0 : cpk5 = cpk5;
+
+      cell_B4.value = TextCellValue(max1.toString());
+      cell_C4.value = TextCellValue(max2.toString());
+      cell_D4.value = TextCellValue(max3.toString());
+      cell_E4.value = TextCellValue(max4.toString());
+      cell_F4.value = TextCellValue(max5.toString());
+
+      cell_B5.value = TextCellValue(min1.toString());
+      cell_C5.value = TextCellValue(min2.toString());
+      cell_D5.value = TextCellValue(min3.toString());
+      cell_E5.value = TextCellValue(min4.toString());
+      cell_F5.value = TextCellValue(min5.toString());
+
+      cell_B6.value = TextCellValue(avg1.toStringAsFixed(2));
+      cell_C6.value = TextCellValue(avg2.toStringAsFixed(2));
+      cell_D6.value = TextCellValue(avg3.toStringAsFixed(2));
+      cell_E6.value = TextCellValue(avg4.toStringAsFixed(2));
+      cell_F6.value = TextCellValue(avg5.toStringAsFixed(2));
+
+      cell_B7.value = TextCellValue(st_dev1.toStringAsFixed(2));
+      cell_C7.value = TextCellValue(st_dev2.toStringAsFixed(2));
+      cell_D7.value = TextCellValue(st_dev3.toStringAsFixed(2));
+      cell_E7.value = TextCellValue(st_dev4.toStringAsFixed(2));
+      cell_F7.value = TextCellValue(st_dev5.toStringAsFixed(2));
+
+      cell_B8.value = TextCellValue(cp1.toStringAsFixed(2));
+      cell_C8.value = TextCellValue(cp2.toStringAsFixed(2));
+      cell_D8.value = TextCellValue(cp3.toStringAsFixed(2));
+      cell_E8.value = TextCellValue(cp4.toStringAsFixed(2));
+      cell_F8.value = TextCellValue(cp5.toStringAsFixed(2));
+
+      cell_B9.value = TextCellValue(cpk1.toStringAsFixed(2));
+      cell_C9.value = TextCellValue(cpk2.toStringAsFixed(2));
+      cell_D9.value = TextCellValue(cpk3.toStringAsFixed(2));
+      cell_E9.value = TextCellValue(cpk4.toStringAsFixed(2));
+      cell_F9.value = TextCellValue(cpk5.toStringAsFixed(2));
+
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
+              max1.toString() +
+              "  " +
+              min1.toString() +
+              "  " +
+              avg1.toStringAsFixed(2) +
+              "  " +
+              st_dev1.toStringAsFixed(2) +
+              "  " +
+              cp1.toStringAsFixed(2) +
+              "  " +
+              cpk1.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT2 ----------------------------------> ' +
+              max2.toString() +
+              "  " +
+              min2.toString() +
+              "  " +
+              avg2.toStringAsFixed(2) +
+              "  " +
+              st_dev2.toStringAsFixed(2) +
+              "  " +
+              cp2.toStringAsFixed(2) +
+              "  " +
+              cpk2.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT3 ----------------------------------> ' +
+              max3.toString() +
+              "  " +
+              min3.toString() +
+              "  " +
+              avg3.toStringAsFixed(2) +
+              "  " +
+              st_dev3.toStringAsFixed(2) +
+              "  " +
+              cp3.toStringAsFixed(2) +
+              "  " +
+              cpk3.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT4 ----------------------------------> ' +
+              max4.toString() +
+              "  " +
+              min4.toString() +
+              "  " +
+              avg4.toStringAsFixed(2) +
+              "  " +
+              st_dev4.toStringAsFixed(2) +
+              "  " +
+              cp4.toStringAsFixed(2) +
+              "  " +
+              cpk4.toStringAsFixed(2));
+      print(
+          'MAX MIN AVG STDEV Cp Cpk POINT5 ----------------------------------> ' +
+              max5.toString() +
+              "  " +
+              min5.toString() +
+              "  " +
+              avg5.toStringAsFixed(2) +
+              "  " +
+              st_dev5.toStringAsFixed(2) +
+              "  " +
+              cp5.toStringAsFixed(2) +
+              "  " +
+              cpk5.toStringAsFixed(2));
+    }
+
+    // Save
+    List<int>? fileBytes = await excel.encode();
+
+    File outputFile = File((filepath));
+    if (res.isGranted) {
+      if (await outputFile.exists()) {
+        //print("File exist");
+        // await outputFile.delete().catchError((e) {
+        //   print(e);
+        // });
+      }
+    }
+
+    // Saving the file
+    if (fileBytes != null) {
+      await outputFile.writeAsBytes(fileBytes, flush: true);
+
+      print('Update Cell');
     }
   }
 
@@ -1278,9 +2356,9 @@ class _MainpageState extends State<Mainpage> {
     //var filename = MyConstant.path_excel;
     List<int> bytes = await (InputFile).readAsBytes();
     var excel = Excel.decodeBytes(bytes);
-
     var sheet1 = excel['Sheet1'];
 
+    // Append
     String result = '';
     if (judge == true) {
       result = "OK";
@@ -1292,10 +2370,10 @@ class _MainpageState extends State<Mainpage> {
       sheet1.appendRow([
         TextCellValue(timenow),
         TextCellValue(data_recived[0].trim()),
-        TextCellValue('Not use'),
-        TextCellValue('Not use'),
-        TextCellValue('Not use'),
-        TextCellValue('Not use'),
+        TextCellValue(""),
+        TextCellValue(""),
+        TextCellValue(""),
+        TextCellValue(""),
         TextCellValue(result)
       ]);
     } else if (read_point_selected == '2') {
@@ -1303,9 +2381,9 @@ class _MainpageState extends State<Mainpage> {
         TextCellValue(timenow),
         TextCellValue(data_recived[0].trim()),
         TextCellValue(data_recived[1].trim()),
-        TextCellValue('Not use'),
-        TextCellValue('Not use'),
-        TextCellValue('Not use'),
+        TextCellValue(""),
+        TextCellValue(""),
+        TextCellValue(""),
         TextCellValue(result)
       ]);
     } else if (read_point_selected == '3') {
@@ -1314,8 +2392,8 @@ class _MainpageState extends State<Mainpage> {
         TextCellValue(data_recived[0].trim()),
         TextCellValue(data_recived[1].trim()),
         TextCellValue(data_recived[2].trim()),
-        TextCellValue('Not use'),
-        TextCellValue('Not use'),
+        TextCellValue(""),
+        TextCellValue(""),
         TextCellValue(result)
       ]);
     } else if (read_point_selected == '4') {
@@ -1325,7 +2403,7 @@ class _MainpageState extends State<Mainpage> {
         TextCellValue(data_recived[1].trim()),
         TextCellValue(data_recived[2].trim()),
         TextCellValue(data_recived[3].trim()),
-        TextCellValue('Not use'),
+        TextCellValue(""),
         TextCellValue(result)
       ]);
     } else if (read_point_selected == '5') {
@@ -1374,7 +2452,36 @@ class _MainpageState extends State<Mainpage> {
     var excel = Excel.createExcel();
     var sheet1 = excel['Sheet1'];
 
-    List<CellValue> dataList = [
+    List<CellValue> dataList_row0 = [
+      TextCellValue("List"),
+      TextCellValue("Point1"),
+      TextCellValue("Point2"),
+      TextCellValue("Point3"),
+      TextCellValue("Point4"),
+      TextCellValue("Point5"),
+      TextCellValue("")
+    ];
+
+    List<CellValue> dataList_row1 = [TextCellValue("ST MAX")];
+    List<CellValue> dataList_row2 = [TextCellValue("ST MIN")];
+    List<CellValue> dataList_row3 = [TextCellValue("MAX")];
+    List<CellValue> dataList_row4 = [TextCellValue("MIN")];
+    List<CellValue> dataList_row5 = [TextCellValue("AVERAGE")];
+    List<CellValue> dataList_row6 = [TextCellValue("ST DEV")];
+    List<CellValue> dataList_row7 = [TextCellValue("Cp")];
+    List<CellValue> dataList_row8 = [TextCellValue("Cpk")];
+
+    List<CellValue> dataList_row9 = [
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue(""),
+      TextCellValue("")
+    ];
+
+    List<CellValue> dataList_row10 = [
       TextCellValue("Timestamp"),
       TextCellValue("Point1"),
       TextCellValue("Point2"),
@@ -1384,7 +2491,17 @@ class _MainpageState extends State<Mainpage> {
       TextCellValue("Judge")
     ];
 
-    sheet1.insertRowIterables(dataList, 0);
+    sheet1.insertRowIterables(dataList_row0, 0);
+    sheet1.insertRowIterables(dataList_row1, 1);
+    sheet1.insertRowIterables(dataList_row2, 2);
+    sheet1.insertRowIterables(dataList_row3, 3);
+    sheet1.insertRowIterables(dataList_row4, 4);
+    sheet1.insertRowIterables(dataList_row5, 5);
+    sheet1.insertRowIterables(dataList_row6, 6);
+    sheet1.insertRowIterables(dataList_row7, 7);
+    sheet1.insertRowIterables(dataList_row8, 8);
+    sheet1.insertRowIterables(dataList_row9, 9);
+    sheet1.insertRowIterables(dataList_row10, 10);
 
     List<int>? fileBytes = await excel.encode();
 
@@ -1533,12 +2650,16 @@ class _MainpageState extends State<Mainpage> {
                       status_result[0] = true;
 
                       data_recived[0] = 'Waiting';
+                      unit[0] = '';
                     } else if (read_point_selected == '2') {
                       status_result[0] = true;
                       status_result[1] = true;
 
                       data_recived[0] = 'Waiting';
                       data_recived[1] = 'Waiting';
+
+                      unit[0] = '';
+                      unit[1] = '';
                     } else if (read_point_selected == '3') {
                       status_result[0] = true;
                       status_result[1] = true;
@@ -1547,6 +2668,10 @@ class _MainpageState extends State<Mainpage> {
                       data_recived[0] = 'Waiting';
                       data_recived[1] = 'Waiting';
                       data_recived[2] = 'Waiting';
+
+                      unit[0] = '';
+                      unit[1] = '';
+                      unit[2] = '';
                     } else if (read_point_selected == '4') {
                       status_result[0] = true;
                       status_result[1] = true;
@@ -1557,6 +2682,11 @@ class _MainpageState extends State<Mainpage> {
                       data_recived[1] = 'Waiting';
                       data_recived[2] = 'Waiting';
                       data_recived[3] = 'Waiting';
+
+                      unit[0] = '';
+                      unit[1] = '';
+                      unit[2] = '';
+                      unit[3] = '';
                     } else if (read_point_selected == '5') {
                       status_result[0] = true;
                       status_result[1] = true;
@@ -1569,6 +2699,12 @@ class _MainpageState extends State<Mainpage> {
                       data_recived[2] = 'Waiting';
                       data_recived[3] = 'Waiting';
                       data_recived[4] = 'Waiting';
+
+                      unit[0] = '';
+                      unit[1] = '';
+                      unit[2] = '';
+                      unit[3] = '';
+                      unit[4] = '';
                     }
                   });
                 },
@@ -1607,6 +2743,7 @@ class _MainpageState extends State<Mainpage> {
               status_result[0] = true;
 
               data_recived[0] = 'Waiting';
+              unit[0] = '';
             }
 
             if (index_recive <= 0) {
@@ -1652,10 +2789,14 @@ class _MainpageState extends State<Mainpage> {
 
               data_recived[0] = 'Waiting';
               data_recived[1] = 'Waiting';
+
+              unit[0] = '';
+              unit[1] = '';
             } else if (index_recive == 1) {
               status_result[1] = true;
 
               data_recived[1] = 'Waiting';
+              unit[1] = '';
             }
 
             if (index_recive <= 0) {
@@ -1703,16 +2844,24 @@ class _MainpageState extends State<Mainpage> {
               data_recived[0] = 'Waiting';
               data_recived[1] = 'Waiting';
               data_recived[2] = 'Waiting';
+
+              unit[0] = '';
+              unit[1] = '';
+              unit[2] = '';
             } else if (index_recive == 1) {
               status_result[1] = true;
               status_result[2] = true;
 
               data_recived[1] = 'Waiting';
               data_recived[2] = 'Waiting';
+
+              unit[1] = '';
+              unit[2] = '';
             } else if (index_recive == 2) {
               status_result[2] = true;
 
               data_recived[2] = 'Waiting';
+              unit[2] = '';
             }
 
             if (index_recive <= 0) {
@@ -1762,6 +2911,11 @@ class _MainpageState extends State<Mainpage> {
               data_recived[1] = 'Waiting';
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
+
+              unit[0] = '';
+              unit[1] = '';
+              unit[2] = '';
+              unit[3] = '';
             } else if (index_recive == 1) {
               status_result[1] = true;
               status_result[2] = true;
@@ -1770,17 +2924,25 @@ class _MainpageState extends State<Mainpage> {
               data_recived[1] = 'Waiting';
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
+
+              unit[1] = '';
+              unit[2] = '';
+              unit[3] = '';
             } else if (index_recive == 2) {
               status_result[2] = true;
               status_result[3] = true;
 
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
+
+              unit[2] = '';
+              unit[3] = '';
             } else if (index_recive == 3) {
               status_result[3] = true;
               status_result[4] = true;
 
               data_recived[3] = 'Waiting';
+              unit[3] = '';
             }
 
             if (index_recive <= 0) {
@@ -1833,6 +2995,12 @@ class _MainpageState extends State<Mainpage> {
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
+
+              unit[0] = '';
+              unit[1] = '';
+              unit[2] = '';
+              unit[3] = '';
+              unit[4] = '';
             } else if (index_recive == 1) {
               status_result[1] = true;
               status_result[2] = true;
@@ -1843,6 +3011,11 @@ class _MainpageState extends State<Mainpage> {
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
+
+              unit[1] = '';
+              unit[2] = '';
+              unit[3] = '';
+              unit[4] = '';
             } else if (index_recive == 2) {
               status_result[2] = true;
               status_result[3] = true;
@@ -1851,16 +3024,24 @@ class _MainpageState extends State<Mainpage> {
               data_recived[2] = 'Waiting';
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
+
+              unit[2] = '';
+              unit[3] = '';
+              unit[4] = '';
             } else if (index_recive == 3) {
               status_result[3] = true;
               status_result[4] = true;
 
               data_recived[3] = 'Waiting';
               data_recived[4] = 'Waiting';
+
+              unit[3] = '';
+              unit[4] = '';
             } else if (index_recive == 4) {
               status_result[4] = true;
 
               data_recived[4] = 'Waiting';
+              unit[4] = '';
             }
 
             if (index_recive <= 0) {

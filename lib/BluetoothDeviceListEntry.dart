@@ -9,7 +9,7 @@ class BluetoothDeviceListEntry extends ListTile {
     required GestureTapCallback onTap,
     bool enabled = true,
   }) : super(
-          tileColor: Colors.blue[300],
+          tileColor: Colors.grey[200],          
           onTap: onTap,
           enabled: enabled,          
           leading: Icon(Icons.devices),
@@ -19,6 +19,7 @@ class BluetoothDeviceListEntry extends ListTile {
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
+              //Divider(),
               rssi != null
                   ? Container(
                     
@@ -43,6 +44,7 @@ class BluetoothDeviceListEntry extends ListTile {
                   : Container(width: 0, height: 0),
             ],
           ),
+          
         );
 
   static TextStyle _computeTextStyle(int rssi) {
