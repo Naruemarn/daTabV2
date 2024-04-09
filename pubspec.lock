@@ -129,6 +129,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.0.2"
+  exception_templates:
+    dependency: transitive
+    description:
+      name: exception_templates
+      sha256: e9303fd16ecdb845a14b397cb93476f807dd2b4706f5ee44f708dbc95c256c33
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.4"
   fake_async:
     dependency: transitive
     description:
@@ -240,6 +248,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.8.1"
+  lazy_memo:
+    dependency: transitive
+    description:
+      name: lazy_memo
+      sha256: ca4be412d65726f79a30ba6e40b7056f1dbefbb35ec42913365b3f3e86d49279
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.9"
   leak_tracker:
     dependency: transitive
     description:
@@ -264,6 +280,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
+  list_operators:
+    dependency: transitive
+    description:
+      name: list_operators
+      sha256: "25f630709110b04c51bc2d3f131c694d72d109cb3e653f84fc61d72b4179a51f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.3"
   matcher:
     dependency: transitive
     description:
@@ -432,6 +456,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.7.4"
+  sample_statistics:
+    dependency: "direct main"
+    description:
+      name: sample_statistics
+      sha256: "5c2f4111c0511ce5d4762580c2aa8b97d42e8ffe20da291279c913d6df8c1e10"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   scoped_model:
     dependency: "direct main"
     description:
@@ -496,6 +528,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.2"
+  simulated_annealing:
+    dependency: transitive
+    description:
+      name: simulated_annealing
+      sha256: "1eab3eb43fbd58d190f631d07fbc317105eb7775b0997d465844f04945d8b46c"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.8"
   sky_engine:
     dependency: transitive
     description: flutter
