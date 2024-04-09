@@ -1320,8 +1320,8 @@ class _MainpageState extends State<Mainpage> {
       } else {
         print("New Excel File");
         await excel_write_header(filename)
-            .then((value) => excel_append_data(filename));
-        //.then((value) => excel_update_cell(filename)));
+            .then((value) => excel_append_data(filename)
+        .then((value) => excel_update_cell(filename)));
       }
     }
   }
