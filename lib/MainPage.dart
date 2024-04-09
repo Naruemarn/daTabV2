@@ -2464,7 +2464,7 @@ class _MainpageState extends State<Mainpage> {
     } else if (read_point_selected == '2') {
       List<double> value = [
         double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
+        double.parse(data_recived[1].trim()),
         0,
         0,
         0
@@ -2473,8 +2473,8 @@ class _MainpageState extends State<Mainpage> {
     } else if (read_point_selected == '3') {
      List<double> value = [
         double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
+        double.parse(data_recived[1].trim()),
+        double.parse(data_recived[2].trim()),
         0,
         0
       ];
@@ -2482,19 +2482,19 @@ class _MainpageState extends State<Mainpage> {
     } else if (read_point_selected == '4') {
       List<double> value = [
         double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
+        double.parse(data_recived[1].trim()),
+        double.parse(data_recived[2].trim()),
+        double.parse(data_recived[3].trim()),
         0
       ];
       AppendDataToExcel(sheet1, value, last_row, result);
     } else if (read_point_selected == '5') {
       List<double> value = [
         double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim()),
-        double.parse(data_recived[0].trim())
+        double.parse(data_recived[1].trim()),
+        double.parse(data_recived[2].trim()),
+        double.parse(data_recived[3].trim()),
+        double.parse(data_recived[4].trim())
       ];
       AppendDataToExcel(sheet1, value, last_row, result);
     }
