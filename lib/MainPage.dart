@@ -852,10 +852,13 @@ class _MainpageState extends State<Mainpage> {
           ),
         ],
       ),
-      floatingActionButton: Container(
-        //color: Colors.pink,
-        width: 500,            
-         child: build_retry_save_button()),
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.only(right: 10),
+        child: Container(
+          //color: Colors.pink,
+          width: 500,            
+           child: build_retry_save_button()),
+      ),
     );
   }
 
