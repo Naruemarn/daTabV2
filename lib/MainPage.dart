@@ -121,6 +121,7 @@ class _MainpageState extends State<Mainpage> {
   late RestartableTimer _timer;
 
   late String imagePathDownloadFolder = '/storage/emulated/0/Download/';
+  late String FileImagePath;
   bool isFolderName = false;
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -213,6 +214,8 @@ class _MainpageState extends State<Mainpage> {
 
       read_min5 = read_min5.toString();
       read_max5 = read_max5.toString();
+
+      FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
     });
 
     print('Point selected = $read_point_selected');
@@ -337,22 +340,34 @@ class _MainpageState extends State<Mainpage> {
     setState(() {
       index_recive++;
 
+      // Index Image
       if (index_recive <= 0) {
         index_image = 1;
+        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
       } else if (index_recive == 1) {
         index_image = 2;
+        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
       } else if (index_recive == 2) {
         index_image = 3;
+        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
       } else if (index_recive == 3) {
         index_image = 4;
+        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
       } else if (index_recive == 4) {
         index_image = 5;
+        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
       } else if (index_recive >= 5) {
-        index_recive = 5;
-        index_image = 5;
+        index_recive = 5;        
       }
 
-      print('Index : ' + index_recive.toString());
+      if(index_recive >= int.parse(read_point_selected))
+      {
+        FileImagePath = imagePathDownloadFolder + '/Img/Done.jpg';
+      }
+
+
+
+      print('Index recive: ' + index_recive.toString());
 
       if (read_point_selected == '1') {
         calculate_result_1_points();
@@ -828,7 +843,7 @@ class _MainpageState extends State<Mainpage> {
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(color: Colors.teal, width: 10),
                             image: isFolderName? DecorationImage(
-                              image: FileImage(File(imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg')),
+                              image: FileImage(File(FileImagePath)),
                               fit: BoxFit.fill,                              
                             ):DecorationImage(
                               image: AssetImage(MyConstant.no_image),
@@ -851,20 +866,18 @@ class _MainpageState extends State<Mainpage> {
                     ],
                   ),
                 ),
+                
+                build_table(size),                
                 build_judge(size),
-                build_table(size),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: Container(
-            //color: Colors.pink,
-            width: 500,
-            child: build_retry_save_button()),
-      ),
+      floatingActionButton: Container(
+          //color: Colors.pink,
+          width: 1160,
+          child: build_retry_save_button()),
     );
   }
 
@@ -969,7 +982,7 @@ class _MainpageState extends State<Mainpage> {
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Row build_retry_save_button() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         reset_button(),
         //SizedBox(width: 20),
@@ -2945,6 +2958,8 @@ class _MainpageState extends State<Mainpage> {
                       buffer.clear();
 
                       index_image = 1;
+                      FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+
 
                       if (read_point_selected == '1') {
                         status_result[0] = true;
@@ -3041,15 +3056,21 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+            } else if (index_recive == 4) {
+              index_image = 5;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
-              index_image = 5;
             }
 
             if (index_recive == 0) {
@@ -3099,15 +3120,21 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+            } else if (index_recive == 4) {
+              index_image = 5;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
-              index_image = 5;
             }
 
             if (index_recive == 0) {
@@ -3166,15 +3193,21 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+            } else if (index_recive == 4) {
+              index_image = 5;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
-              index_image = 5;
             }
 
             if (index_recive == 0) {
@@ -3245,15 +3278,21 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+            } else if (index_recive == 4) {
+              index_image = 5;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
-              index_image = 5;
             }
 
             if (index_recive == 0) {
@@ -3341,15 +3380,21 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+            } else if (index_recive == 4) {
+              index_image = 5;
+              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
-              index_image = 5;
             }
 
             if (index_recive == 0) {
@@ -3443,7 +3488,7 @@ class _MainpageState extends State<Mainpage> {
     return Card(
       color: Colors.green,
       child: Container(
-        width: 400,
+        width: 300,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -3477,7 +3522,7 @@ class _MainpageState extends State<Mainpage> {
     return Card(
       color: Colors.red,
       child: Container(
-        width: 400,
+        width: 300,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -3511,7 +3556,7 @@ class _MainpageState extends State<Mainpage> {
     return Card(
       color: Colors.blue,
       child: Container(
-        width: 400,
+        width: 300,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [

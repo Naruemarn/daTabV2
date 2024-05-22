@@ -17,6 +17,7 @@ class MyConstant{
   static String image_wait = 'assets/images/wait.png';
   static String no_image = 'assets/images/NoImage.png';
 
+
   // Path Excel
   static String path_excel = '/storage/emulated/0/Download/Output.xlsx';
 
