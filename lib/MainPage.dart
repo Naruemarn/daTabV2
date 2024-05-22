@@ -33,7 +33,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 //     hide Row
 //     hide Stack;
 
-import 'package:excel/excel.dart';
+import 'package:excel/excel.dart' as FromExcel;
 //import 'package:path/path.dart';
 
 import 'package:timelines/timelines.dart';
@@ -192,7 +192,6 @@ class _MainpageState extends State<Mainpage> {
     String path = imagePathDownloadFolder + read_preset_selected;
     isFolderName = await Directory(path).exists();
 
-
     setState(() {
       isFolderName = isFolderName;
 
@@ -214,8 +213,6 @@ class _MainpageState extends State<Mainpage> {
 
       read_min5 = read_min5.toString();
       read_max5 = read_max5.toString();
-
-
     });
 
     print('Point selected = $read_point_selected');
@@ -340,28 +337,17 @@ class _MainpageState extends State<Mainpage> {
     setState(() {
       index_recive++;
 
-      if(index_recive <= 0)
-      {
+      if (index_recive <= 0) {
         index_image = 1;
-      }
-      else if(index_recive == 1)
-      {
+      } else if (index_recive == 1) {
         index_image = 2;
-      }
-      else if(index_recive == 2)
-      {
+      } else if (index_recive == 2) {
         index_image = 3;
-      }
-      else if(index_recive == 3)
-      {
+      } else if (index_recive == 3) {
         index_image = 4;
-      }
-      else if(index_recive == 4)
-      {
+      } else if (index_recive == 4) {
         index_image = 5;
-      }
-      else if(index_recive >= 5)
-      {
+      } else if (index_recive >= 5) {
         index_recive = 5;
         index_image = 5;
       }
@@ -832,15 +818,35 @@ class _MainpageState extends State<Mainpage> {
                       build_ok_counter(cnt_ok!),
                       build_ng_counter(cnt_ng!),
                       build_total_counter(cnt_total!),
-                      //reset_button(),                      
+                      //reset_button(),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Container(
-                          color: Colors.black,
                           width: 400,
                           height: 260,
-                          child: isFolderName? Image(image: FileImage(File(imagePathDownloadFolder + read_preset_selected + '/' + index_image.toString() + '.jpg')),fit: BoxFit.fill,) : ShowImage(path: MyConstant.no_image),),
-                          
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(30),
+                            border: Border.all(color: Colors.teal, width: 10),
+                            image: isFolderName? DecorationImage(
+                              image: FileImage(File(imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg')),
+                              fit: BoxFit.fill,                              
+                            ):DecorationImage(
+                              image: AssetImage(MyConstant.no_image),
+                              fit: BoxFit.fill
+                            ),
+                          ),
+                          // child: isFolderName
+                          //     ? Image(
+                          //         image: FileImage(File(
+                          //             imagePathDownloadFolder +
+                          //                 read_preset_selected +
+                          //                 '/' +
+                          //                 index_image.toString() +
+                          //                 '.jpg')),
+                          //         fit: BoxFit.fill,
+                          //       )
+                          //     : ShowImage(path: MyConstant.no_image),
+                        ),
                       ),
                     ],
                   ),
@@ -855,9 +861,9 @@ class _MainpageState extends State<Mainpage> {
       floatingActionButton: Padding(
         padding: const EdgeInsets.only(right: 10),
         child: Container(
-          //color: Colors.pink,
-          width: 500,            
-           child: build_retry_save_button()),
+            //color: Colors.pink,
+            width: 500,
+            child: build_retry_save_button()),
       ),
     );
   }
@@ -924,8 +930,8 @@ class _MainpageState extends State<Mainpage> {
             ),
           );
 
-           String path = imagePathDownloadFolder + get_setting[1];
-           isFolderName = await Directory(path).exists();
+          String path = imagePathDownloadFolder + get_setting[1];
+          isFolderName = await Directory(path).exists();
 
           setState(() {
             read_point_selected = get_setting[0];
@@ -949,8 +955,6 @@ class _MainpageState extends State<Mainpage> {
             isFolderName = isFolderName;
             print(
                 'Return Setting ==> $read_point_selected $read_preset_selected $read_preset_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
-
-           
           });
 
           //read_register();
@@ -1365,8 +1369,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> write_to_excel() async {
-    try
-    {
+    try {
       var res = await Permission.storage.request();
       String product_name = read_preset_name.replaceAll(' ', '');
       String datenow = timenow.substring(0, 10);
@@ -1384,14 +1387,12 @@ class _MainpageState extends State<Mainpage> {
               .then((value) => excel_update_cell(filename));
         } else {
           print("New Excel File");
-          await excel_write_header(filename)
-              .then((value) => excel_append_data(filename)
-          .then((value) => excel_update_cell(filename)));
+          await excel_write_header(filename).then((value) =>
+              excel_append_data(filename)
+                  .then((value) => excel_update_cell(filename)));
         }
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       print(e);
     }
   }
@@ -1418,8 +1419,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> excel_update_cell(String filepath) async {
-    try
-    {
+    try {
       var res = await Permission.storage.request();
       File InputFile = File((filepath));
       if (res.isGranted) {
@@ -1428,7 +1428,7 @@ class _MainpageState extends State<Mainpage> {
 
       //var filename = MyConstant.path_excel;
       List<int> bytes = await (InputFile).readAsBytes();
-      var excel = Excel.decodeBytes(bytes);
+      var excel = FromExcel.Excel.decodeBytes(bytes);
       var sheet1 = excel['Sheet1'];
 
       // Read Excel file
@@ -1482,132 +1482,166 @@ class _MainpageState extends State<Mainpage> {
       print(' Row  5 --------------> ${row4}');
       print(' Row  6 --------------> ${row5}');
 
-
       // Update Cell
       // ST MAX
-      var cell_B2 = sheet1.cell(CellIndex.indexByString('B2'));
-      var cell_C2 = sheet1.cell(CellIndex.indexByString('C2'));
-      var cell_D2 = sheet1.cell(CellIndex.indexByString('D2'));
-      var cell_E2 = sheet1.cell(CellIndex.indexByString('E2'));
-      var cell_F2 = sheet1.cell(CellIndex.indexByString('F2'));
+      var cell_B2 = sheet1.cell(FromExcel.CellIndex.indexByString('B2'));
+      var cell_C2 = sheet1.cell(FromExcel.CellIndex.indexByString('C2'));
+      var cell_D2 = sheet1.cell(FromExcel.CellIndex.indexByString('D2'));
+      var cell_E2 = sheet1.cell(FromExcel.CellIndex.indexByString('E2'));
+      var cell_F2 = sheet1.cell(FromExcel.CellIndex.indexByString('F2'));
 
-      cell_B2.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C2.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D2.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E2.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F2.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+      cell_B2.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C2.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D2.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E2.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F2.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // ST MIN
-      var cell_B3 = sheet1.cell(CellIndex.indexByString('B3'));
-      var cell_C3 = sheet1.cell(CellIndex.indexByString('C3'));
-      var cell_D3 = sheet1.cell(CellIndex.indexByString('D3'));
-      var cell_E3 = sheet1.cell(CellIndex.indexByString('E3'));
-      var cell_F3 = sheet1.cell(CellIndex.indexByString('F3'));
+      var cell_B3 = sheet1.cell(FromExcel.CellIndex.indexByString('B3'));
+      var cell_C3 = sheet1.cell(FromExcel.CellIndex.indexByString('C3'));
+      var cell_D3 = sheet1.cell(FromExcel.CellIndex.indexByString('D3'));
+      var cell_E3 = sheet1.cell(FromExcel.CellIndex.indexByString('E3'));
+      var cell_F3 = sheet1.cell(FromExcel.CellIndex.indexByString('F3'));
 
-      cell_B3.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C3.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D3.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E3.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F3.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+      cell_B3.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C3.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D3.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E3.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F3.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // MAX
-      var cell_B4 = sheet1.cell(CellIndex.indexByString('B4'));
-      var cell_C4 = sheet1.cell(CellIndex.indexByString('C4'));
-      var cell_D4 = sheet1.cell(CellIndex.indexByString('D4'));
-      var cell_E4 = sheet1.cell(CellIndex.indexByString('E4'));
-      var cell_F4 = sheet1.cell(CellIndex.indexByString('F4'));
+      var cell_B4 = sheet1.cell(FromExcel.CellIndex.indexByString('B4'));
+      var cell_C4 = sheet1.cell(FromExcel.CellIndex.indexByString('C4'));
+      var cell_D4 = sheet1.cell(FromExcel.CellIndex.indexByString('D4'));
+      var cell_E4 = sheet1.cell(FromExcel.CellIndex.indexByString('E4'));
+      var cell_F4 = sheet1.cell(FromExcel.CellIndex.indexByString('F4'));
 
-      cell_B4.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C4.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D4.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E4.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F4.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-
+      cell_B4.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C4.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D4.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E4.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F4.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // MIN
-      var cell_B5 = sheet1.cell(CellIndex.indexByString('B5'));
-      var cell_C5 = sheet1.cell(CellIndex.indexByString('C5'));
-      var cell_D5 = sheet1.cell(CellIndex.indexByString('D5'));
-      var cell_E5 = sheet1.cell(CellIndex.indexByString('E5'));
-      var cell_F5 = sheet1.cell(CellIndex.indexByString('F5'));
+      var cell_B5 = sheet1.cell(FromExcel.CellIndex.indexByString('B5'));
+      var cell_C5 = sheet1.cell(FromExcel.CellIndex.indexByString('C5'));
+      var cell_D5 = sheet1.cell(FromExcel.CellIndex.indexByString('D5'));
+      var cell_E5 = sheet1.cell(FromExcel.CellIndex.indexByString('E5'));
+      var cell_F5 = sheet1.cell(FromExcel.CellIndex.indexByString('F5'));
 
-      cell_B5.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C5.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D5.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E5.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F5.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-
-
+      cell_B5.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C5.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D5.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E5.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F5.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // AVERAGE
-      var cell_B6 = sheet1.cell(CellIndex.indexByString('B6'));
-      var cell_C6 = sheet1.cell(CellIndex.indexByString('C6'));
-      var cell_D6 = sheet1.cell(CellIndex.indexByString('D6'));
-      var cell_E6 = sheet1.cell(CellIndex.indexByString('E6'));
-      var cell_F6 = sheet1.cell(CellIndex.indexByString('F6'));
+      var cell_B6 = sheet1.cell(FromExcel.CellIndex.indexByString('B6'));
+      var cell_C6 = sheet1.cell(FromExcel.CellIndex.indexByString('C6'));
+      var cell_D6 = sheet1.cell(FromExcel.CellIndex.indexByString('D6'));
+      var cell_E6 = sheet1.cell(FromExcel.CellIndex.indexByString('E6'));
+      var cell_F6 = sheet1.cell(FromExcel.CellIndex.indexByString('F6'));
 
-      cell_B6.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C6.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D6.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E6.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F6.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+      cell_B6.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C6.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D6.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E6.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F6.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // ST DEV
-      var cell_B7 = sheet1.cell(CellIndex.indexByString('B7'));
-      var cell_C7 = sheet1.cell(CellIndex.indexByString('C7'));
-      var cell_D7 = sheet1.cell(CellIndex.indexByString('D7'));
-      var cell_E7 = sheet1.cell(CellIndex.indexByString('E7'));
-      var cell_F7 = sheet1.cell(CellIndex.indexByString('F7'));
+      var cell_B7 = sheet1.cell(FromExcel.CellIndex.indexByString('B7'));
+      var cell_C7 = sheet1.cell(FromExcel.CellIndex.indexByString('C7'));
+      var cell_D7 = sheet1.cell(FromExcel.CellIndex.indexByString('D7'));
+      var cell_E7 = sheet1.cell(FromExcel.CellIndex.indexByString('E7'));
+      var cell_F7 = sheet1.cell(FromExcel.CellIndex.indexByString('F7'));
 
-      cell_B7.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C7.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D7.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E7.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F7.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-
+      cell_B7.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C7.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D7.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E7.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F7.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // Cp
-      var cell_B8 = sheet1.cell(CellIndex.indexByString('B8'));
-      var cell_C8 = sheet1.cell(CellIndex.indexByString('C8'));
-      var cell_D8 = sheet1.cell(CellIndex.indexByString('D8'));
-      var cell_E8 = sheet1.cell(CellIndex.indexByString('E8'));
-      var cell_F8 = sheet1.cell(CellIndex.indexByString('F8'));
+      var cell_B8 = sheet1.cell(FromExcel.CellIndex.indexByString('B8'));
+      var cell_C8 = sheet1.cell(FromExcel.CellIndex.indexByString('C8'));
+      var cell_D8 = sheet1.cell(FromExcel.CellIndex.indexByString('D8'));
+      var cell_E8 = sheet1.cell(FromExcel.CellIndex.indexByString('E8'));
+      var cell_F8 = sheet1.cell(FromExcel.CellIndex.indexByString('F8'));
 
-      cell_B8.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C8.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D8.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E8.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F8.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-
+      cell_B8.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C8.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D8.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E8.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F8.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // Cpk
-      var cell_B9 = sheet1.cell(CellIndex.indexByString('B9'));
-      var cell_C9 = sheet1.cell(CellIndex.indexByString('C9'));
-      var cell_D9 = sheet1.cell(CellIndex.indexByString('D9'));
-      var cell_E9 = sheet1.cell(CellIndex.indexByString('E9'));
-      var cell_F9 = sheet1.cell(CellIndex.indexByString('F9'));
+      var cell_B9 = sheet1.cell(FromExcel.CellIndex.indexByString('B9'));
+      var cell_C9 = sheet1.cell(FromExcel.CellIndex.indexByString('C9'));
+      var cell_D9 = sheet1.cell(FromExcel.CellIndex.indexByString('D9'));
+      var cell_E9 = sheet1.cell(FromExcel.CellIndex.indexByString('E9'));
+      var cell_F9 = sheet1.cell(FromExcel.CellIndex.indexByString('F9'));
 
-      cell_B9.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_C9.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_D9.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_E9.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
-      cell_F9.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+      cell_B9.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C9.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D9.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E9.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F9.cellStyle =
+          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       if (read_point_selected == '1') {
         //---------------------------------------------------> 1
         // ST MAX
-        cell_B2.value = DoubleCellValue(double.parse(read_max1));
-        cell_C2.value = DoubleCellValue(0);
-        cell_D2.value = DoubleCellValue(0);
-        cell_E2.value = DoubleCellValue(0);
-        cell_F2.value = DoubleCellValue(0);
+        cell_B2.value = FromExcel.DoubleCellValue(double.parse(read_max1));
+        cell_C2.value = FromExcel.DoubleCellValue(0);
+        cell_D2.value = FromExcel.DoubleCellValue(0);
+        cell_E2.value = FromExcel.DoubleCellValue(0);
+        cell_F2.value = FromExcel.DoubleCellValue(0);
 
         // ST MIN
-        cell_B3.value = DoubleCellValue(double.parse(read_min1));
-        cell_C3.value = DoubleCellValue(0);
-        cell_D3.value = DoubleCellValue(0);
-        cell_E3.value = DoubleCellValue(0);
-        cell_F3.value = DoubleCellValue(0);
+        cell_B3.value = FromExcel.DoubleCellValue(double.parse(read_min1));
+        cell_C3.value = FromExcel.DoubleCellValue(0);
+        cell_D3.value = FromExcel.DoubleCellValue(0);
+        cell_E3.value = FromExcel.DoubleCellValue(0);
+        cell_F3.value = FromExcel.DoubleCellValue(0);
 
         // MAX MIN AVG
         double avg = 0;
@@ -1636,41 +1670,46 @@ class _MainpageState extends State<Mainpage> {
         double cpk1 = [value1, value2].reduce(min);
         cpk1.isInfinite ? cpk1 = 0 : cpk1 = cpk1;
 
-        cell_B4.value = DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
-        cell_C4.value = DoubleCellValue(0);
-        cell_D4.value = DoubleCellValue(0);
-        cell_E4.value = DoubleCellValue(0);
-        cell_F4.value = DoubleCellValue(0);
+        cell_B4.value =
+            FromExcel.DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
+        cell_C4.value = FromExcel.DoubleCellValue(0);
+        cell_D4.value = FromExcel.DoubleCellValue(0);
+        cell_E4.value = FromExcel.DoubleCellValue(0);
+        cell_F4.value = FromExcel.DoubleCellValue(0);
 
-        cell_B5.value = DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
-        cell_C5.value = DoubleCellValue(0);
-        cell_D5.value = DoubleCellValue(0);
-        cell_E5.value = DoubleCellValue(0);
-        cell_F5.value = DoubleCellValue(0);
+        cell_B5.value =
+            FromExcel.DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
+        cell_C5.value = FromExcel.DoubleCellValue(0);
+        cell_D5.value = FromExcel.DoubleCellValue(0);
+        cell_E5.value = FromExcel.DoubleCellValue(0);
+        cell_F5.value = FromExcel.DoubleCellValue(0);
 
-        cell_B6.value = DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
-        cell_C6.value = DoubleCellValue(0);
-        cell_D6.value = DoubleCellValue(0);
-        cell_E6.value = DoubleCellValue(0);
-        cell_F6.value = DoubleCellValue(0);
+        cell_B6.value =
+            FromExcel.DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
+        cell_C6.value = FromExcel.DoubleCellValue(0);
+        cell_D6.value = FromExcel.DoubleCellValue(0);
+        cell_E6.value = FromExcel.DoubleCellValue(0);
+        cell_F6.value = FromExcel.DoubleCellValue(0);
 
-        cell_B7.value = DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
-        cell_C7.value = DoubleCellValue(0);
-        cell_D7.value = DoubleCellValue(0);
-        cell_E7.value = DoubleCellValue(0);
-        cell_F7.value = DoubleCellValue(0);
+        cell_B7.value =
+            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
+        cell_C7.value = FromExcel.DoubleCellValue(0);
+        cell_D7.value = FromExcel.DoubleCellValue(0);
+        cell_E7.value = FromExcel.DoubleCellValue(0);
+        cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = DoubleCellValue(0);
-        cell_D8.value = DoubleCellValue(0);
-        cell_E8.value = DoubleCellValue(0);
-        cell_F8.value = DoubleCellValue(0);
+        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value = FromExcel.DoubleCellValue(0);
+        cell_D8.value = FromExcel.DoubleCellValue(0);
+        cell_E8.value = FromExcel.DoubleCellValue(0);
+        cell_F8.value = FromExcel.DoubleCellValue(0);
 
-        cell_B9.value = DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
-        cell_C9.value = DoubleCellValue(0);
-        cell_D9.value = DoubleCellValue(0);
-        cell_E9.value = DoubleCellValue(0);
-        cell_F9.value = DoubleCellValue(0);
+        cell_B9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
+        cell_C9.value = FromExcel.DoubleCellValue(0);
+        cell_D9.value = FromExcel.DoubleCellValue(0);
+        cell_E9.value = FromExcel.DoubleCellValue(0);
+        cell_F9.value = FromExcel.DoubleCellValue(0);
 
         print(
             'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
@@ -1688,18 +1727,18 @@ class _MainpageState extends State<Mainpage> {
       } else if (read_point_selected == '2') {
         //---------------------------------------------------> 2
         // ST MAX
-        cell_B2.value = DoubleCellValue(double.parse(read_max1));
-        cell_C2.value = DoubleCellValue(double.parse(read_max2));
-        cell_D2.value = DoubleCellValue(0);
-        cell_E2.value = DoubleCellValue(0);
-        cell_F2.value = DoubleCellValue(0);
+        cell_B2.value = FromExcel.DoubleCellValue(double.parse(read_max1));
+        cell_C2.value = FromExcel.DoubleCellValue(double.parse(read_max2));
+        cell_D2.value = FromExcel.DoubleCellValue(0);
+        cell_E2.value = FromExcel.DoubleCellValue(0);
+        cell_F2.value = FromExcel.DoubleCellValue(0);
 
         // ST MIN
-        cell_B3.value = DoubleCellValue(double.parse(read_min1));
-        cell_C3.value = DoubleCellValue(double.parse(read_min2));
-        cell_D3.value = DoubleCellValue(0);
-        cell_E3.value = DoubleCellValue(0);
-        cell_F3.value = DoubleCellValue(0);
+        cell_B3.value = FromExcel.DoubleCellValue(double.parse(read_min1));
+        cell_C3.value = FromExcel.DoubleCellValue(double.parse(read_min2));
+        cell_D3.value = FromExcel.DoubleCellValue(0);
+        cell_E3.value = FromExcel.DoubleCellValue(0);
+        cell_F3.value = FromExcel.DoubleCellValue(0);
 
         // MAX MIN AVG
         double avg = 0;
@@ -1753,43 +1792,52 @@ class _MainpageState extends State<Mainpage> {
         double cpk2 = [value1, value2].reduce(min);
         cpk2.isInfinite ? cpk2 = 0 : cpk2 = cpk2;
 
-        cell_B4.value = DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
-        cell_C4.value = DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
-        cell_D4.value = DoubleCellValue(0);
-        cell_E4.value = DoubleCellValue(0);
-        cell_F4.value = DoubleCellValue(0);
+        cell_B4.value =
+            FromExcel.DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
+        cell_C4.value =
+            FromExcel.DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
+        cell_D4.value = FromExcel.DoubleCellValue(0);
+        cell_E4.value = FromExcel.DoubleCellValue(0);
+        cell_F4.value = FromExcel.DoubleCellValue(0);
 
-        cell_B5.value = DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
-        cell_C5.value = DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
-        cell_D5.value = DoubleCellValue(0);
-        cell_E5.value = DoubleCellValue(0);
-        cell_F5.value = DoubleCellValue(0);
+        cell_B5.value =
+            FromExcel.DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
+        cell_C5.value =
+            FromExcel.DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
+        cell_D5.value = FromExcel.DoubleCellValue(0);
+        cell_E5.value = FromExcel.DoubleCellValue(0);
+        cell_F5.value = FromExcel.DoubleCellValue(0);
 
-        cell_B6.value = DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
-        cell_C6.value = DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
-        cell_D6.value = DoubleCellValue(0);
-        cell_E6.value = DoubleCellValue(0);
-        cell_F6.value = DoubleCellValue(0);
+        cell_B6.value =
+            FromExcel.DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
+        cell_C6.value =
+            FromExcel.DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
+        cell_D6.value = FromExcel.DoubleCellValue(0);
+        cell_E6.value = FromExcel.DoubleCellValue(0);
+        cell_F6.value = FromExcel.DoubleCellValue(0);
 
         cell_B7.value =
-            DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
         cell_C7.value =
-            DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
-        cell_D7.value = DoubleCellValue(0);
-        cell_E7.value = DoubleCellValue(0);
-        cell_F7.value = DoubleCellValue(0);
+            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
+        cell_D7.value = FromExcel.DoubleCellValue(0);
+        cell_E7.value = FromExcel.DoubleCellValue(0);
+        cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
-        cell_D8.value = DoubleCellValue(0);
-        cell_E8.value = DoubleCellValue(0);
-        cell_F8.value = DoubleCellValue(0);
+        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value =
+            FromExcel.DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
+        cell_D8.value = FromExcel.DoubleCellValue(0);
+        cell_E8.value = FromExcel.DoubleCellValue(0);
+        cell_F8.value = FromExcel.DoubleCellValue(0);
 
-        cell_B9.value = DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
-        cell_C9.value = DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
-        cell_D9.value = DoubleCellValue(0);
-        cell_E9.value = DoubleCellValue(0);
-        cell_F9.value = DoubleCellValue(0);
+        cell_B9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
+        cell_C9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
+        cell_D9.value = FromExcel.DoubleCellValue(0);
+        cell_E9.value = FromExcel.DoubleCellValue(0);
+        cell_F9.value = FromExcel.DoubleCellValue(0);
 
         print(
             'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
@@ -1820,18 +1868,18 @@ class _MainpageState extends State<Mainpage> {
       } else if (read_point_selected == '3') {
         //---------------------------------------------------> 3
         // ST MAX
-        cell_B2.value = DoubleCellValue(double.parse(read_max1));
-        cell_C2.value = DoubleCellValue(double.parse(read_max2));
-        cell_D2.value = DoubleCellValue(double.parse(read_max3));
-        cell_E2.value = DoubleCellValue(0);
-        cell_F2.value = DoubleCellValue(0);
+        cell_B2.value = FromExcel.DoubleCellValue(double.parse(read_max1));
+        cell_C2.value = FromExcel.DoubleCellValue(double.parse(read_max2));
+        cell_D2.value = FromExcel.DoubleCellValue(double.parse(read_max3));
+        cell_E2.value = FromExcel.DoubleCellValue(0);
+        cell_F2.value = FromExcel.DoubleCellValue(0);
 
         // ST MIN
-        cell_B3.value = DoubleCellValue(double.parse(read_min1));
-        cell_C3.value = DoubleCellValue(double.parse(read_min2));
-        cell_D3.value = DoubleCellValue(double.parse(read_min3));
-        cell_E3.value = DoubleCellValue(0);
-        cell_F3.value = DoubleCellValue(0);
+        cell_B3.value = FromExcel.DoubleCellValue(double.parse(read_min1));
+        cell_C3.value = FromExcel.DoubleCellValue(double.parse(read_min2));
+        cell_D3.value = FromExcel.DoubleCellValue(double.parse(read_min3));
+        cell_E3.value = FromExcel.DoubleCellValue(0);
+        cell_F3.value = FromExcel.DoubleCellValue(0);
 
         // MAX MIN AVG
         double avg = 0;
@@ -1919,44 +1967,56 @@ class _MainpageState extends State<Mainpage> {
         print('Value2: $avg3-$st_min3 / 3*$st_dev3');
         print('Value1: $value1  Value2: $value2  Cpk3: $cpk3');
 
-        cell_B4.value = DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
-        cell_C4.value = DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
-        cell_D4.value = DoubleCellValue(double.parse((max3).toStringAsFixed(2)));
-        cell_E4.value = DoubleCellValue(0);
-        cell_F4.value = DoubleCellValue(0);
+        cell_B4.value =
+            FromExcel.DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
+        cell_C4.value =
+            FromExcel.DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
+        cell_D4.value =
+            FromExcel.DoubleCellValue(double.parse((max3).toStringAsFixed(2)));
+        cell_E4.value = FromExcel.DoubleCellValue(0);
+        cell_F4.value = FromExcel.DoubleCellValue(0);
 
-        cell_B5.value = DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
-        cell_C5.value = DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
-        cell_D5.value = DoubleCellValue(double.parse((min3).toStringAsFixed(2)));
-        cell_E5.value = DoubleCellValue(0);
-        cell_F5.value = DoubleCellValue(0);
+        cell_B5.value =
+            FromExcel.DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
+        cell_C5.value =
+            FromExcel.DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
+        cell_D5.value =
+            FromExcel.DoubleCellValue(double.parse((min3).toStringAsFixed(2)));
+        cell_E5.value = FromExcel.DoubleCellValue(0);
+        cell_F5.value = FromExcel.DoubleCellValue(0);
 
-        cell_B6.value = DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
-        cell_C6.value = DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
-        cell_D6.value = DoubleCellValue(double.parse((avg3).toStringAsFixed(2)));
-        cell_E6.value = DoubleCellValue(0);
-        cell_F6.value = DoubleCellValue(0);
+        cell_B6.value =
+            FromExcel.DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
+        cell_C6.value =
+            FromExcel.DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
+        cell_D6.value =
+            FromExcel.DoubleCellValue(double.parse((avg3).toStringAsFixed(2)));
+        cell_E6.value = FromExcel.DoubleCellValue(0);
+        cell_F6.value = FromExcel.DoubleCellValue(0);
 
         cell_B7.value =
-            DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
         cell_C7.value =
-            DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
         cell_D7.value =
-            DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
-        cell_E7.value = DoubleCellValue(0);
-        cell_F7.value = DoubleCellValue(0);
+            FromExcel.DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
+        cell_E7.value = FromExcel.DoubleCellValue(0);
+        cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
-        cell_D8.value = DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
-        cell_E8.value = DoubleCellValue(0);
-        cell_F8.value = DoubleCellValue(0);
+        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value = FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
+        cell_D8.value = FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
+        cell_E8.value = FromExcel.DoubleCellValue(0);
+        cell_F8.value = FromExcel.DoubleCellValue(0);
 
-        cell_B9.value = DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
-        cell_C9.value = DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
-        cell_D9.value = DoubleCellValue(double.parse((cpk3).toStringAsFixed(2)));
-        cell_E9.value = DoubleCellValue(0);
-        cell_F9.value = DoubleCellValue(0);
+        cell_B9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
+        cell_C9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
+        cell_D9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk3).toStringAsFixed(2)));
+        cell_E9.value = FromExcel.DoubleCellValue(0);
+        cell_F9.value = FromExcel.DoubleCellValue(0);
 
         print(
             'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
@@ -2000,18 +2060,18 @@ class _MainpageState extends State<Mainpage> {
       } else if (read_point_selected == '4') {
         //---------------------------------------------------> 4
         // ST MAX
-        cell_B2.value = DoubleCellValue(double.parse(read_max1));
-        cell_C2.value = DoubleCellValue(double.parse(read_max2));
-        cell_D2.value = DoubleCellValue(double.parse(read_max3));
-        cell_E2.value = DoubleCellValue(double.parse(read_max4));
-        cell_F2.value = DoubleCellValue(0);
+        cell_B2.value = FromExcel.DoubleCellValue(double.parse(read_max1));
+        cell_C2.value = FromExcel.DoubleCellValue(double.parse(read_max2));
+        cell_D2.value = FromExcel.DoubleCellValue(double.parse(read_max3));
+        cell_E2.value = FromExcel.DoubleCellValue(double.parse(read_max4));
+        cell_F2.value = FromExcel.DoubleCellValue(0);
 
         // ST MIN
-        cell_B3.value = DoubleCellValue(double.parse(read_min1));
-        cell_C3.value = DoubleCellValue(double.parse(read_min2));
-        cell_D3.value = DoubleCellValue(double.parse(read_min3));
-        cell_E3.value = DoubleCellValue(double.parse(read_min4));
-        cell_F3.value = DoubleCellValue(0);
+        cell_B3.value = FromExcel.DoubleCellValue(double.parse(read_min1));
+        cell_C3.value = FromExcel.DoubleCellValue(double.parse(read_min2));
+        cell_D3.value = FromExcel.DoubleCellValue(double.parse(read_min3));
+        cell_E3.value = FromExcel.DoubleCellValue(double.parse(read_min4));
+        cell_F3.value = FromExcel.DoubleCellValue(0);
 
         // MAX MIN AVG
         double avg = 0;
@@ -2120,45 +2180,61 @@ class _MainpageState extends State<Mainpage> {
         double cpk4 = [value1, value2].reduce(min);
         cpk4.isInfinite ? cpk4 = 0 : cpk4 = cpk4;
 
-        cell_B4.value = DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
-        cell_C4.value = DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
-        cell_D4.value = DoubleCellValue(double.parse((max3).toStringAsFixed(2)));
-        cell_E4.value = DoubleCellValue(double.parse((max4).toStringAsFixed(2)));
-        cell_F4.value = DoubleCellValue(0);
+        cell_B4.value =
+            FromExcel.DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
+        cell_C4.value =
+            FromExcel.DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
+        cell_D4.value =
+            FromExcel.DoubleCellValue(double.parse((max3).toStringAsFixed(2)));
+        cell_E4.value =
+            FromExcel.DoubleCellValue(double.parse((max4).toStringAsFixed(2)));
+        cell_F4.value = FromExcel.DoubleCellValue(0);
 
-        cell_B5.value = DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
-        cell_C5.value = DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
-        cell_D5.value = DoubleCellValue(double.parse((min3).toStringAsFixed(2)));
-        cell_E5.value = DoubleCellValue(double.parse((min4).toStringAsFixed(2)));
-        cell_F5.value = DoubleCellValue(0);
+        cell_B5.value =
+            FromExcel.DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
+        cell_C5.value =
+            FromExcel.DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
+        cell_D5.value =
+            FromExcel.DoubleCellValue(double.parse((min3).toStringAsFixed(2)));
+        cell_E5.value =
+            FromExcel.DoubleCellValue(double.parse((min4).toStringAsFixed(2)));
+        cell_F5.value = FromExcel.DoubleCellValue(0);
 
-        cell_B6.value = DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
-        cell_C6.value = DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
-        cell_D6.value = DoubleCellValue(double.parse((avg3).toStringAsFixed(2)));
-        cell_E6.value = DoubleCellValue(double.parse((avg4).toStringAsFixed(2)));
-        cell_F6.value = DoubleCellValue(0);
+        cell_B6.value =
+            FromExcel.DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
+        cell_C6.value =
+            FromExcel.DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
+        cell_D6.value =
+            FromExcel.DoubleCellValue(double.parse((avg3).toStringAsFixed(2)));
+        cell_E6.value =
+            FromExcel.DoubleCellValue(double.parse((avg4).toStringAsFixed(2)));
+        cell_F6.value = FromExcel.DoubleCellValue(0);
 
         cell_B7.value =
-            DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
         cell_C7.value =
-            DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
         cell_D7.value =
-            DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
         cell_E7.value =
-            DoubleCellValue(double.parse((st_dev4).toStringAsFixed(2)));
-        cell_F7.value = DoubleCellValue(0);
+            FromExcel.DoubleCellValue(double.parse((st_dev4).toStringAsFixed(2)));
+        cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
-        cell_D8.value = DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
-        cell_E8.value = DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
-        cell_F8.value = DoubleCellValue(0);
+        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value = FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
+        cell_D8.value = FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
+        cell_E8.value = FromExcel.DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
+        cell_F8.value = FromExcel.DoubleCellValue(0);
 
-        cell_B9.value = DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
-        cell_C9.value = DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
-        cell_D9.value = DoubleCellValue(double.parse((cpk3).toStringAsFixed(2)));
-        cell_E9.value = DoubleCellValue(double.parse((cpk4).toStringAsFixed(2)));
-        cell_F9.value = DoubleCellValue(0);
+        cell_B9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
+        cell_C9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
+        cell_D9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk3).toStringAsFixed(2)));
+        cell_E9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk4).toStringAsFixed(2)));
+        cell_F9.value = FromExcel.DoubleCellValue(0);
 
         print(
             'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
@@ -2215,17 +2291,17 @@ class _MainpageState extends State<Mainpage> {
       } else if (read_point_selected == '5') {
         //---------------------------------------------------> 5
         // ST MAX
-        cell_B2.value = DoubleCellValue(double.parse(read_max1));
-        cell_C2.value = DoubleCellValue(double.parse(read_max2));
-        cell_D2.value = DoubleCellValue(double.parse(read_max3));
-        cell_E2.value = DoubleCellValue(double.parse(read_max4));
-        cell_F2.value = DoubleCellValue(double.parse(read_max5));
+        cell_B2.value = FromExcel.DoubleCellValue(double.parse(read_max1));
+        cell_C2.value = FromExcel.DoubleCellValue(double.parse(read_max2));
+        cell_D2.value = FromExcel.DoubleCellValue(double.parse(read_max3));
+        cell_E2.value = FromExcel.DoubleCellValue(double.parse(read_max4));
+        cell_F2.value = FromExcel.DoubleCellValue(double.parse(read_max5));
         // ST MIN
-        cell_B3.value = DoubleCellValue(double.parse(read_min1));
-        cell_C3.value = DoubleCellValue(double.parse(read_min2));
-        cell_D3.value = DoubleCellValue(double.parse(read_min3));
-        cell_E3.value = DoubleCellValue(double.parse(read_min4));
-        cell_F3.value = DoubleCellValue(double.parse(read_min5));
+        cell_B3.value = FromExcel.DoubleCellValue(double.parse(read_min1));
+        cell_C3.value = FromExcel.DoubleCellValue(double.parse(read_min2));
+        cell_D3.value = FromExcel.DoubleCellValue(double.parse(read_min3));
+        cell_E3.value = FromExcel.DoubleCellValue(double.parse(read_min4));
+        cell_F3.value = FromExcel.DoubleCellValue(double.parse(read_min5));
 
         // MAX MIN AVG
         double avg = 0;
@@ -2361,46 +2437,66 @@ class _MainpageState extends State<Mainpage> {
         double cpk5 = [value1, value2].reduce(min);
         cpk5.isInfinite ? cpk5 = 0 : cpk5 = cpk5;
 
-        cell_B4.value = DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
-        cell_C4.value = DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
-        cell_D4.value = DoubleCellValue(double.parse((max3).toStringAsFixed(2)));
-        cell_E4.value = DoubleCellValue(double.parse((max4).toStringAsFixed(2)));
-        cell_F4.value = DoubleCellValue(double.parse((max5).toStringAsFixed(2)));
+        cell_B4.value =
+            FromExcel.DoubleCellValue(double.parse((max1).toStringAsFixed(2)));
+        cell_C4.value =
+            FromExcel.DoubleCellValue(double.parse((max2).toStringAsFixed(2)));
+        cell_D4.value =
+            FromExcel.DoubleCellValue(double.parse((max3).toStringAsFixed(2)));
+        cell_E4.value =
+            FromExcel.DoubleCellValue(double.parse((max4).toStringAsFixed(2)));
+        cell_F4.value =
+            FromExcel.DoubleCellValue(double.parse((max5).toStringAsFixed(2)));
 
-        cell_B5.value = DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
-        cell_C5.value = DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
-        cell_D5.value = DoubleCellValue(double.parse((min3).toStringAsFixed(2)));
-        cell_E5.value = DoubleCellValue(double.parse((min4).toStringAsFixed(2)));
-        cell_F5.value = DoubleCellValue(double.parse((min5).toStringAsFixed(2)));
+        cell_B5.value =
+            FromExcel.DoubleCellValue(double.parse((min1).toStringAsFixed(2)));
+        cell_C5.value =
+            FromExcel.DoubleCellValue(double.parse((min2).toStringAsFixed(2)));
+        cell_D5.value =
+            FromExcel.DoubleCellValue(double.parse((min3).toStringAsFixed(2)));
+        cell_E5.value =
+            FromExcel.DoubleCellValue(double.parse((min4).toStringAsFixed(2)));
+        cell_F5.value =
+            FromExcel.DoubleCellValue(double.parse((min5).toStringAsFixed(2)));
 
-        cell_B6.value = DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
-        cell_C6.value = DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
-        cell_D6.value = DoubleCellValue(double.parse((avg3).toStringAsFixed(2)));
-        cell_E6.value = DoubleCellValue(double.parse((avg4).toStringAsFixed(2)));
-        cell_F6.value = DoubleCellValue(double.parse((avg5).toStringAsFixed(2)));
+        cell_B6.value =
+            FromExcel.DoubleCellValue(double.parse((avg1).toStringAsFixed(2)));
+        cell_C6.value =
+            FromExcel.DoubleCellValue(double.parse((avg2).toStringAsFixed(2)));
+        cell_D6.value =
+            FromExcel.DoubleCellValue(double.parse((avg3).toStringAsFixed(2)));
+        cell_E6.value =
+            FromExcel.DoubleCellValue(double.parse((avg4).toStringAsFixed(2)));
+        cell_F6.value =
+            FromExcel.DoubleCellValue(double.parse((avg5).toStringAsFixed(2)));
 
         cell_B7.value =
-            DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
         cell_C7.value =
-            DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
         cell_D7.value =
-            DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
         cell_E7.value =
-            DoubleCellValue(double.parse((st_dev4).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev4).toStringAsFixed(2)));
         cell_F7.value =
-            DoubleCellValue(double.parse((st_dev5).toStringAsFixed(2)));
+            FromExcel.DoubleCellValue(double.parse((st_dev5).toStringAsFixed(2)));
 
-        cell_B8.value = DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
-        cell_D8.value = DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
-        cell_E8.value = DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
-        cell_F8.value = DoubleCellValue(double.parse((cp5).toStringAsFixed(2)));
+        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value = FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
+        cell_D8.value = FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
+        cell_E8.value = FromExcel.DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
+        cell_F8.value = FromExcel.DoubleCellValue(double.parse((cp5).toStringAsFixed(2)));
 
-        cell_B9.value = DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
-        cell_C9.value = DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
-        cell_D9.value = DoubleCellValue(double.parse((cpk3).toStringAsFixed(2)));
-        cell_E9.value = DoubleCellValue(double.parse((cpk4).toStringAsFixed(2)));
-        cell_F9.value = DoubleCellValue(double.parse((cpk5).toStringAsFixed(2)));
+        cell_B9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
+        cell_C9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
+        cell_D9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk3).toStringAsFixed(2)));
+        cell_E9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk4).toStringAsFixed(2)));
+        cell_F9.value =
+            FromExcel.DoubleCellValue(double.parse((cpk5).toStringAsFixed(2)));
 
         print(
             'MAX MIN AVG STDEV Cp Cpk POINT1 ----------------------------------> ' +
@@ -2488,9 +2584,7 @@ class _MainpageState extends State<Mainpage> {
 
         print('Update Cell');
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       print(e);
     }
   }
@@ -2498,8 +2592,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> excel_append_data(String filepath) async {
-    try
-    {
+    try {
       var res = await Permission.storage.request();
       File InputFile = File((filepath));
       if (res.isGranted) {
@@ -2509,7 +2602,7 @@ class _MainpageState extends State<Mainpage> {
 
       //var filename = MyConstant.path_excel;
       List<int> bytes = await (InputFile).readAsBytes();
-      var excel = Excel.decodeBytes(bytes);
+      var excel = FromExcel.Excel.decodeBytes(bytes);
       var sheet1 = excel['Sheet1'];
 
       int last_column = 0;
@@ -2532,13 +2625,7 @@ class _MainpageState extends State<Mainpage> {
       }
 
       if (read_point_selected == '1') {
-        List<double> value = [
-          double.parse(data_recived[0].trim()),
-          0,
-          0,
-          0,
-          0
-        ];
+        List<double> value = [double.parse(data_recived[0].trim()), 0, 0, 0, 0];
         AppendDataToExcel(sheet1, value, last_row, result);
       } else if (read_point_selected == '2') {
         List<double> value = [
@@ -2550,7 +2637,7 @@ class _MainpageState extends State<Mainpage> {
         ];
         AppendDataToExcel(sheet1, value, last_row, result);
       } else if (read_point_selected == '3') {
-      List<double> value = [
+        List<double> value = [
           double.parse(data_recived[0].trim()),
           double.parse(data_recived[1].trim()),
           double.parse(data_recived[2].trim()),
@@ -2606,99 +2693,97 @@ class _MainpageState extends State<Mainpage> {
       } else {
         print('------------------------------->>> Null');
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       print(e);
     }
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  void AppendDataToExcel(Sheet sheet1, List<double> value, int last_row, String result) {
+  void AppendDataToExcel(
+      FromExcel.Sheet sheet1, List<double> value, int last_row, String result) {
     //https://github.com/justkawal/excel/issues/293
 
     var cell0 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: last_row));
-    cell0.value = TextCellValue(timenow);
-    cell0.cellStyle = CellStyle(numberFormat: NumFormat.defaultNumeric); // Text
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: last_row));
+    cell0.value = FromExcel.TextCellValue(timenow);
+    cell0.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.defaultNumeric); // Text
 
     var cell1 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: last_row));
-    cell1.value = DoubleCellValue(value[0]);
-    cell1.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: last_row));
+    cell1.value = FromExcel.DoubleCellValue(value[0]);
+    cell1.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
     var cell2 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: last_row));
-    cell2.value = DoubleCellValue(value[1]);
-    cell2.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: last_row));
+    cell2.value = FromExcel.DoubleCellValue(value[1]);
+    cell2.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
     var cell3 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: last_row));
-    cell3.value = DoubleCellValue(value[2]);
-    cell3.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: last_row));
+    cell3.value = FromExcel.DoubleCellValue(value[2]);
+    cell3.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
     var cell4 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: last_row));
-    cell4.value = DoubleCellValue(value[3]);
-    cell4.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: last_row));
+    cell4.value = FromExcel.DoubleCellValue(value[3]);
+    cell4.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
     var cell5 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: last_row));
-    cell5.value = DoubleCellValue(value[4]);
-    cell5.cellStyle = CellStyle(numberFormat: NumFormat.standard_2); // Double
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: last_row));
+    cell5.value = FromExcel.DoubleCellValue(value[4]);
+    cell5.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
 
     var cell6 = sheet1
-        .cell(CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: last_row));
-    cell6.value = TextCellValue(result);
-    cell6.cellStyle = CellStyle(numberFormat: NumFormat.defaultNumeric); // Text
+        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: last_row));
+    cell6.value = FromExcel.TextCellValue(result);
+    cell6.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.defaultNumeric); // Text
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Future<void> excel_write_header(String filepath) async {
-    try
-    {
-      var excel = Excel.createExcel();
+    try {
+      var excel = FromExcel.Excel.createExcel();
       var sheet1 = excel['Sheet1'];
 
-      List<CellValue> dataList_row0 = [
-        TextCellValue("List"),
-        TextCellValue("Point1"),
-        TextCellValue("Point2"),
-        TextCellValue("Point3"),
-        TextCellValue("Point4"),
-        TextCellValue("Point5"),
-        TextCellValue("")
+      List<FromExcel.CellValue> dataList_row0 = [
+        FromExcel.TextCellValue("List"),
+        FromExcel.TextCellValue("Point1"),
+        FromExcel.TextCellValue("Point2"),
+        FromExcel.TextCellValue("Point3"),
+        FromExcel.TextCellValue("Point4"),
+        FromExcel.TextCellValue("Point5"),
+        FromExcel.TextCellValue("")
       ];
 
-      List<CellValue> dataList_row1 = [TextCellValue("ST MAX")];
-      List<CellValue> dataList_row2 = [TextCellValue("ST MIN")];
-      List<CellValue> dataList_row3 = [TextCellValue("MAX")];
-      List<CellValue> dataList_row4 = [TextCellValue("MIN")];
-      List<CellValue> dataList_row5 = [TextCellValue("AVERAGE")];
-      List<CellValue> dataList_row6 = [TextCellValue("ST DEV")];
-      List<CellValue> dataList_row7 = [TextCellValue("Cp")];
-      List<CellValue> dataList_row8 = [TextCellValue("Cpk")];
+      List<FromExcel.CellValue> dataList_row1 = [FromExcel.TextCellValue("ST MAX")];
+      List<FromExcel.CellValue> dataList_row2 = [FromExcel.TextCellValue("ST MIN")];
+      List<FromExcel.CellValue> dataList_row3 = [FromExcel.TextCellValue("MAX")];
+      List<FromExcel.CellValue> dataList_row4 = [FromExcel.TextCellValue("MIN")];
+      List<FromExcel.CellValue> dataList_row5 = [FromExcel.TextCellValue("AVERAGE")];
+      List<FromExcel.CellValue> dataList_row6 = [FromExcel.TextCellValue("ST DEV")];
+      List<FromExcel.CellValue> dataList_row7 = [FromExcel.TextCellValue("Cp")];
+      List<FromExcel.CellValue> dataList_row8 = [FromExcel.TextCellValue("Cpk")];
 
-      List<CellValue> dataList_row9 = [
-        TextCellValue(""),
-        TextCellValue(""),
-        TextCellValue(""),
-        TextCellValue(""),
-        TextCellValue(""),
-        TextCellValue(""),
-        TextCellValue("")
+      List<FromExcel.CellValue> dataList_row9 = [
+        FromExcel.TextCellValue(""),
+        FromExcel.TextCellValue(""),
+        FromExcel.TextCellValue(""),
+        FromExcel.TextCellValue(""),
+        FromExcel.TextCellValue(""),
+        FromExcel.TextCellValue(""),
+        FromExcel.TextCellValue("")
       ];
 
-      List<CellValue> dataList_row10 = [
-        TextCellValue("Timestamp"),
-        TextCellValue("Point1"),
-        TextCellValue("Point2"),
-        TextCellValue("Point3"),
-        TextCellValue("Point4"),
-        TextCellValue("Point5"),
-        TextCellValue("Judge")
+      List<FromExcel.CellValue> dataList_row10 = [
+        FromExcel.TextCellValue("Timestamp"),
+        FromExcel.TextCellValue("Point1"),
+        FromExcel.TextCellValue("Point2"),
+        FromExcel.TextCellValue("Point3"),
+        FromExcel.TextCellValue("Point4"),
+        FromExcel.TextCellValue("Point5"),
+        FromExcel.TextCellValue("Judge")
       ];
 
       sheet1.insertRowIterables(dataList_row0, 0);
@@ -2730,9 +2815,7 @@ class _MainpageState extends State<Mainpage> {
       if (fileBytes != null) {
         await outputFile.writeAsBytes(fileBytes, flush: true);
       }
-    }
-    catch(e)
-    {
+    } catch (e) {
       print(e);
     }
   }
@@ -2819,9 +2902,18 @@ class _MainpageState extends State<Mainpage> {
           onPressed: () {
             confirm_popup();
           },
-           icon: Icon(Icons.arrow_drop_down_circle_rounded, size: 50),
-                label: Text('Reset',style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal,foregroundColor: Colors.white,shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30),),),
+          icon: Icon(Icons.arrow_drop_down_circle_rounded, size: 50),
+          label: Text(
+            'Reset',
+            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+          ),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.teal,
+            foregroundColor: Colors.white,
+            shape: new RoundedRectangleBorder(
+              borderRadius: new BorderRadius.circular(30),
+            ),
+          ),
         ),
       ),
     );
@@ -2844,7 +2936,7 @@ class _MainpageState extends State<Mainpage> {
                   //isSaving = true;  // for test --> don't show CircularProgress
 
                   await write_to_excel().then((value) {
-                      setState(() {
+                    setState(() {
                       //_processIndex = (_processIndex + 1) % _processes.length;
                       //WriteLogFile();
 
@@ -2853,7 +2945,7 @@ class _MainpageState extends State<Mainpage> {
                       buffer.clear();
 
                       index_image = 1;
-                      
+
                       if (read_point_selected == '1') {
                         status_result[0] = true;
 
@@ -2917,12 +3009,19 @@ class _MainpageState extends State<Mainpage> {
                     });
                     return isSaving = false;
                   });
-
-                  
                 },
                 icon: Icon(Icons.save, size: 50),
-                label: Text('Save',style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal,foregroundColor: Colors.white,shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30),),),
+                label: Text(
+                  'Save',
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  shape: new RoundedRectangleBorder(
+                    borderRadius: new BorderRadius.circular(30),
+                  ),
+                ),
               ));
   }
 
@@ -2936,28 +3035,19 @@ class _MainpageState extends State<Mainpage> {
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
-            index_recive--;            
+            index_recive--;
             buffer.clear();
-            
+
             // Index Image
-            if(index_recive <= 0)
-            {
+            if (index_recive <= 0) {
               index_image = 1;
-            }
-            else if(index_recive == 1)
-            {
+            } else if (index_recive == 1) {
               index_image = 2;
-            }
-            else if(index_recive == 2)
-            {
+            } else if (index_recive == 2) {
               index_image = 3;
-            }
-            else if(index_recive == 3)
-            {
+            } else if (index_recive == 3) {
               index_image = 4;
-            }
-            else if(index_recive >= 5)
-            {
+            } else if (index_recive >= 5) {
               index_recive = 5;
               index_image = 5;
             }
@@ -3006,26 +3096,16 @@ class _MainpageState extends State<Mainpage> {
             index_recive--;
             buffer.clear();
 
-
             // Index Image
-            if(index_recive <= 0)
-            {
+            if (index_recive <= 0) {
               index_image = 1;
-            }
-            else if(index_recive == 1)
-            {
+            } else if (index_recive == 1) {
               index_image = 2;
-            }
-            else if(index_recive == 2)
-            {
+            } else if (index_recive == 2) {
               index_image = 3;
-            }
-            else if(index_recive == 3)
-            {
+            } else if (index_recive == 3) {
               index_image = 4;
-            }
-            else if(index_recive >= 5)
-            {
+            } else if (index_recive >= 5) {
               index_recive = 5;
               index_image = 5;
             }
@@ -3083,30 +3163,19 @@ class _MainpageState extends State<Mainpage> {
             index_recive--;
             buffer.clear();
 
-
             // Index Image
-            if(index_recive <= 0)
-            {
+            if (index_recive <= 0) {
               index_image = 1;
-            }
-            else if(index_recive == 1)
-            {
+            } else if (index_recive == 1) {
               index_image = 2;
-            }
-            else if(index_recive == 2)
-            {
+            } else if (index_recive == 2) {
               index_image = 3;
-            }
-            else if(index_recive == 3)
-            {
+            } else if (index_recive == 3) {
               index_image = 4;
-            }
-            else if(index_recive >= 5)
-            {
+            } else if (index_recive >= 5) {
               index_recive = 5;
               index_image = 5;
             }
-
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -3174,28 +3243,18 @@ class _MainpageState extends State<Mainpage> {
             buffer.clear();
 
             // Index Image
-            if(index_recive <= 0)
-            {
+            if (index_recive <= 0) {
               index_image = 1;
-            }
-            else if(index_recive == 1)
-            {
+            } else if (index_recive == 1) {
               index_image = 2;
-            }
-            else if(index_recive == 2)
-            {
+            } else if (index_recive == 2) {
               index_image = 3;
-            }
-            else if(index_recive == 3)
-            {
+            } else if (index_recive == 3) {
               index_image = 4;
-            }
-            else if(index_recive >= 5)
-            {
+            } else if (index_recive >= 5) {
               index_recive = 5;
               index_image = 5;
             }
-
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -3280,28 +3339,18 @@ class _MainpageState extends State<Mainpage> {
             buffer.clear();
 
             // Index Image
-            if(index_recive <= 0)
-            {
+            if (index_recive <= 0) {
               index_image = 1;
-            }
-            else if(index_recive == 1)
-            {
+            } else if (index_recive == 1) {
               index_image = 2;
-            }
-            else if(index_recive == 2)
-            {
+            } else if (index_recive == 2) {
               index_image = 3;
-            }
-            else if(index_recive == 3)
-            {
+            } else if (index_recive == 3) {
               index_image = 4;
-            }
-            else if(index_recive >= 5)
-            {
+            } else if (index_recive >= 5) {
               index_recive = 5;
               index_image = 5;
             }
-
 
             if (index_recive == 0) {
               index_recive = 0;
