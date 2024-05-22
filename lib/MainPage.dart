@@ -101,6 +101,7 @@ class _MainpageState extends State<Mainpage> {
   List<String> unit = ['', '', '', '', ''];
 
   int index_recive = 0;
+  int index_image = 1;
 
   var connection; //BluetoothConnection
 
@@ -118,6 +119,9 @@ class _MainpageState extends State<Mainpage> {
   int contentLength = 0;
   late Uint8List _bytes;
   late RestartableTimer _timer;
+
+  late String imagePathDownloadFolder = '/storage/emulated/0/Download/';
+  bool isFolderName = false;
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Color getColor(int index) {
@@ -185,7 +189,13 @@ class _MainpageState extends State<Mainpage> {
     read_min5 = prefs.getString('key_min5_' + read_preset_selected.toString())!;
     read_max5 = prefs.getString('key_max5_' + read_preset_selected.toString())!;
 
+    String path = imagePathDownloadFolder + read_preset_selected;
+    isFolderName = await Directory(path).exists();
+
+
     setState(() {
+      isFolderName = isFolderName;
+
       read_point_selected = read_point_selected;
       read_preset_selected = read_preset_selected;
       read_preset_name = read_preset_name;
@@ -204,6 +214,8 @@ class _MainpageState extends State<Mainpage> {
 
       read_min5 = read_min5.toString();
       read_max5 = read_max5.toString();
+
+
     });
 
     print('Point selected = $read_point_selected');
@@ -327,6 +339,35 @@ class _MainpageState extends State<Mainpage> {
   void process_data() {
     setState(() {
       index_recive++;
+
+      if(index_recive <= 0)
+      {
+        index_image = 1;
+      }
+      else if(index_recive == 1)
+      {
+        index_image = 2;
+      }
+      else if(index_recive == 2)
+      {
+        index_image = 3;
+      }
+      else if(index_recive == 3)
+      {
+        index_image = 4;
+      }
+      else if(index_recive == 4)
+      {
+        index_image = 5;
+      }
+      else if(index_recive >= 5)
+      {
+        index_recive = 5;
+        index_image = 5;
+      }
+
+      print('Index : ' + index_recive.toString());
+
       if (read_point_selected == '1') {
         calculate_result_1_points();
       } else if (read_point_selected == '2') {
@@ -783,29 +824,38 @@ class _MainpageState extends State<Mainpage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Container(
-                    //color: Colors.blue,
-                    child: Column(
-                      children: [
-                        show_counter(),
-                        build_ok_counter(cnt_ok!),
-                        build_ng_counter(cnt_ng!),
-                        build_total_counter(cnt_total!),
-                        reset_button(),
-                      ],
-                    ),
+                Container(
+                  //color: Colors.pink,
+                  child: Column(
+                    children: [
+                      //show_counter(),
+                      build_ok_counter(cnt_ok!),
+                      build_ng_counter(cnt_ng!),
+                      build_total_counter(cnt_total!),
+                      //reset_button(),                      
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Container(
+                          color: Colors.black,
+                          width: 400,
+                          height: 260,
+                          child: isFolderName? Image(image: FileImage(File(imagePathDownloadFolder + read_preset_selected + '/' + index_image.toString() + '.jpg')),fit: BoxFit.fill,) : ShowImage(path: MyConstant.no_image),),
+                          
+                      ),
+                    ],
                   ),
                 ),
                 build_judge(size),
-                build_table(size)
+                build_table(size),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: build_retry_save_button(),
+      floatingActionButton: Container(
+        //color: Colors.pink,
+        width: 500,            
+         child: build_retry_save_button()),
     );
   }
 
@@ -871,6 +921,9 @@ class _MainpageState extends State<Mainpage> {
             ),
           );
 
+           String path = imagePathDownloadFolder + get_setting[1];
+           isFolderName = await Directory(path).exists();
+
           setState(() {
             read_point_selected = get_setting[0];
             read_preset_selected = get_setting[1];
@@ -890,8 +943,11 @@ class _MainpageState extends State<Mainpage> {
             read_min5 = get_setting[11];
             read_max5 = get_setting[12];
 
+            isFolderName = isFolderName;
             print(
                 'Return Setting ==> $read_point_selected $read_preset_selected $read_preset_name $read_min1  $read_max1  $read_min2  $read_max2  $read_min3  $read_max3  $read_min4  $read_max4  $read_min5  $read_max5');
+
+           
           });
 
           //read_register();
@@ -908,12 +964,14 @@ class _MainpageState extends State<Mainpage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        reset_button(),
+        //SizedBox(width: 20),
         if (read_point_selected == '1') retry_button_1_points(),
         if (read_point_selected == '2') retry_button_2_points(),
         if (read_point_selected == '3') retry_button_3_points(),
         if (read_point_selected == '4') retry_button_4_points(),
         if (read_point_selected == '5') retry_button_5_points(),
-        SizedBox(width: 20),
+        SizedBox(width: 8),
         if (index_recive >= int.parse(read_point_selected)) save_button(),
       ],
     );
@@ -924,7 +982,9 @@ class _MainpageState extends State<Mainpage> {
   Expanded build_table(double size) {
     return Expanded(
       child: Container(
+        //color: Colors.yellow,
         width: size * 0.1,
+        //width: 500,
         //color: Colors.purple,
         child: Column(
           children: [
@@ -2708,7 +2768,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Container icon_ng() {
     return Container(
-      width: 60,
+      width: 30,
       //color: Colors.pink,
       child: ShowImage(path: MyConstant.image_ng),
     );
@@ -2718,7 +2778,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Container icon_ok() {
     return Container(
-      width: 60,
+      width: 30,
       //color: Colors.pink,
       child: ShowImage(path: MyConstant.image_ok),
     );
@@ -2751,21 +2811,14 @@ class _MainpageState extends State<Mainpage> {
       child: Container(
         //color: Colors.red,
         width: 150,
-        height: 50,
+        height: 70,
         child: ElevatedButton.icon(
           onPressed: () {
             confirm_popup();
           },
-          icon: Icon(Icons.arrow_drop_down_circle_rounded),
-          label: Text('Reset'),
-          style: ElevatedButton.styleFrom(
-            shadowColor: Colors.black,
-            backgroundColor: Colors.teal,
-            foregroundColor: Colors.white,
-            shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(30),
-            ),
-          ),
+           icon: Icon(Icons.arrow_drop_down_circle_rounded, size: 50),
+                label: Text('Reset',style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal,foregroundColor: Colors.white,shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30),),),
         ),
       ),
     );
@@ -2776,7 +2829,7 @@ class _MainpageState extends State<Mainpage> {
   Widget save_button() {
     return Container(
         //color: Colors.red,
-        width: 200,
+        width: 150,
         height: 70,
         child: isSaving
             ? Center(
@@ -2796,6 +2849,8 @@ class _MainpageState extends State<Mainpage> {
                       index_recive = 0;
                       buffer.clear();
 
+                      index_image = 1;
+                      
                       if (read_point_selected == '1') {
                         status_result[0] = true;
 
@@ -2863,17 +2918,8 @@ class _MainpageState extends State<Mainpage> {
                   
                 },
                 icon: Icon(Icons.save, size: 50),
-                label: Text(
-                  'Save',
-                  style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(30),
-                  ),
-                ),
+                label: Text('Save',style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.teal,foregroundColor: Colors.white,shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30),),),
               ));
   }
 
@@ -2882,13 +2928,36 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_1_points() {
     return Container(
       //color: Colors.red,
-      width: 200,
+      width: 150,
       height: 70,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
-            index_recive--;
+            index_recive--;            
             buffer.clear();
+            
+            // Index Image
+            if(index_recive <= 0)
+            {
+              index_image = 1;
+            }
+            else if(index_recive == 1)
+            {
+              index_image = 2;
+            }
+            else if(index_recive == 2)
+            {
+              index_image = 3;
+            }
+            else if(index_recive == 3)
+            {
+              index_image = 4;
+            }
+            else if(index_recive >= 5)
+            {
+              index_recive = 5;
+              index_image = 5;
+            }
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -2908,7 +2977,7 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
@@ -2926,13 +2995,37 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_2_points() {
     return Container(
       //color: Colors.red,
-      width: 200,
+      width: 150,
       height: 70,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
             index_recive--;
             buffer.clear();
+
+
+            // Index Image
+            if(index_recive <= 0)
+            {
+              index_image = 1;
+            }
+            else if(index_recive == 1)
+            {
+              index_image = 2;
+            }
+            else if(index_recive == 2)
+            {
+              index_image = 3;
+            }
+            else if(index_recive == 3)
+            {
+              index_image = 4;
+            }
+            else if(index_recive >= 5)
+            {
+              index_recive = 5;
+              index_image = 5;
+            }
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -2961,7 +3054,7 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
@@ -2979,13 +3072,38 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_3_points() {
     return Container(
       //color: Colors.red,
-      width: 200,
+      width: 150,
       height: 70,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
             index_recive--;
             buffer.clear();
+
+
+            // Index Image
+            if(index_recive <= 0)
+            {
+              index_image = 1;
+            }
+            else if(index_recive == 1)
+            {
+              index_image = 2;
+            }
+            else if(index_recive == 2)
+            {
+              index_image = 3;
+            }
+            else if(index_recive == 3)
+            {
+              index_image = 4;
+            }
+            else if(index_recive >= 5)
+            {
+              index_recive = 5;
+              index_image = 5;
+            }
+
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -3026,7 +3144,7 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
@@ -3044,13 +3162,37 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_4_points() {
     return Container(
       //color: Colors.red,
-      width: 200,
+      width: 150,
       height: 70,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
             index_recive--;
             buffer.clear();
+
+            // Index Image
+            if(index_recive <= 0)
+            {
+              index_image = 1;
+            }
+            else if(index_recive == 1)
+            {
+              index_image = 2;
+            }
+            else if(index_recive == 2)
+            {
+              index_image = 3;
+            }
+            else if(index_recive == 3)
+            {
+              index_image = 4;
+            }
+            else if(index_recive >= 5)
+            {
+              index_recive = 5;
+              index_image = 5;
+            }
+
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -3107,7 +3249,7 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
@@ -3125,7 +3267,7 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_5_points() {
     return Container(
       //color: Colors.red,
-      width: 200,
+      width: 150,
       height: 70,
       child: ElevatedButton.icon(
         onPressed: () {
@@ -3133,6 +3275,30 @@ class _MainpageState extends State<Mainpage> {
             //_processIndex = (_processIndex - 1) % _processes.length;
             index_recive--;
             buffer.clear();
+
+            // Index Image
+            if(index_recive <= 0)
+            {
+              index_image = 1;
+            }
+            else if(index_recive == 1)
+            {
+              index_image = 2;
+            }
+            else if(index_recive == 2)
+            {
+              index_image = 3;
+            }
+            else if(index_recive == 3)
+            {
+              index_image = 4;
+            }
+            else if(index_recive >= 5)
+            {
+              index_recive = 5;
+              index_image = 5;
+            }
+
 
             if (index_recive == 0) {
               index_recive = 0;
@@ -3206,7 +3372,7 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
@@ -3237,14 +3403,14 @@ class _MainpageState extends State<Mainpage> {
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 NumberFormat("#,###").format(value),
-                style: TextStyle(color: Colors.white, fontSize: 30),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 'Qty',
-                style: TextStyle(color: Colors.white, fontSize: 25),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
           ],
@@ -3271,14 +3437,14 @@ class _MainpageState extends State<Mainpage> {
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 NumberFormat("#,###").format(value),
-                style: TextStyle(color: Colors.white, fontSize: 25),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 'Qty',
-                style: TextStyle(color: Colors.white, fontSize: 25),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
           ],
@@ -3298,18 +3464,18 @@ class _MainpageState extends State<Mainpage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
               child: Text(
                 'Total',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 25,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(10.0),
               child: Text(
                 NumberFormat("#,###").format(value),
                 style: TextStyle(color: Colors.white, fontSize: 30),
