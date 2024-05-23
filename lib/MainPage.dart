@@ -833,36 +833,7 @@ class _MainpageState extends State<Mainpage> {
                       build_ok_counter(cnt_ok!),
                       build_ng_counter(cnt_ng!),
                       build_total_counter(cnt_total!),
-                      //reset_button(),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          width: 400,
-                          height: 260,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: Colors.teal, width: 10),
-                            image: isFolderName? DecorationImage(
-                              image: FileImage(File(FileImagePath)),
-                              fit: BoxFit.fill,                              
-                            ):DecorationImage(
-                              image: AssetImage(MyConstant.no_image),
-                              fit: BoxFit.fill
-                            ),
-                          ),
-                          // child: isFolderName
-                          //     ? Image(
-                          //         image: FileImage(File(
-                          //             imagePathDownloadFolder +
-                          //                 read_preset_selected +
-                          //                 '/' +
-                          //                 index_image.toString() +
-                          //                 '.jpg')),
-                          //         fit: BoxFit.fill,
-                          //       )
-                          //     : ShowImage(path: MyConstant.no_image),
-                        ),
-                      ),
+                      build_step_image(),
                     ],
                   ),
                 ),
@@ -879,6 +850,28 @@ class _MainpageState extends State<Mainpage> {
           width: 1160,
           child: build_retry_save_button()),
     );
+  }
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  Padding build_step_image() {
+    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
+                        width: 420,
+                        height: 260,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          border: Border.all(color: Colors.teal, width: 10),
+                          image: isFolderName? DecorationImage(
+                            image: FileImage(File(FileImagePath)),
+                            fit: BoxFit.fill,                              
+                          ):DecorationImage(
+                            image: AssetImage(MyConstant.no_image),
+                            fit: BoxFit.fill
+                          ),
+                        ),
+                      ),
+                    );
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1162,34 +1155,52 @@ class _MainpageState extends State<Mainpage> {
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Column build_judge(double size) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        if (index_recive >= int.parse(read_point_selected))
-          judge
-              ? Container(
-                  width: size * 0.25,
-                  child: ShowImage(path: MyConstant.image_ok),
-                )
-              : Container(
-                  width: size * 0.25,
-                  child: ShowImage(path: MyConstant.image_ng),
+  Widget build_judge(double size) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        color: Colors.teal,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            if (index_recive >= int.parse(read_point_selected))
+              judge
+                  ? Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                        width: size * 0.25,
+                        child: ShowImage(path: MyConstant.image_ok),
+                      ),
+                  )
+                  : Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                        width: size * 0.25,
+                        child: ShowImage(path: MyConstant.image_ng),
+                      ),
+                  ),
+            if (index_recive < int.parse(read_point_selected))
+              Container(
+                width: size * 0.25,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ShowImage(path: MyConstant.image_wait),
                 ),
-        if (index_recive < int.parse(read_point_selected))
-          Container(
-            width: size * 0.25,
-            child: ShowImage(path: MyConstant.image_wait),
-          ),
-        Container(
-          child: Text(
-            'Judge',
-            style: TextStyle(
-                fontSize: 30, color: Colors.teal, fontWeight: FontWeight.bold),
-          ),
+              ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                child: Text(
+                  'Judge',
+                  style: TextStyle(
+                      fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+            //show_timenow(),
+          ],
         ),
-        //show_timenow(),
-      ],
+      ),
     );
   }
 
@@ -3561,28 +3572,28 @@ class _MainpageState extends State<Mainpage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(12.0),
               child: Text(
                 'Total',
                 style: TextStyle(
-                  fontSize: 25,
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(10.0),
+              padding: const EdgeInsets.all(12.0),
               child: Text(
                 NumberFormat("#,###").format(value),
-                style: TextStyle(color: Colors.white, fontSize: 30),
+                style: TextStyle(color: Colors.white, fontSize: 25),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: Text(
                 'Qty',
-                style: TextStyle(color: Colors.white, fontSize: 25),
+                style: TextStyle(color: Colors.white, fontSize: 20),
               ),
             ),
           ],
