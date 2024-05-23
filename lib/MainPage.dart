@@ -215,7 +215,11 @@ class _MainpageState extends State<Mainpage> {
       read_min5 = read_min5.toString();
       read_max5 = read_max5.toString();
 
-      FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+      FileImagePath = imagePathDownloadFolder +
+          read_preset_selected +
+          '/' +
+          index_image.toString() +
+          '.jpg';
     });
 
     print('Point selected = $read_point_selected');
@@ -343,29 +347,46 @@ class _MainpageState extends State<Mainpage> {
       // Index Image
       if (index_recive <= 0) {
         index_image = 1;
-        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+        FileImagePath = imagePathDownloadFolder +
+            read_preset_selected +
+            '/' +
+            index_image.toString() +
+            '.jpg';
       } else if (index_recive == 1) {
         index_image = 2;
-        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+        FileImagePath = imagePathDownloadFolder +
+            read_preset_selected +
+            '/' +
+            index_image.toString() +
+            '.jpg';
       } else if (index_recive == 2) {
         index_image = 3;
-        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+        FileImagePath = imagePathDownloadFolder +
+            read_preset_selected +
+            '/' +
+            index_image.toString() +
+            '.jpg';
       } else if (index_recive == 3) {
         index_image = 4;
-        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+        FileImagePath = imagePathDownloadFolder +
+            read_preset_selected +
+            '/' +
+            index_image.toString() +
+            '.jpg';
       } else if (index_recive == 4) {
         index_image = 5;
-        FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+        FileImagePath = imagePathDownloadFolder +
+            read_preset_selected +
+            '/' +
+            index_image.toString() +
+            '.jpg';
       } else if (index_recive >= 5) {
-        index_recive = 5;        
+        index_recive = 5;
       }
 
-      if(index_recive >= int.parse(read_point_selected))
-      {
+      if (index_recive >= int.parse(read_point_selected)) {
         FileImagePath = imagePathDownloadFolder + '/Img/Done.jpg';
       }
-
-
 
       print('Index recive: ' + index_recive.toString());
 
@@ -820,7 +841,7 @@ class _MainpageState extends State<Mainpage> {
           build_timeline(context, int.parse(read_point_selected)),
           //Divider(color: Colors.grey, height: 40,),
           Container(
-            //color: Colors.yellow,
+            //color: Colors.purple,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -833,45 +854,58 @@ class _MainpageState extends State<Mainpage> {
                       build_ok_counter(cnt_ok!),
                       build_ng_counter(cnt_ng!),
                       build_total_counter(cnt_total!),
-                      build_step_image(),
+                      build_step_image(),                      
                     ],
                   ),
+                ),                
+                build_table(size),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+
+                  children: [                    
+                    build_judge(size),
+                    build_save_button(),                    
+                  ],
                 ),
                 
-                build_table(size),                
-                build_judge(size),
               ],
             ),
           ),
         ],
       ),
-      floatingActionButton: Container(
-          //color: Colors.pink,
-          width: 1160,
-          child: build_retry_save_button()),
+      // floatingActionButton: Column(
+      //   mainAxisAlignment: MainAxisAlignment.end,
+      //   children: [
+      //     Container(
+      //         //color: Colors.pink,
+      //         width: 1130,
+      //         child: build_retry_button()),
+      //   ],
+      // ),
     );
   }
+
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Padding build_step_image() {
     return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Container(
-                        width: 420,
-                        height: 260,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(30),
-                          border: Border.all(color: Colors.teal, width: 10),
-                          image: isFolderName? DecorationImage(
-                            image: FileImage(File(FileImagePath)),
-                            fit: BoxFit.fill,                              
-                          ):DecorationImage(
-                            image: AssetImage(MyConstant.no_image),
-                            fit: BoxFit.fill
-                          ),
-                        ),
-                      ),
-                    );
+      padding: const EdgeInsets.all(8.0),
+      child: Container(
+        width: 450,
+        height: 260,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(30),
+          border: Border.all(color: Colors.teal, width: 10),
+          image: isFolderName
+              ? DecorationImage(
+                  image: FileImage(File(FileImagePath)),
+                  fit: BoxFit.fill,
+                )
+              : DecorationImage(
+                  image: AssetImage(MyConstant.no_image), fit: BoxFit.fill),
+        ),
+      ),
+    );
   }
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -973,19 +1007,19 @@ class _MainpageState extends State<Mainpage> {
 
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Row build_retry_save_button() {
+  Row build_retry_button() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         reset_button(),
-        //SizedBox(width: 20),
+        SizedBox(width: 20),
         if (read_point_selected == '1') retry_button_1_points(),
         if (read_point_selected == '2') retry_button_2_points(),
         if (read_point_selected == '3') retry_button_3_points(),
         if (read_point_selected == '4') retry_button_4_points(),
         if (read_point_selected == '5') retry_button_5_points(),
-        SizedBox(width: 8),
-        if (index_recive >= int.parse(read_point_selected)) save_button(),
+        //SizedBox(width: 8),
+        //if (index_recive >= int.parse(read_point_selected)) save_button(),
       ],
     );
   }
@@ -1001,22 +1035,18 @@ class _MainpageState extends State<Mainpage> {
         //color: Colors.purple,
         child: Column(
           children: [
+            
             Container(
-                child: Text(
-              read_preset_name,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 35,
-                  color: Colors.teal),
-            )),
-            SizedBox(
-              height: 5,
-            ),
+                child: Text(read_preset_name,style: TextStyle(fontWeight: FontWeight.bold,fontSize: 35,color: Colors.teal),)),
+            SizedBox(height: 5,),
+            show_timenow(),
             if (read_point_selected == '1') build_table_row1(),
             if (read_point_selected == '2') build_table_row2(),
             if (read_point_selected == '3') build_table_row3(),
             if (read_point_selected == '4') build_table_row4(),
             if (read_point_selected == '5') build_table_row5(),
+            SizedBox(height: 30,),
+            build_retry_button(),
           ],
         ),
       ),
@@ -1166,19 +1196,19 @@ class _MainpageState extends State<Mainpage> {
             if (index_recive >= int.parse(read_point_selected))
               judge
                   ? Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
                         width: size * 0.25,
                         child: ShowImage(path: MyConstant.image_ok),
                       ),
-                  )
+                    )
                   : Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Container(
                         width: size * 0.25,
                         child: ShowImage(path: MyConstant.image_ng),
                       ),
-                  ),
+                    ),
             if (index_recive < int.parse(read_point_selected))
               Container(
                 width: size * 0.25,
@@ -1187,16 +1217,18 @@ class _MainpageState extends State<Mainpage> {
                   child: ShowImage(path: MyConstant.image_wait),
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container(
-                child: Text(
-                  'Judge',
-                  style: TextStyle(
-                      fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: Container(
+            //     child: Text(
+            //       'Judge',
+            //       style: TextStyle(
+            //           fontSize: 30,
+            //           color: Colors.white,
+            //           fontWeight: FontWeight.bold),
+            //     ),
+            //   ),
+            // ),
             //show_timenow(),
           ],
         ),
@@ -1514,16 +1546,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E2 = sheet1.cell(FromExcel.CellIndex.indexByString('E2'));
       var cell_F2 = sheet1.cell(FromExcel.CellIndex.indexByString('F2'));
 
-      cell_B2.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C2.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D2.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E2.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F2.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B2.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C2.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D2.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E2.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F2.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // ST MIN
       var cell_B3 = sheet1.cell(FromExcel.CellIndex.indexByString('B3'));
@@ -1532,16 +1564,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E3 = sheet1.cell(FromExcel.CellIndex.indexByString('E3'));
       var cell_F3 = sheet1.cell(FromExcel.CellIndex.indexByString('F3'));
 
-      cell_B3.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C3.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D3.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E3.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F3.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B3.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C3.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D3.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E3.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F3.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // MAX
       var cell_B4 = sheet1.cell(FromExcel.CellIndex.indexByString('B4'));
@@ -1550,16 +1582,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E4 = sheet1.cell(FromExcel.CellIndex.indexByString('E4'));
       var cell_F4 = sheet1.cell(FromExcel.CellIndex.indexByString('F4'));
 
-      cell_B4.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C4.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D4.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E4.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F4.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B4.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C4.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D4.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E4.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F4.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // MIN
       var cell_B5 = sheet1.cell(FromExcel.CellIndex.indexByString('B5'));
@@ -1568,16 +1600,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E5 = sheet1.cell(FromExcel.CellIndex.indexByString('E5'));
       var cell_F5 = sheet1.cell(FromExcel.CellIndex.indexByString('F5'));
 
-      cell_B5.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C5.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D5.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E5.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F5.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B5.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C5.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D5.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E5.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F5.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // AVERAGE
       var cell_B6 = sheet1.cell(FromExcel.CellIndex.indexByString('B6'));
@@ -1586,16 +1618,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E6 = sheet1.cell(FromExcel.CellIndex.indexByString('E6'));
       var cell_F6 = sheet1.cell(FromExcel.CellIndex.indexByString('F6'));
 
-      cell_B6.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C6.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D6.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E6.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F6.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B6.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C6.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D6.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E6.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F6.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // ST DEV
       var cell_B7 = sheet1.cell(FromExcel.CellIndex.indexByString('B7'));
@@ -1604,16 +1636,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E7 = sheet1.cell(FromExcel.CellIndex.indexByString('E7'));
       var cell_F7 = sheet1.cell(FromExcel.CellIndex.indexByString('F7'));
 
-      cell_B7.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C7.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D7.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E7.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F7.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B7.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C7.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D7.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E7.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F7.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // Cp
       var cell_B8 = sheet1.cell(FromExcel.CellIndex.indexByString('B8'));
@@ -1622,16 +1654,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E8 = sheet1.cell(FromExcel.CellIndex.indexByString('E8'));
       var cell_F8 = sheet1.cell(FromExcel.CellIndex.indexByString('F8'));
 
-      cell_B8.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C8.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D8.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E8.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F8.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B8.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C8.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D8.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E8.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F8.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       // Cpk
       var cell_B9 = sheet1.cell(FromExcel.CellIndex.indexByString('B9'));
@@ -1640,16 +1672,16 @@ class _MainpageState extends State<Mainpage> {
       var cell_E9 = sheet1.cell(FromExcel.CellIndex.indexByString('E9'));
       var cell_F9 = sheet1.cell(FromExcel.CellIndex.indexByString('F9'));
 
-      cell_B9.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_C9.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_D9.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_E9.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
-      cell_F9.cellStyle =
-          FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_B9.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_C9.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_D9.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_E9.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
+      cell_F9.cellStyle = FromExcel.CellStyle(
+          numberFormat: FromExcel.NumFormat.standard_2); // Double
 
       if (read_point_selected == '1') {
         //---------------------------------------------------> 1
@@ -1715,14 +1747,15 @@ class _MainpageState extends State<Mainpage> {
         cell_E6.value = FromExcel.DoubleCellValue(0);
         cell_F6.value = FromExcel.DoubleCellValue(0);
 
-        cell_B7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
+        cell_B7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev1).toStringAsFixed(2)));
         cell_C7.value = FromExcel.DoubleCellValue(0);
         cell_D7.value = FromExcel.DoubleCellValue(0);
         cell_E7.value = FromExcel.DoubleCellValue(0);
         cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_B8.value =
+            FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
         cell_C8.value = FromExcel.DoubleCellValue(0);
         cell_D8.value = FromExcel.DoubleCellValue(0);
         cell_E8.value = FromExcel.DoubleCellValue(0);
@@ -1840,15 +1873,16 @@ class _MainpageState extends State<Mainpage> {
         cell_E6.value = FromExcel.DoubleCellValue(0);
         cell_F6.value = FromExcel.DoubleCellValue(0);
 
-        cell_B7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
-        cell_C7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
+        cell_B7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev1).toStringAsFixed(2)));
+        cell_C7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev2).toStringAsFixed(2)));
         cell_D7.value = FromExcel.DoubleCellValue(0);
         cell_E7.value = FromExcel.DoubleCellValue(0);
         cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_B8.value =
+            FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
         cell_C8.value =
             FromExcel.DoubleCellValue(double.parse((cpk2).toStringAsFixed(2)));
         cell_D8.value = FromExcel.DoubleCellValue(0);
@@ -2018,18 +2052,21 @@ class _MainpageState extends State<Mainpage> {
         cell_E6.value = FromExcel.DoubleCellValue(0);
         cell_F6.value = FromExcel.DoubleCellValue(0);
 
-        cell_B7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
-        cell_C7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
-        cell_D7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
+        cell_B7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev1).toStringAsFixed(2)));
+        cell_C7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev2).toStringAsFixed(2)));
+        cell_D7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev3).toStringAsFixed(2)));
         cell_E7.value = FromExcel.DoubleCellValue(0);
         cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
-        cell_D8.value = FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
+        cell_B8.value =
+            FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value =
+            FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
+        cell_D8.value =
+            FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
         cell_E8.value = FromExcel.DoubleCellValue(0);
         cell_F8.value = FromExcel.DoubleCellValue(0);
 
@@ -2234,20 +2271,24 @@ class _MainpageState extends State<Mainpage> {
             FromExcel.DoubleCellValue(double.parse((avg4).toStringAsFixed(2)));
         cell_F6.value = FromExcel.DoubleCellValue(0);
 
-        cell_B7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
-        cell_C7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
-        cell_D7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
-        cell_E7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev4).toStringAsFixed(2)));
+        cell_B7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev1).toStringAsFixed(2)));
+        cell_C7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev2).toStringAsFixed(2)));
+        cell_D7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev3).toStringAsFixed(2)));
+        cell_E7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev4).toStringAsFixed(2)));
         cell_F7.value = FromExcel.DoubleCellValue(0);
 
-        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
-        cell_D8.value = FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
-        cell_E8.value = FromExcel.DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
+        cell_B8.value =
+            FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value =
+            FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
+        cell_D8.value =
+            FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
+        cell_E8.value =
+            FromExcel.DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
         cell_F8.value = FromExcel.DoubleCellValue(0);
 
         cell_B9.value =
@@ -2494,22 +2535,27 @@ class _MainpageState extends State<Mainpage> {
         cell_F6.value =
             FromExcel.DoubleCellValue(double.parse((avg5).toStringAsFixed(2)));
 
-        cell_B7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev1).toStringAsFixed(2)));
-        cell_C7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev2).toStringAsFixed(2)));
-        cell_D7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev3).toStringAsFixed(2)));
-        cell_E7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev4).toStringAsFixed(2)));
-        cell_F7.value =
-            FromExcel.DoubleCellValue(double.parse((st_dev5).toStringAsFixed(2)));
+        cell_B7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev1).toStringAsFixed(2)));
+        cell_C7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev2).toStringAsFixed(2)));
+        cell_D7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev3).toStringAsFixed(2)));
+        cell_E7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev4).toStringAsFixed(2)));
+        cell_F7.value = FromExcel.DoubleCellValue(
+            double.parse((st_dev5).toStringAsFixed(2)));
 
-        cell_B8.value = FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
-        cell_C8.value = FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
-        cell_D8.value = FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
-        cell_E8.value = FromExcel.DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
-        cell_F8.value = FromExcel.DoubleCellValue(double.parse((cp5).toStringAsFixed(2)));
+        cell_B8.value =
+            FromExcel.DoubleCellValue(double.parse((cp1).toStringAsFixed(2)));
+        cell_C8.value =
+            FromExcel.DoubleCellValue(double.parse((cp2).toStringAsFixed(2)));
+        cell_D8.value =
+            FromExcel.DoubleCellValue(double.parse((cp3).toStringAsFixed(2)));
+        cell_E8.value =
+            FromExcel.DoubleCellValue(double.parse((cp4).toStringAsFixed(2)));
+        cell_F8.value =
+            FromExcel.DoubleCellValue(double.parse((cp5).toStringAsFixed(2)));
 
         cell_B9.value =
             FromExcel.DoubleCellValue(double.parse((cpk1).toStringAsFixed(2)));
@@ -2728,40 +2774,47 @@ class _MainpageState extends State<Mainpage> {
       FromExcel.Sheet sheet1, List<double> value, int last_row, String result) {
     //https://github.com/justkawal/excel/issues/293
 
-    var cell0 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: last_row));
+    var cell0 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 0, rowIndex: last_row));
     cell0.value = FromExcel.TextCellValue(timenow);
-    cell0.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.defaultNumeric); // Text
+    cell0.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.defaultNumeric); // Text
 
-    var cell1 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: last_row));
+    var cell1 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 1, rowIndex: last_row));
     cell1.value = FromExcel.DoubleCellValue(value[0]);
-    cell1.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+    cell1.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.standard_2); // Double
 
-    var cell2 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: last_row));
+    var cell2 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 2, rowIndex: last_row));
     cell2.value = FromExcel.DoubleCellValue(value[1]);
-    cell2.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+    cell2.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.standard_2); // Double
 
-    var cell3 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 3, rowIndex: last_row));
+    var cell3 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 3, rowIndex: last_row));
     cell3.value = FromExcel.DoubleCellValue(value[2]);
-    cell3.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+    cell3.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.standard_2); // Double
 
-    var cell4 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 4, rowIndex: last_row));
+    var cell4 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 4, rowIndex: last_row));
     cell4.value = FromExcel.DoubleCellValue(value[3]);
-    cell4.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+    cell4.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.standard_2); // Double
 
-    var cell5 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: last_row));
+    var cell5 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 5, rowIndex: last_row));
     cell5.value = FromExcel.DoubleCellValue(value[4]);
-    cell5.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.standard_2); // Double
+    cell5.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.standard_2); // Double
 
-    var cell6 = sheet1
-        .cell(FromExcel.CellIndex.indexByColumnRow(columnIndex: 6, rowIndex: last_row));
+    var cell6 = sheet1.cell(FromExcel.CellIndex.indexByColumnRow(
+        columnIndex: 6, rowIndex: last_row));
     cell6.value = FromExcel.TextCellValue(result);
-    cell6.cellStyle = FromExcel.CellStyle(numberFormat: FromExcel.NumFormat.defaultNumeric); // Text
+    cell6.cellStyle = FromExcel.CellStyle(
+        numberFormat: FromExcel.NumFormat.defaultNumeric); // Text
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2781,14 +2834,28 @@ class _MainpageState extends State<Mainpage> {
         FromExcel.TextCellValue("")
       ];
 
-      List<FromExcel.CellValue> dataList_row1 = [FromExcel.TextCellValue("ST MAX")];
-      List<FromExcel.CellValue> dataList_row2 = [FromExcel.TextCellValue("ST MIN")];
-      List<FromExcel.CellValue> dataList_row3 = [FromExcel.TextCellValue("MAX")];
-      List<FromExcel.CellValue> dataList_row4 = [FromExcel.TextCellValue("MIN")];
-      List<FromExcel.CellValue> dataList_row5 = [FromExcel.TextCellValue("AVERAGE")];
-      List<FromExcel.CellValue> dataList_row6 = [FromExcel.TextCellValue("ST DEV")];
+      List<FromExcel.CellValue> dataList_row1 = [
+        FromExcel.TextCellValue("ST MAX")
+      ];
+      List<FromExcel.CellValue> dataList_row2 = [
+        FromExcel.TextCellValue("ST MIN")
+      ];
+      List<FromExcel.CellValue> dataList_row3 = [
+        FromExcel.TextCellValue("MAX")
+      ];
+      List<FromExcel.CellValue> dataList_row4 = [
+        FromExcel.TextCellValue("MIN")
+      ];
+      List<FromExcel.CellValue> dataList_row5 = [
+        FromExcel.TextCellValue("AVERAGE")
+      ];
+      List<FromExcel.CellValue> dataList_row6 = [
+        FromExcel.TextCellValue("ST DEV")
+      ];
       List<FromExcel.CellValue> dataList_row7 = [FromExcel.TextCellValue("Cp")];
-      List<FromExcel.CellValue> dataList_row8 = [FromExcel.TextCellValue("Cpk")];
+      List<FromExcel.CellValue> dataList_row8 = [
+        FromExcel.TextCellValue("Cpk")
+      ];
 
       List<FromExcel.CellValue> dataList_row9 = [
         FromExcel.TextCellValue(""),
@@ -2916,27 +2983,24 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget reset_button() {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        //color: Colors.red,
-        width: 150,
-        height: 70,
-        child: ElevatedButton.icon(
-          onPressed: () {
-            confirm_popup();
-          },
-          icon: Icon(Icons.arrow_drop_down_circle_rounded, size: 50),
-          label: Text(
-            'Reset',
-            style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.teal,
-            foregroundColor: Colors.white,
-            shape: new RoundedRectangleBorder(
-              borderRadius: new BorderRadius.circular(30),
-            ),
+    return Container(
+      //color: Colors.red,
+      width: 200,
+      height: 80,
+      child: ElevatedButton.icon(
+        onPressed: () {
+          confirm_popup();
+        },
+        icon: Icon(Icons.arrow_drop_down_circle_rounded, size: 50),
+        label: Text(
+          'Reset',
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          shape: new RoundedRectangleBorder(
+            borderRadius: new BorderRadius.circular(60),
           ),
         ),
       ),
@@ -2945,110 +3009,116 @@ class _MainpageState extends State<Mainpage> {
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  Widget save_button() {
-    return Container(
-        //color: Colors.red,
-        width: 150,
-        height: 70,
-        child: isSaving
-            ? Center(
-                child: CircularProgressIndicator(
-                color: Colors.teal,
-              ))
-            : ElevatedButton.icon(
-                onPressed: () async {
-                  //isSaving = true;  // for test --> don't show CircularProgress
-
-                  await write_to_excel().then((value) {
-                    setState(() {
-                      //_processIndex = (_processIndex + 1) % _processes.length;
-                      //WriteLogFile();
-
-                      check_save_counter();
-                      index_recive = 0;
-                      buffer.clear();
-
-                      index_image = 1;
-                      FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
-
-
-                      if (read_point_selected == '1') {
-                        status_result[0] = true;
-
-                        data_recived[0] = 'Waiting';
-                        unit[0] = '';
-                      } else if (read_point_selected == '2') {
-                        status_result[0] = true;
-                        status_result[1] = true;
-
-                        data_recived[0] = 'Waiting';
-                        data_recived[1] = 'Waiting';
-
-                        unit[0] = '';
-                        unit[1] = '';
-                      } else if (read_point_selected == '3') {
-                        status_result[0] = true;
-                        status_result[1] = true;
-                        status_result[2] = true;
-
-                        data_recived[0] = 'Waiting';
-                        data_recived[1] = 'Waiting';
-                        data_recived[2] = 'Waiting';
-
-                        unit[0] = '';
-                        unit[1] = '';
-                        unit[2] = '';
-                      } else if (read_point_selected == '4') {
-                        status_result[0] = true;
-                        status_result[1] = true;
-                        status_result[2] = true;
-                        status_result[3] = true;
-
-                        data_recived[0] = 'Waiting';
-                        data_recived[1] = 'Waiting';
-                        data_recived[2] = 'Waiting';
-                        data_recived[3] = 'Waiting';
-
-                        unit[0] = '';
-                        unit[1] = '';
-                        unit[2] = '';
-                        unit[3] = '';
-                      } else if (read_point_selected == '5') {
-                        status_result[0] = true;
-                        status_result[1] = true;
-                        status_result[2] = true;
-                        status_result[3] = true;
-                        status_result[4] = true;
-
-                        data_recived[0] = 'Waiting';
-                        data_recived[1] = 'Waiting';
-                        data_recived[2] = 'Waiting';
-                        data_recived[3] = 'Waiting';
-                        data_recived[4] = 'Waiting';
-
-                        unit[0] = '';
-                        unit[1] = '';
-                        unit[2] = '';
-                        unit[3] = '';
-                        unit[4] = '';
-                      }
-                    });
-                    return isSaving = false;
-                  });
-                },
-                icon: Icon(Icons.save, size: 50),
-                label: Text(
-                  'Save',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.teal,
-                  foregroundColor: Colors.white,
-                  shape: new RoundedRectangleBorder(
-                    borderRadius: new BorderRadius.circular(30),
+  Widget build_save_button() {
+    return Padding(
+      padding: const EdgeInsets.all(20.0),
+      child: Container(
+          //color: Colors.red,
+          width: 200,
+          height: 80,
+          child: isSaving
+              ? Center(
+                  child: CircularProgressIndicator(
+                  color: Colors.teal,
+                ))
+              : ElevatedButton.icon(
+                  onPressed: () async {
+                    //isSaving = true;  // for test --> don't show CircularProgress
+                    if (index_recive >= int.parse(read_point_selected)) {
+                      await write_to_excel().then((value) {
+                        setState(() {
+                          //_processIndex = (_processIndex + 1) % _processes.length;
+                          //WriteLogFile();
+                          check_save_counter();
+                          index_recive = 0;
+                          buffer.clear();
+      
+                          index_image = 1;
+                          FileImagePath = imagePathDownloadFolder +
+                              read_preset_selected +
+                              '/' +
+                              index_image.toString() +
+                              '.jpg';
+      
+                          if (read_point_selected == '1') {
+                            status_result[0] = true;
+      
+                            data_recived[0] = 'Waiting';
+                            unit[0] = '';
+                          } else if (read_point_selected == '2') {
+                            status_result[0] = true;
+                            status_result[1] = true;
+      
+                            data_recived[0] = 'Waiting';
+                            data_recived[1] = 'Waiting';
+      
+                            unit[0] = '';
+                            unit[1] = '';
+                          } else if (read_point_selected == '3') {
+                            status_result[0] = true;
+                            status_result[1] = true;
+                            status_result[2] = true;
+      
+                            data_recived[0] = 'Waiting';
+                            data_recived[1] = 'Waiting';
+                            data_recived[2] = 'Waiting';
+      
+                            unit[0] = '';
+                            unit[1] = '';
+                            unit[2] = '';
+                          } else if (read_point_selected == '4') {
+                            status_result[0] = true;
+                            status_result[1] = true;
+                            status_result[2] = true;
+                            status_result[3] = true;
+      
+                            data_recived[0] = 'Waiting';
+                            data_recived[1] = 'Waiting';
+                            data_recived[2] = 'Waiting';
+                            data_recived[3] = 'Waiting';
+      
+                            unit[0] = '';
+                            unit[1] = '';
+                            unit[2] = '';
+                            unit[3] = '';
+                          } else if (read_point_selected == '5') {
+                            status_result[0] = true;
+                            status_result[1] = true;
+                            status_result[2] = true;
+                            status_result[3] = true;
+                            status_result[4] = true;
+      
+                            data_recived[0] = 'Waiting';
+                            data_recived[1] = 'Waiting';
+                            data_recived[2] = 'Waiting';
+                            data_recived[3] = 'Waiting';
+                            data_recived[4] = 'Waiting';
+      
+                            unit[0] = '';
+                            unit[1] = '';
+                            unit[2] = '';
+                            unit[3] = '';
+                            unit[4] = '';
+                          }
+                        });
+                        return isSaving = false;
+                      });
+                    }
+                  },
+                  icon: Icon(Icons.save, size: 50),
+                  label: Text(
+                    'Save',
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
                   ),
-                ),
-              ));
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    shape: new RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(60),
+                    ),
+                  ),
+                )),
+    );
   }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -3056,8 +3126,8 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_1_points() {
     return Container(
       //color: Colors.red,
-      width: 150,
-      height: 70,
+      width: 200,
+      height: 80,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
@@ -3067,19 +3137,39 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 4) {
               index_image = 5;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
             }
@@ -3102,13 +3192,13 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
           foregroundColor: Colors.white,
           shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30),
+            borderRadius: new BorderRadius.circular(60),
           ),
         ),
       ),
@@ -3120,8 +3210,8 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_2_points() {
     return Container(
       //color: Colors.red,
-      width: 150,
-      height: 70,
+      width: 200,
+      height: 80,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
@@ -3131,19 +3221,39 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 4) {
               index_image = 5;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
             }
@@ -3175,13 +3285,13 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
           foregroundColor: Colors.white,
           shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30),
+            borderRadius: new BorderRadius.circular(60),
           ),
         ),
       ),
@@ -3193,8 +3303,8 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_3_points() {
     return Container(
       //color: Colors.red,
-      width: 150,
-      height: 70,
+      width: 200,
+      height: 80,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
@@ -3204,19 +3314,39 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 4) {
               index_image = 5;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
             }
@@ -3260,13 +3390,13 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
           foregroundColor: Colors.white,
           shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30),
+            borderRadius: new BorderRadius.circular(60),
           ),
         ),
       ),
@@ -3278,8 +3408,8 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_4_points() {
     return Container(
       //color: Colors.red,
-      width: 150,
-      height: 70,
+      width: 200,
+      height: 80,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
@@ -3289,19 +3419,39 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 4) {
               index_image = 5;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
             }
@@ -3361,13 +3511,13 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
           foregroundColor: Colors.white,
           shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30),
+            borderRadius: new BorderRadius.circular(60),
           ),
         ),
       ),
@@ -3379,8 +3529,8 @@ class _MainpageState extends State<Mainpage> {
   Widget retry_button_5_points() {
     return Container(
       //color: Colors.red,
-      width: 150,
-      height: 70,
+      width: 200,
+      height: 80,
       child: ElevatedButton.icon(
         onPressed: () {
           setState(() {
@@ -3391,19 +3541,39 @@ class _MainpageState extends State<Mainpage> {
             // Index Image
             if (index_recive <= 0) {
               index_image = 1;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 1) {
               index_image = 2;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 2) {
               index_image = 3;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 3) {
               index_image = 4;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive == 4) {
               index_image = 5;
-              FileImagePath = imagePathDownloadFolder+read_preset_selected+'/'+index_image.toString()+'.jpg';
+              FileImagePath = imagePathDownloadFolder +
+                  read_preset_selected +
+                  '/' +
+                  index_image.toString() +
+                  '.jpg';
             } else if (index_recive >= 5) {
               index_recive = 5;
             }
@@ -3480,13 +3650,13 @@ class _MainpageState extends State<Mainpage> {
         icon: Icon(Icons.replay_circle_filled_rounded, size: 50),
         label: Text(
           'Retry',
-          style: TextStyle(fontSize: 15, fontWeight: FontWeight.normal),
+          style: TextStyle(fontSize: 30, fontWeight: FontWeight.normal),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: Colors.teal,
           foregroundColor: Colors.white,
           shape: new RoundedRectangleBorder(
-            borderRadius: new BorderRadius.circular(30),
+            borderRadius: new BorderRadius.circular(60),
           ),
         ),
       ),
