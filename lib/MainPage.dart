@@ -75,7 +75,7 @@ int? cnt_ng;
 int? cnt_total;
 
 int? cnt_;
-String timenow = '';
+String timenow = 'Time Now';
 
 bool isSaving = false;
 
@@ -152,11 +152,14 @@ class _MainpageState extends State<Mainpage> {
     String dataString = String.fromCharCodes(_bytes);
     var value_unit = dataString.split(',');
 
+    
+
     setState(() {
       data_recived[index_recive] = value_unit[0];
       unit[index_recive] = value_unit[1];
 
       process_data();
+
       final DateTime now = DateTime.now();
       timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
     });
@@ -284,9 +287,24 @@ class _MainpageState extends State<Mainpage> {
 
     _getBTConnection();
 
+    final DateTime now = DateTime.now();
+    timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
+    Timer.periodic(const Duration(seconds: 1), (Timer t) => _getTimeString());
+
     _timer = new RestartableTimer(Duration(milliseconds: 100), getBTdata);
   }
 
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+  _getTimeString() {
+    final DateTime now = DateTime.now();
+    timenow = DateFormat('yyyy-MM-dd HH:mm:ss').format(now);
+
+    setState(() {
+      timenow = timenow;    
+    });
+  }
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   @override
@@ -891,8 +909,8 @@ class _MainpageState extends State<Mainpage> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Container(
-        width: 450,
-        height: 260,
+        width: 400,
+        height: 250,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
           border: Border.all(color: Colors.teal, width: 10),
@@ -2913,33 +2931,33 @@ class _MainpageState extends State<Mainpage> {
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-  void WriteLogFile() {
-    String res;
+  // void WriteLogFile() {
+  //   String res;
 
-    if (judge == true) {
-      res = "OK";
-    } else {
-      res = "NG";
-    }
-    print('Index Recieved: $index_recive');
-    if (index_recive >= int.parse(read_point_selected))
-      FileStorage.writeCounter(
-          timenow +
-              ',' +
-              data_recived[0].trim() +
-              ',' +
-              data_recived[1].trim() +
-              ',' +
-              data_recived[2].trim() +
-              ',' +
-              data_recived[3].trim() +
-              ',' +
-              data_recived[4].trim() +
-              ',' +
-              res +
-              '\r',
-          "log.csv");
-  }
+  //   if (judge == true) {
+  //     res = "OK";
+  //   } else {
+  //     res = "NG";
+  //   }
+  //   print('Index Recieved: $index_recive');
+  //   if (index_recive >= int.parse(read_point_selected))
+  //     FileStorage.writeCounter(
+  //         timenow +
+  //             ',' +
+  //             data_recived[0].trim() +
+  //             ',' +
+  //             data_recived[1].trim() +
+  //             ',' +
+  //             data_recived[2].trim() +
+  //             ',' +
+  //             data_recived[3].trim() +
+  //             ',' +
+  //             data_recived[4].trim() +
+  //             ',' +
+  //             res +
+  //             '\r',
+  //         "log.csv");
+  // }
 
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -2966,7 +2984,7 @@ class _MainpageState extends State<Mainpage> {
   Widget show_timenow() {
     return Text(
       timenow,
-      style: TextStyle(fontSize: 25, color: Colors.teal),
+      style: TextStyle(fontSize: 25, color: Colors.black),
     );
   }
 
@@ -3011,7 +3029,7 @@ class _MainpageState extends State<Mainpage> {
   //--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
   Widget build_save_button() {
     return Padding(
-      padding: const EdgeInsets.all(20.0),
+      padding: const EdgeInsets.all(12.0),
       child: Container(
           //color: Colors.red,
           width: 200,
